@@ -120,6 +120,8 @@ public final class ServletConsts {
 
   public static final String JSON_FILENAME_APPEND = "_results.json";
 
+  public static final String RDF_FILENAME_APPEND = "_results.rdf";
+
   public static final String RECORD_KEY = "record";
 
   public static final int EXPORT_CURSOR_CHUNK_SIZE = 100;

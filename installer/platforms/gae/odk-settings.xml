@@ -54,6 +54,7 @@
 	<bean id="kml_task" class="org.opendatakit.aggregate.task.gae.KmlGeneratorImpl" />
 	<bean id="csv_task" class="org.opendatakit.aggregate.task.gae.CsvGeneratorImpl" />
 	<bean id="json_file_task" class="org.opendatakit.aggregate.task.gae.JsonFileGeneratorImpl" />
+	<bean id="rdf_task" class="org.opendatakit.aggregate.task.gae.RdfGeneratorImpl" />
     <bean id="http_client_factory" class="org.opendatakit.common.utils.gae.GaeHttpClientFactoryImpl" />
     <bean id="image_util" class="org.opendatakit.aggregate.util.gae.ImageUtilImpl" />
 	<bean id="startup" class="org.opendatakit.aggregate.AggregateStartupImpl" />

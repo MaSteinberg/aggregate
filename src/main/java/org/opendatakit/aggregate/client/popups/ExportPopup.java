@@ -149,7 +149,16 @@ public final class ExportPopup extends AbstractPopupBase {
         KmlOptionsPopup popup = new KmlOptionsPopup(formId, filterGroup);
         popup.setPopupPositionAndShow(popup.getPositionCallBack());
         hide();
-      } else {
+      } else if (type == ExportType.RDF){
+        secureRequest(
+            SecureGWT.getFormService(),
+            (rpc, sc, cb) -> rpc.createRdfFileFromFilter(filterGroup, cb),
+            this::onSuccess,
+            this::onFailure
+        );
+      }
+
+      else {
         new ErrorDialog().show();
       }
 

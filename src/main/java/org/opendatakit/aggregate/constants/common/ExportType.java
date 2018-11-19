@@ -22,7 +22,8 @@ import java.io.Serializable;
 public enum ExportType implements Serializable {
     CSV("CSV file"),
     KML("KML file"),
-    JSONFILE("JSON file");
+    JSONFILE("JSON file"),
+    RDF("RDF file");
     
     private String displayText;
     
