@@ -70,6 +70,7 @@
 		<property name="kmlGenerator" ref="kml_task" />
 		<property name="csvGenerator" ref="csv_task" />
 		<property name="jsonFileGenerator" ref="json_file_task" />
+		<property name="rdfGenerator" ref="rdf_task" />
 		<property name="httpClientFactory" ref="http_client_factory" />
 		<property name="imageUtil" ref="image_util" />
 	</bean>

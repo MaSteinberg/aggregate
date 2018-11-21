@@ -19,7 +19,7 @@ import org.opendatakit.aggregate.constants.ServletConsts;
 import org.opendatakit.aggregate.form.IForm;
 import org.opendatakit.aggregate.submission.SubmissionKey;
 import org.opendatakit.aggregate.task.RdfGenerator;
-import org.opendatakit.aggregate.task.gae.servlet.CsvGeneratorTaskServlet;
+import org.opendatakit.aggregate.task.gae.servlet.RdfGeneratorTaskServlet;
 import org.opendatakit.common.persistence.PersistConsts;
 import org.opendatakit.common.persistence.exception.ODKDatastoreException;
 import org.opendatakit.common.web.CallingContext;

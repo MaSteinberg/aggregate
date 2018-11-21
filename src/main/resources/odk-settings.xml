@@ -78,6 +78,7 @@
 	<bean id="kml_task" class="org.opendatakit.aggregate.task.tomcat.KmlGeneratorImpl" />
 	<bean id="csv_task" class="org.opendatakit.aggregate.task.tomcat.CsvGeneratorImpl" />
 	<bean id="json_file_task" class="org.opendatakit.aggregate.task.tomcat.JsonFileGeneratorImpl" />
+	<bean id="rdf_task" class="org.opendatakit.aggregate.task.tomcat.RdfGeneratorImpl" />
     <bean id="http_client_factory" class="org.opendatakit.common.utils.tomcat.TomcatHttpClientFactoryImpl" />
     <bean id="image_util" class="org.opendatakit.aggregate.util.tomcat.ImageUtilImpl" />
 	<bean id="startup" class="org.opendatakit.aggregate.AggregateStartupImpl" />
@@ -94,6 +95,7 @@
 		<property name="kmlGenerator" ref="kml_task" />
 		<property name="csvGenerator" ref="csv_task" />
 		<property name="jsonFileGenerator" ref="json_file_task" />
+		<property name="rdfGenerator" ref="rdf_task" />
 		<property name="httpClientFactory" ref="http_client_factory" />
 		<property name="imageUtil" ref="image_util" />
 	</bean>

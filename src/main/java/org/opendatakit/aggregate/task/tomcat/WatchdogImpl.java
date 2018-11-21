@@ -21,19 +21,11 @@ import java.util.concurrent.ScheduledFuture;
 
 import javax.servlet.ServletContext;
 
+import org.opendatakit.aggregate.task.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opendatakit.aggregate.constants.BeanDefs;
 import org.opendatakit.aggregate.server.ServerPreferencesProperties;
-import org.opendatakit.aggregate.task.CsvGenerator;
-import org.opendatakit.aggregate.task.FormDelete;
-import org.opendatakit.aggregate.task.JsonFileGenerator;
-import org.opendatakit.aggregate.task.KmlGenerator;
-import org.opendatakit.aggregate.task.PurgeOlderSubmissions;
-import org.opendatakit.aggregate.task.UploadSubmissions;
-import org.opendatakit.aggregate.task.Watchdog;
-import org.opendatakit.aggregate.task.WatchdogWorkerImpl;
-import org.opendatakit.aggregate.task.WorksheetCreator;
 import org.opendatakit.aggregate.util.BackendActionsTable;
 import org.opendatakit.aggregate.util.ImageUtil;
 import org.opendatakit.common.persistence.Datastore;
@@ -81,6 +73,7 @@ public class WatchdogImpl implements Watchdog, SmartLifecycle, InitializingBean,
   CsvGenerator csvGenerator = null;
   KmlGenerator kmlGenerator = null;
   JsonFileGenerator jsonFileGenerator = null;
+  RdfGenerator rdfGenerator = null;
   PurgeOlderSubmissions purgeSubmissions = null;
   FormDelete formDelete = null;
   WorksheetCreator worksheetCreator = null;
@@ -172,6 +165,8 @@ public class WatchdogImpl implements Watchdog, SmartLifecycle, InitializingBean,
         return csvGenerator;
       } else if ( BeanDefs.JSON_FILE_BEAN.equals(beanName) ) {
         return jsonFileGenerator;
+      } else if ( BeanDefs.RDF_BEAN.equals(beanName) ) {
+        return rdfGenerator;
       } else if (BeanDefs.DATASTORE_BEAN.equals(beanName)) {
         return datastore;
       } else if (BeanDefs.FORM_DELETE_BEAN.equals(beanName)) {
@@ -406,6 +401,14 @@ public class WatchdogImpl implements Watchdog, SmartLifecycle, InitializingBean,
 
   public void setJsonFileGenerator(JsonFileGenerator jsonFileGenerator) {
     this.jsonFileGenerator = jsonFileGenerator;
+  }
+
+  public RdfGenerator getRdfGenerator() {
+    return rdfGenerator;
+  }
+
+  public void setRdfGenerator(RdfGenerator rdfGenerator) {
+    this.rdfGenerator = rdfGenerator;
   }
 
   public FormDelete getFormDelete() {

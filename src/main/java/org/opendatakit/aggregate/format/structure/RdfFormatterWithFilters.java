@@ -55,11 +55,12 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
 
     @Override
     public void beforeProcessSubmissions(CallingContext cc) throws ODKDatastoreException {
-
+        output.append("Hello world, this is before the RDF-export");
     }
 
     @Override
     public void processSubmissions(List<Submission> submissions, CallingContext cc) throws ODKDatastoreException {
+        //Function currently not in use, the functions are separately called
         beforeProcessSubmissions(cc);
         processSubmissionSegment(submissions, cc);
         afterProcessSubmissions(cc);
@@ -67,11 +68,11 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
 
     @Override
     public void processSubmissionSegment(List<Submission> submissions, CallingContext cc) throws ODKDatastoreException {
-        output.append("Hello world, this is the RDF-export");
+
     }
 
     @Override
     public void afterProcessSubmissions(CallingContext cc) throws ODKDatastoreException {
-
+        output.append("Hello world, this is after the RDF-export");
     }
 }

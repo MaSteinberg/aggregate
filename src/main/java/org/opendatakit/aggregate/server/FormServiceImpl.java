@@ -361,7 +361,7 @@ public class FormServiceImpl extends RemoteServiceServlet implements
       // create csv task
       CallingContext ccDaemon = ContextFactory.getCallingContext(this, req);
       ccDaemon.setAsDaemon(true);
-      RdfGenerator generator = (RdfGenerator) cc.getBean(BeanDefs.CSV_BEAN);
+      RdfGenerator generator = (RdfGenerator) cc.getBean(BeanDefs.RDF_BEAN);
       generator.createRdfTask(form, r.getSubmissionKey(), 1L, ccDaemon);
       return true;
 
