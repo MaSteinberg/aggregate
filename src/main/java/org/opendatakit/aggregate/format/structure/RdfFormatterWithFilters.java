@@ -15,6 +15,9 @@
  */
 package org.opendatakit.aggregate.format.structure;
 
+import com.github.mustachejava.DefaultMustacheFactory;
+import com.github.mustachejava.Mustache;
+import com.github.mustachejava.MustacheFactory;
 import org.opendatakit.aggregate.client.filter.FilterGroup;
 import org.opendatakit.aggregate.client.submission.SubmissionUISummary;
 import org.opendatakit.aggregate.constants.common.FormElementNamespace;
@@ -38,6 +41,7 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
     private final IForm form;
     private final PrintWriter output;
     private List<FormElementNamespace> namespaces;
+    private int counter = 0;
 
     public RdfFormatterWithFilters(IForm xform, String webServerUrl, PrintWriter printWriter,
                                    FilterGroup filterGroup) {
@@ -55,7 +59,6 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
 
     @Override
     public void beforeProcessSubmissions(CallingContext cc) throws ODKDatastoreException {
-        output.append("Hello world, this is before the RDF-export");
     }
 
     @Override
@@ -68,11 +71,23 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
 
     @Override
     public void processSubmissionSegment(List<Submission> submissions, CallingContext cc) throws ODKDatastoreException {
-
+        for(Submission s : submissions){
+            counter++;
+            MustacheFactory mf = new DefaultMustacheFactory();
+            Mustache mustache = mf.compile("mustache_templates/template.mustache");
+            mustache.execute(output, new Example(String.valueOf(counter)));
+            output.append("\n");
+        }
     }
 
     @Override
     public void afterProcessSubmissions(CallingContext cc) throws ODKDatastoreException {
-        output.append("Hello world, this is after the RDF-export");
+    }
+
+    private class Example{
+        public String number;
+        public Example(String number){
+            this.number = number;
+        }
     }
 }

@@ -82,7 +82,8 @@ def versions = [
     odkTomcatUtil : '1.0.1',
     servletApi    : '3.1.0',
     junit         : '4.12',
-    mockito       : '2.+'
+    mockito       : '2.+',
+    mustache      : '0.9.5'
 ]
 
 configurations.all {
@@ -144,6 +145,7 @@ dependencies {
   compile group: 'com.google.appengine', name: 'appengine-api-1.0-sdk', version: versions.gae
   compile group: 'com.google.appengine', name: 'appengine-api-labs', version: versions.gae
   compile group: 'com.google.appengine', name: 'appengine-jsr107cache', version: versions.gae
+  compile group: 'com.github.spullara.mustache.java', name: 'compiler', version: versions.mustache
   compileOnly group: 'javax.servlet', name: 'javax.servlet-api', version: versions.servletApi
   testCompile group: 'junit', name: 'junit', version: versions.junit
   testCompile group: 'org.springframework', name: 'spring-test', version: versions.spring
