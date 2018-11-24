@@ -141,7 +141,7 @@ public final class HtmlConsts {
 
    public static final String RESP_TYPE_JSON = "application/json; charset=utf-8";
 
-    public static final String RESP_TYPE_RDF = "application/rdf+xml; charset=utf-8";
+    public static final String RESP_TYPE_RDF = "text/turtle; charset=utf-8";
 
     /**
      * Encoding scheme for servlets
