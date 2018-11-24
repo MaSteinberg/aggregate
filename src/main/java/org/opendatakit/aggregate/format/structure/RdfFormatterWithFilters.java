@@ -59,6 +59,18 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
 
     @Override
     public void beforeProcessSubmissions(CallingContext cc) throws ODKDatastoreException {
+        //Namespaces
+        List<Namespace> namespaces = new ArrayList<Namespace>(){
+            {
+                add(new Namespace("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#"));
+                add(new Namespace("rdfs", "http://www.w3.org/2000/01/rdf-schema#"));
+                add(new Namespace("owl", "http://www.w3.org/2002/07/owl#"));
+            }
+        };
+        NamespacesModel model = new NamespacesModel("http://example.org", namespaces);
+        MustacheFactory mf = new DefaultMustacheFactory();
+        Mustache mustache = mf.compile("mustache_templates/common/namespaces.ttl.mustache");
+        mustache.execute(output, model);
     }
 
     @Override
@@ -71,23 +83,32 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
 
     @Override
     public void processSubmissionSegment(List<Submission> submissions, CallingContext cc) throws ODKDatastoreException {
-        for(Submission s : submissions){
-            counter++;
-            MustacheFactory mf = new DefaultMustacheFactory();
-            Mustache mustache = mf.compile("mustache_templates/template.mustache");
-            mustache.execute(output, new Example(String.valueOf(counter)));
-            output.append("\n");
-        }
     }
 
     @Override
     public void afterProcessSubmissions(CallingContext cc) throws ODKDatastoreException {
     }
 
-    private class Example{
-        public String number;
-        public Example(String number){
-            this.number = number;
+    private class NamespacesModel{
+        public String base;
+        public List<Namespace> namespaces;
+
+        public NamespacesModel(String base){
+            this.base = base;
+        }
+
+        public NamespacesModel(String base, List<Namespace> namespaces){
+            this.base = base;
+            this.namespaces = namespaces;
+        }
+    }
+
+    private class Namespace{
+        public String prefix;
+        public String uri;
+        public Namespace(String prefix, String uri){
+            this.prefix = prefix;
+            this.uri = uri;
         }
     }
 }
