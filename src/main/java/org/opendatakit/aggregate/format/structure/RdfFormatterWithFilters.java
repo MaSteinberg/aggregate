@@ -41,7 +41,7 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
     private final IForm form;
     private final PrintWriter output;
     private List<FormElementNamespace> namespaces;
-    private int counter = 0;
+    private MustacheFactory mf;
 
     public RdfFormatterWithFilters(IForm xform, String webServerUrl, PrintWriter printWriter,
                                    FilterGroup filterGroup) {
@@ -55,6 +55,9 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
         headerGenerator.processForHeaderInfo(form.getTopLevelGroupElement());
         propertyNames = headerGenerator.getIncludedElements();
         namespaces = headerGenerator.includedFormElementNamespaces();
+
+        //Initialize Mustache
+        mf = new DefaultMustacheFactory();
     }
 
     @Override
@@ -65,12 +68,27 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
                 add(new Namespace("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#"));
                 add(new Namespace("rdfs", "http://www.w3.org/2000/01/rdf-schema#"));
                 add(new Namespace("owl", "http://www.w3.org/2002/07/owl#"));
+                add(new Namespace("oboe-core", "http://ecoinformatics.org/oboe/oboe.1.2/oboe-core.owl#"));
             }
         };
         NamespacesModel model = new NamespacesModel("http://example.org", namespaces);
-        MustacheFactory mf = new DefaultMustacheFactory();
-        Mustache mustache = mf.compile("mustache_templates/common/namespaces.ttl.mustache");
-        mustache.execute(output, model);
+        Mustache namespacesMustache = mf.compile("mustache_templates/common/namespaces.ttl.mustache");
+        namespacesMustache.execute(output, model);
+
+        //For each column...
+        output.append("#Each column describes one observation\n");
+        Mustache columnsMustache = mf.compile("mustache_templates/oboe/column.ttl.mustache");
+        for(FormElementModel col : propertyNames){
+            /*Check if the column is a metadata column
+            Neither FormElementModel.isMetadata() nor
+            FormElementModel.getElementType() offer the expected results
+            so I have to check if the parent element is called "meta"*/
+            if(col.getParent().getElementName().equals("meta")){
+                //Special treatment for metadata
+            } else{
+                columnsMustache.execute(output, col.getElementName());
+            }
+        }
     }
 
     @Override
