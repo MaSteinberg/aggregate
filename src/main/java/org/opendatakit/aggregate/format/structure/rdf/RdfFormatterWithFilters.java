@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.opendatakit.aggregate.format.structure;
+package org.opendatakit.aggregate.format.structure.rdf;
 
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
@@ -25,6 +25,9 @@ import org.opendatakit.aggregate.datamodel.FormElementModel;
 import org.opendatakit.aggregate.form.IForm;
 import org.opendatakit.aggregate.format.SubmissionFormatter;
 import org.opendatakit.aggregate.format.element.ElementFormatter;
+import org.opendatakit.aggregate.format.structure.rdf.models.NamespacesModel;
+import org.opendatakit.aggregate.format.structure.rdf.models.RdfNamespace;
+import org.opendatakit.aggregate.format.structure.rdf.models.TopLevelModel;
 import org.opendatakit.aggregate.server.GenerateHeaderInfo;
 import org.opendatakit.aggregate.submission.Submission;
 import org.opendatakit.common.persistence.exception.ODKDatastoreException;
@@ -32,6 +35,7 @@ import org.opendatakit.common.web.CallingContext;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class RdfFormatterWithFilters implements SubmissionFormatter {
@@ -63,17 +67,22 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
     @Override
     public void beforeProcessSubmissions(CallingContext cc) throws ODKDatastoreException {
         //Namespaces
-        List<Namespace> namespaces = new ArrayList<Namespace>(){
+        List<RdfNamespace> namespaces = new ArrayList<RdfNamespace>(){
             {
-                add(new Namespace("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#"));
-                add(new Namespace("rdfs", "http://www.w3.org/2000/01/rdf-schema#"));
-                add(new Namespace("owl", "http://www.w3.org/2002/07/owl#"));
-                add(new Namespace("oboe-core", "http://ecoinformatics.org/oboe/oboe.1.2/oboe-core.owl#"));
+                add(new RdfNamespace("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#"));
+                add(new RdfNamespace("rdfs", "http://www.w3.org/2000/01/rdf-schema#"));
+                add(new RdfNamespace("owl", "http://www.w3.org/2002/07/owl#"));
+                add(new RdfNamespace("oboe-core", "http://ecoinformatics.org/oboe/oboe.1.2/oboe-core.owl#"));
             }
         };
-        NamespacesModel model = new NamespacesModel("http://example.org", namespaces);
+        NamespacesModel namespacesModel = new NamespacesModel("http://example.org", namespaces);
         Mustache namespacesMustache = mf.compile("mustache_templates/common/namespaces.ttl.mustache");
-        namespacesMustache.execute(output, model);
+        namespacesMustache.execute(output, namespacesModel );
+
+        //Toplevel
+        Mustache toplevelMustache = mf.compile("mustache_templates/oboe/toplevel.ttl.mustache");
+        TopLevelModel toplevelModel = new TopLevelModel(this.form);
+        toplevelMustache.execute(output, toplevelModel);
 
         //For each column...
         output.append("#Each column describes one observation\n");
@@ -105,28 +114,5 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
 
     @Override
     public void afterProcessSubmissions(CallingContext cc) throws ODKDatastoreException {
-    }
-
-    private class NamespacesModel{
-        public String base;
-        public List<Namespace> namespaces;
-
-        public NamespacesModel(String base){
-            this.base = base;
-        }
-
-        public NamespacesModel(String base, List<Namespace> namespaces){
-            this.base = base;
-            this.namespaces = namespaces;
-        }
-    }
-
-    private class Namespace{
-        public String prefix;
-        public String uri;
-        public Namespace(String prefix, String uri){
-            this.prefix = prefix;
-            this.uri = uri;
-        }
     }
 }

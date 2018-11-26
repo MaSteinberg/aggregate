@@ -23,7 +23,7 @@ import org.opendatakit.aggregate.filter.SubmissionFilterGroup;
 import org.opendatakit.aggregate.form.IForm;
 import org.opendatakit.aggregate.form.PersistentResults;
 import org.opendatakit.aggregate.format.SubmissionFormatter;
-import org.opendatakit.aggregate.format.structure.RdfFormatterWithFilters;
+import org.opendatakit.aggregate.format.structure.rdf.RdfFormatterWithFilters;
 import org.opendatakit.aggregate.query.submission.QueryBase;
 import org.opendatakit.aggregate.query.submission.QueryByUIFilterGroup;
 import org.opendatakit.aggregate.submission.Submission;
