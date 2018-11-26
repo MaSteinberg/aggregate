@@ -25,6 +25,7 @@ import org.opendatakit.aggregate.datamodel.FormElementModel;
 import org.opendatakit.aggregate.form.IForm;
 import org.opendatakit.aggregate.format.SubmissionFormatter;
 import org.opendatakit.aggregate.format.element.ElementFormatter;
+import org.opendatakit.aggregate.format.structure.rdf.models.ColumnModel;
 import org.opendatakit.aggregate.format.structure.rdf.models.NamespacesModel;
 import org.opendatakit.aggregate.format.structure.rdf.models.RdfNamespace;
 import org.opendatakit.aggregate.format.structure.rdf.models.TopLevelModel;
@@ -32,13 +33,21 @@ import org.opendatakit.aggregate.server.GenerateHeaderInfo;
 import org.opendatakit.aggregate.submission.Submission;
 import org.opendatakit.common.persistence.exception.ODKDatastoreException;
 import org.opendatakit.common.web.CallingContext;
+import org.opendatakit.common.web.constants.HtmlConsts;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 public class RdfFormatterWithFilters implements SubmissionFormatter {
+    private final Logger logger = LoggerFactory.getLogger(RdfFormatterWithFilters.class);
+
     private ElementFormatter elemFormatter;
     private List<FormElementModel> propertyNames;
     private List<String> headers;
@@ -84,19 +93,12 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
         TopLevelModel toplevelModel = new TopLevelModel(this.form);
         toplevelMustache.execute(output, toplevelModel);
 
-        //For each column...
+        //For each column create the ColumnModel and fill the template
         output.append("#Each column describes one observation\n");
         Mustache columnsMustache = mf.compile("mustache_templates/oboe/column.ttl.mustache");
         for(FormElementModel col : propertyNames){
-            /*Check if the column is a metadata column
-            Neither FormElementModel.isMetadata() nor
-            FormElementModel.getElementType() offer the expected results
-            so I have to check if the parent element is called "meta"*/
-            if(col.getParent().getElementName().equals("meta")){
-                //Special treatment for metadata
-            } else{
-                columnsMustache.execute(output, col.getElementName());
-            }
+            ColumnModel columnModel = new ColumnModel(toplevelModel, col.getElementName());
+            columnsMustache.execute(output, columnModel);
         }
     }
 
