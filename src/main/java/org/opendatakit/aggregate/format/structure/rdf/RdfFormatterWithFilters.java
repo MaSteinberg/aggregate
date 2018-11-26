@@ -23,12 +23,11 @@ import org.opendatakit.aggregate.client.submission.SubmissionUISummary;
 import org.opendatakit.aggregate.constants.common.FormElementNamespace;
 import org.opendatakit.aggregate.datamodel.FormElementModel;
 import org.opendatakit.aggregate.form.IForm;
+import org.opendatakit.aggregate.format.Row;
 import org.opendatakit.aggregate.format.SubmissionFormatter;
+import org.opendatakit.aggregate.format.element.BasicElementFormatter;
 import org.opendatakit.aggregate.format.element.ElementFormatter;
-import org.opendatakit.aggregate.format.structure.rdf.models.ColumnModel;
-import org.opendatakit.aggregate.format.structure.rdf.models.NamespacesModel;
-import org.opendatakit.aggregate.format.structure.rdf.models.RdfNamespace;
-import org.opendatakit.aggregate.format.structure.rdf.models.TopLevelModel;
+import org.opendatakit.aggregate.format.structure.rdf.models.*;
 import org.opendatakit.aggregate.server.GenerateHeaderInfo;
 import org.opendatakit.aggregate.submission.Submission;
 import org.opendatakit.common.persistence.exception.ODKDatastoreException;
@@ -56,6 +55,8 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
     private List<FormElementNamespace> namespaces;
     private MustacheFactory mf;
 
+    private TopLevelModel toplevelModel;
+
     public RdfFormatterWithFilters(IForm xform, String webServerUrl, PrintWriter printWriter,
                                    FilterGroup filterGroup) {
         form = xform;
@@ -68,6 +69,7 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
         headerGenerator.processForHeaderInfo(form.getTopLevelGroupElement());
         propertyNames = headerGenerator.getIncludedElements();
         namespaces = headerGenerator.includedFormElementNamespaces();
+        elemFormatter = new BasicElementFormatter(false, true, true, false);
 
         //Initialize Mustache
         mf = new DefaultMustacheFactory();
@@ -90,7 +92,7 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
 
         //Toplevel
         Mustache toplevelMustache = mf.compile("mustache_templates/oboe/toplevel.ttl.mustache");
-        TopLevelModel toplevelModel = ModelBuilder.buildTopLevelModel(this.form);
+        toplevelModel = ModelBuilder.buildTopLevelModel(this.form);
         toplevelMustache.execute(output, toplevelModel);
 
         //For each column create the ColumnModel and fill the template
@@ -112,7 +114,13 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
 
     @Override
     public void processSubmissionSegment(List<Submission> submissions, CallingContext cc) throws ODKDatastoreException {
-
+        //For each row create the ColumnModel and fill the template
+        Mustache rowMustache = mf.compile("mustache_templates/oboe/row.ttl.mustache");
+        for (Submission sub : submissions) {
+            Row row = sub.getFormattedValuesAsRow(namespaces, propertyNames, elemFormatter, false, cc);
+            RowModel rowModel = ModelBuilder.buildRowModel(toplevelModel, row.getFormattedValues(), propertyNames);
+            rowMustache.execute(output, rowModel);
+        }
     }
 
     @Override

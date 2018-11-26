@@ -8,13 +8,9 @@ public class RowModel {
     public TopLevelModel topLevelModel;
     public String rowId;
     public String creator;
-    public Date creationDate;
-    public Date lastUpdateDate;
-    public Date submissionDate;
-    public Date markedAsCompleteDate;
-    public Date startTime;
-    public Date endTime;
-    public Date today;
+    public String startTime;
+    public String endTime;
+    public String today;
     public String phone;
     public String subscriberId;
     public String simSerial;
