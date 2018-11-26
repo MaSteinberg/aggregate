@@ -5,7 +5,7 @@ import org.opendatakit.aggregate.form.IForm;
 import java.util.Date;
 
 public class RowModel {
-    public TopLevelModel tlModel;
+    public TopLevelModel topLevelModel;
     public String rowId;
     public String creator;
     public Date creationDate;
@@ -19,12 +19,4 @@ public class RowModel {
     public String subscriberId;
     public String simSerial;
     public String deviceId;
-
-    public RowModel(TopLevelModel tlm){
-        this.tlModel = tlm;
-    }
-
-    public RowModel(IForm form){
-        this.tlModel = new TopLevelModel(form);
-    }
 }

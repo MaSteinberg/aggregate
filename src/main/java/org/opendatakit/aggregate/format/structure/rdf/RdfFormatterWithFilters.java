@@ -90,14 +90,14 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
 
         //Toplevel
         Mustache toplevelMustache = mf.compile("mustache_templates/oboe/toplevel.ttl.mustache");
-        TopLevelModel toplevelModel = new TopLevelModel(this.form);
+        TopLevelModel toplevelModel = ModelBuilder.buildTopLevelModel(this.form);
         toplevelMustache.execute(output, toplevelModel);
 
         //For each column create the ColumnModel and fill the template
         output.append("#Each column describes one observation\n");
         Mustache columnsMustache = mf.compile("mustache_templates/oboe/column.ttl.mustache");
         for(FormElementModel col : propertyNames){
-            ColumnModel columnModel = new ColumnModel(toplevelModel, col.getElementName());
+            ColumnModel columnModel = ModelBuilder.buildColumnModel(toplevelModel, col.getElementName());
             columnsMustache.execute(output, columnModel);
         }
     }
@@ -112,6 +112,7 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
 
     @Override
     public void processSubmissionSegment(List<Submission> submissions, CallingContext cc) throws ODKDatastoreException {
+
     }
 
     @Override
