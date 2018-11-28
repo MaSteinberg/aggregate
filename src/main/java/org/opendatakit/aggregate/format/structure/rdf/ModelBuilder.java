@@ -81,11 +81,11 @@ public class ModelBuilder {
         return rowModel;
     }
 
-    public static CellModel buildCellModel(TopLevelModel topLevelModel, ColumnModel colModel, RowModel rowModel, String cellValue){
+    public static CellModel buildCellModel(TopLevelModel topLevelModel, ColumnModel columnModel, RowModel rowModel, String cellValue){
         CellModel cellModel = new CellModel();
 
         cellModel.topLevelModel = topLevelModel;
-        cellModel.colModel = colModel;
+        cellModel.columnModel = columnModel;
         cellModel.rowModel = rowModel;
         cellModel.cellValue = cellValue;
         

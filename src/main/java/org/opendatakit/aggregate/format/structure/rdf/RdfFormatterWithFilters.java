@@ -53,9 +53,15 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
     private final IForm form;
     private final PrintWriter output;
     private List<FormElementNamespace> namespaces;
+
     private MustacheFactory mf;
+    private Mustache toplevelMustache;
+    private Mustache columnMustache;
+    private Mustache rowMustache;
+    private Mustache cellMustache;
 
     private TopLevelModel toplevelModel;
+    private List<ColumnModel> columnModels = new ArrayList<>();
 
     public RdfFormatterWithFilters(IForm xform, String webServerUrl, PrintWriter printWriter,
                                    FilterGroup filterGroup) {
@@ -71,8 +77,12 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
         namespaces = headerGenerator.includedFormElementNamespaces();
         elemFormatter = new BasicElementFormatter(false, true, true, false);
 
-        //Initialize Mustache
+        //Initialize Mustache & compile the templates
         mf = new DefaultMustacheFactory();
+        this.toplevelMustache = mf.compile("mustache_templates/oboe/toplevel.ttl.mustache");
+        this.columnMustache = mf.compile("mustache_templates/oboe/column.ttl.mustache");
+        this.rowMustache = mf.compile("mustache_templates/oboe/row.ttl.mustache");
+        this.cellMustache = mf.compile("mustache_templates/oboe/cell.ttl.mustache");
     }
 
     @Override
@@ -91,16 +101,15 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
         namespacesMustache.execute(output, namespacesModel );
 
         //Toplevel
-        Mustache toplevelMustache = mf.compile("mustache_templates/oboe/toplevel.ttl.mustache");
         toplevelModel = ModelBuilder.buildTopLevelModel(this.form);
         toplevelMustache.execute(output, toplevelModel);
 
         //For each column create the ColumnModel and fill the template
         output.append("#Each column describes one observation\n");
-        Mustache columnsMustache = mf.compile("mustache_templates/oboe/column.ttl.mustache");
         for(FormElementModel col : propertyNames){
             ColumnModel columnModel = ModelBuilder.buildColumnModel(toplevelModel, col.getElementName());
-            columnsMustache.execute(output, columnModel);
+            columnModels.add(columnModel);
+            columnMustache.execute(output, columnModel);
         }
     }
 
@@ -115,11 +124,20 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
     @Override
     public void processSubmissionSegment(List<Submission> submissions, CallingContext cc) throws ODKDatastoreException {
         //For each row create the ColumnModel and fill the template
-        Mustache rowMustache = mf.compile("mustache_templates/oboe/row.ttl.mustache");
         for (Submission sub : submissions) {
             Row row = sub.getFormattedValuesAsRow(namespaces, propertyNames, elemFormatter, false, cc);
-            RowModel rowModel = ModelBuilder.buildRowModel(toplevelModel, row.getFormattedValues(), propertyNames);
+            List<String> formattedValues = row.getFormattedValues();
+
+            RowModel rowModel = ModelBuilder.buildRowModel(toplevelModel, formattedValues, propertyNames);
             rowMustache.execute(output, rowModel);
+
+            output.append("#Each cell describes one measurement\n");
+            int columnNumber = 0;
+            for(String cellValue : formattedValues){
+                CellModel cellModel = ModelBuilder.buildCellModel(toplevelModel, columnModels.get(columnNumber), rowModel, cellValue);
+                cellMustache.execute(output, cellModel);
+                columnNumber++;
+            }
         }
     }
 
