@@ -2,7 +2,6 @@ package org.opendatakit.aggregate.format.structure.rdf;
 
 import org.opendatakit.aggregate.datamodel.FormElementModel;
 import org.opendatakit.aggregate.form.IForm;
-import org.opendatakit.aggregate.format.Row;
 import org.opendatakit.aggregate.format.structure.rdf.models.CellModel;
 import org.opendatakit.aggregate.format.structure.rdf.models.ColumnModel;
 import org.opendatakit.aggregate.format.structure.rdf.models.RowModel;
@@ -11,7 +10,9 @@ import org.opendatakit.aggregate.format.structure.rdf.models.TopLevelModel;
 import java.util.List;
 
 public class ModelBuilder {
-    public static TopLevelModel buildTopLevelModel(IForm form){
+    private int rowCounter = 1;
+
+    public TopLevelModel buildTopLevelModel(IForm form){
         TopLevelModel topLevelModel = new TopLevelModel();
 
         //Extract the necessary information from the IForm
@@ -26,7 +27,7 @@ public class ModelBuilder {
         return topLevelModel;
     }
 
-    public static ColumnModel buildColumnModel(TopLevelModel topLevelModel, String columnHeader){
+    public ColumnModel buildColumnModel(TopLevelModel topLevelModel, String columnHeader){
         ColumnModel colModel = new ColumnModel();
 
         colModel.topLevelModel= topLevelModel;
@@ -35,7 +36,7 @@ public class ModelBuilder {
         return colModel;
     }
 
-    public static RowModel buildRowModel(TopLevelModel topLevelModel, List<String> formattedValues, List<FormElementModel> headers){
+    public RowModel buildRowModel(TopLevelModel topLevelModel, List<String> formattedValues, List<FormElementModel> headers, boolean requireGuid){
         RowModel rowModel = new RowModel();
 
         rowModel.topLevelModel = topLevelModel;
@@ -76,12 +77,17 @@ public class ModelBuilder {
                     }
                 }
             }
+            //If we don't require globally unique row IDs we can replace them with simpler numbers
+            if(!requireGuid){
+                rowModel.rowId = String.valueOf(rowCounter);
+                rowCounter++;
+            }
         }
 
         return rowModel;
     }
 
-    public static CellModel buildCellModel(TopLevelModel topLevelModel, ColumnModel columnModel, RowModel rowModel, String cellValue){
+    public CellModel buildCellModel(TopLevelModel topLevelModel, ColumnModel columnModel, RowModel rowModel, String cellValue){
         CellModel cellModel = new CellModel();
 
         cellModel.topLevelModel = topLevelModel;
