@@ -54,12 +54,15 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
     private final PrintWriter output;
     private List<FormElementNamespace> namespaces;
 
+    private boolean requireRowGuid = false;
+
     private MustacheFactory mf;
     private Mustache toplevelMustache;
     private Mustache columnMustache;
     private Mustache rowMustache;
     private Mustache cellMustache;
 
+    private ModelBuilder modelBuilder = new ModelBuilder();
     private TopLevelModel toplevelModel;
     private List<ColumnModel> columnModels = new ArrayList<>();
 
@@ -101,13 +104,13 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
         namespacesMustache.execute(output, namespacesModel );
 
         //Toplevel
-        toplevelModel = ModelBuilder.buildTopLevelModel(this.form);
+        toplevelModel = modelBuilder.buildTopLevelModel(this.form);
         toplevelMustache.execute(output, toplevelModel);
 
         //For each column create the ColumnModel and fill the template
         output.append("#Each column describes one observation\n");
         for(FormElementModel col : propertyNames){
-            ColumnModel columnModel = ModelBuilder.buildColumnModel(toplevelModel, col.getElementName());
+            ColumnModel columnModel = modelBuilder.buildColumnModel(toplevelModel, col.getElementName());
             columnModels.add(columnModel);
             columnMustache.execute(output, columnModel);
         }
@@ -128,13 +131,13 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
             Row row = sub.getFormattedValuesAsRow(namespaces, propertyNames, elemFormatter, false, cc);
             List<String> formattedValues = row.getFormattedValues();
 
-            RowModel rowModel = ModelBuilder.buildRowModel(toplevelModel, formattedValues, propertyNames);
+            RowModel rowModel = modelBuilder.buildRowModel(toplevelModel, formattedValues, propertyNames, requireRowGuid);
             rowMustache.execute(output, rowModel);
 
             output.append("#Each cell describes one measurement\n");
             int columnNumber = 0;
             for(String cellValue : formattedValues){
-                CellModel cellModel = ModelBuilder.buildCellModel(toplevelModel, columnModels.get(columnNumber), rowModel, cellValue);
+                CellModel cellModel = modelBuilder.buildCellModel(toplevelModel, columnModels.get(columnNumber), rowModel, cellValue);
                 cellMustache.execute(output, cellModel);
                 columnNumber++;
             }
