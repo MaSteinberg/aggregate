@@ -105,6 +105,7 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
                 add(new RdfNamespace("rdfs", "http://www.w3.org/2000/01/rdf-schema#"));
                 add(new RdfNamespace("owl", "http://www.w3.org/2002/07/owl#"));
                 add(new RdfNamespace("oboe-core", "http://ecoinformatics.org/oboe/oboe.1.2/oboe-core.owl#"));
+                add(new RdfNamespace("dcterms", "http://purl.org/dc/terms/"));
             }
         };
         NamespacesModel namespacesModel = new NamespacesModel("http://example.org", namespaces);

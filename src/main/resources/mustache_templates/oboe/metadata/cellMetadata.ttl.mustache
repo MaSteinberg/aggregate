@@ -1,1 +1,13 @@
-
+#Metadata for row {{rowModel.rowId}}, column {{columnModel.columnHeader}}
+{{!dcterms:identifier}}
+{{#rowModel.rowId}}
+:measurement_{{rowModel.rowId}}_{{columnModel.columnHeader}} dcterms:identifier "{{.}}_{{columnModel.columnHeader}}" .
+{{/rowModel.rowId}}
+{{!dcterms:creator}}
+{{#rowModel.creator}}
+:measurement_{{rowModel.rowId}}_{{columnModel.columnHeader}} dcterms:creator "{{.}}" .
+{{/rowModel.creator}}
+{{!dcterms:created}}
+{{#rowModel.endTime}}
+:measurement_{{rowModel.rowId}}_{{columnModel.columnHeader}} dcterms:created "{{.}}" .
+{{/rowModel.endTime}}
