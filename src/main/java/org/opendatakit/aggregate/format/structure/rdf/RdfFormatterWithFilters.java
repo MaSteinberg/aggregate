@@ -61,6 +61,10 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
     private Mustache columnMustache;
     private Mustache rowMustache;
     private Mustache cellMustache;
+    private Mustache toplevelMetadataMustache;
+    private Mustache columnMetadataMustache;
+    private Mustache rowMetadataMustache;
+    private Mustache cellMetadataMustache;
 
     private ModelBuilder modelBuilder = new ModelBuilder();
     private TopLevelModel toplevelModel;
@@ -86,6 +90,10 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
         this.columnMustache = mf.compile("mustache_templates/oboe/column.ttl.mustache");
         this.rowMustache = mf.compile("mustache_templates/oboe/row.ttl.mustache");
         this.cellMustache = mf.compile("mustache_templates/oboe/cell.ttl.mustache");
+        this.toplevelMetadataMustache = mf.compile("mustache_templates/oboe/metadata/toplevelMetadata.ttl.mustache");
+        this.columnMetadataMustache = mf.compile("mustache_templates/oboe/metadata/columnMetadata.ttl.mustache");
+        this.rowMetadataMustache = mf.compile("mustache_templates/oboe/metadata/rowMetadata.ttl.mustache");
+        this.cellMetadataMustache = mf.compile("mustache_templates/oboe/metadata/cellMetadata.ttl.mustache");
     }
 
     @Override
@@ -106,6 +114,7 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
         //Toplevel
         toplevelModel = modelBuilder.buildTopLevelModel(this.form);
         toplevelMustache.execute(output, toplevelModel);
+        toplevelMetadataMustache.execute(output, toplevelModel);
 
         //For each column create the ColumnModel and fill the template
         output.append("#Each column describes one observation\n");
@@ -113,6 +122,7 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
             ColumnModel columnModel = modelBuilder.buildColumnModel(toplevelModel, col.getElementName());
             columnModels.add(columnModel);
             columnMustache.execute(output, columnModel);
+            columnMetadataMustache.execute(output, columnModel);
         }
     }
 
@@ -133,12 +143,14 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
 
             RowModel rowModel = modelBuilder.buildRowModel(toplevelModel, formattedValues, propertyNames, requireRowGuid);
             rowMustache.execute(output, rowModel);
+            rowMetadataMustache.execute(output, rowModel);
 
             output.append("#Each cell describes one measurement\n");
             int columnNumber = 0;
             for(String cellValue : formattedValues){
                 CellModel cellModel = modelBuilder.buildCellModel(toplevelModel, columnModels.get(columnNumber), rowModel, cellValue);
                 cellMustache.execute(output, cellModel);
+                cellMetadataMustache.execute(output, cellModel);
                 columnNumber++;
             }
         }
