@@ -12,26 +12,26 @@ import java.util.List;
 import java.util.Map;
 
 public class ModelBuilder {
-    private static Map<FormElementModel.ElementType, String> xsdTypeMap = new HashMap<>();
+    private static Map<FormElementModel.ElementType, String> elementTypeToXsdTypeMap = new HashMap<>();
     private int rowCounter = 1;
     //Static initializer for the xsdTypeMap
     static{
         //ElementType.BOOLEAN -> Java type Boolean -> XSD-Type Boolean
-        xsdTypeMap.put(FormElementModel.ElementType.BOOLEAN, RdfDataType.BOOLEAN.getXsdTypeValue());
+        elementTypeToXsdTypeMap.put(FormElementModel.ElementType.BOOLEAN, RdfDataType.BOOLEAN.getXsdTypeValue());
         //ElementType.JRDATETIME -> Java type Java.util.Date -> XSD-Type dateTime
-        xsdTypeMap.put(FormElementModel.ElementType.JRDATETIME, RdfDataType.DATE_TIME.getXsdTypeValue());
+        elementTypeToXsdTypeMap.put(FormElementModel.ElementType.JRDATETIME, RdfDataType.DATE_TIME.getXsdTypeValue());
         //ElementType.JRDATE -> Java type Java.util.Date -> XSD-Type dateTime
-        xsdTypeMap.put(FormElementModel.ElementType.JRDATE, RdfDataType.DATE_TIME.getXsdTypeValue());
+        elementTypeToXsdTypeMap.put(FormElementModel.ElementType.JRDATE, RdfDataType.DATE_TIME.getXsdTypeValue());
         //ElementType.JRTIME -> Java type Java.util.Date -> XSD-Type dateTime
-        xsdTypeMap.put(FormElementModel.ElementType.JRTIME, RdfDataType.DATE_TIME.getXsdTypeValue());
+        elementTypeToXsdTypeMap.put(FormElementModel.ElementType.JRTIME, RdfDataType.DATE_TIME.getXsdTypeValue());
         //ElementType.INTEGER -> Java type Long -> XSD-Type integer
-        xsdTypeMap.put(FormElementModel.ElementType.INTEGER, RdfDataType.INTEGER.getXsdTypeValue());
+        elementTypeToXsdTypeMap.put(FormElementModel.ElementType.INTEGER, RdfDataType.INTEGER.getXsdTypeValue());
         //ElementType.DECIMAL -> Java type BigDecimal -> XSD-Type decimal
-        xsdTypeMap.put(FormElementModel.ElementType.DECIMAL, RdfDataType.DECIMAL.getXsdTypeValue());
+        elementTypeToXsdTypeMap.put(FormElementModel.ElementType.DECIMAL, RdfDataType.DECIMAL.getXsdTypeValue());
         //ElementType.String -> Java type String -> XSD-Type string
-        xsdTypeMap.put(FormElementModel.ElementType.STRING, RdfDataType.STRING.getXsdTypeValue());
+        elementTypeToXsdTypeMap.put(FormElementModel.ElementType.STRING, RdfDataType.STRING.getXsdTypeValue());
         //ElementType.SELECT1 -> Java type String -> XSD-Type String
-        xsdTypeMap.put(FormElementModel.ElementType.SELECT1, RdfDataType.STRING.getXsdTypeValue());
+        elementTypeToXsdTypeMap.put(FormElementModel.ElementType.SELECT1, RdfDataType.STRING.getXsdTypeValue());
         //TODO Proper Mappings for GEOPOINT, GEOTRACE, GEOSHAPE, BINARY, SELECTN, REPEAT, GROUP, METADATA
     }
 
@@ -45,8 +45,8 @@ public class ModelBuilder {
 
         private String xsdType;
 
-        private RdfDataType(String value){
-            this.xsdType = xsdType;
+        RdfDataType(String value){
+            this.xsdType = value;
         }
 
         public String getXsdTypeValue(){
@@ -75,19 +75,12 @@ public class ModelBuilder {
         colModel.topLevelModel= topLevelModel;
         colModel.columnHeader = columnHeader;
 
-        //Mapping of the ForElementModel.ElementType to the xsdDatatype
-        switch(elementType){
-            case BOOLEAN:
-                colModel.xsdDatatype = "xsd:boolean";
-                break;
-            case INTEGER:
-                colModel.xsdDatatype = "xsd:int";
-                break;
-            case DECIMAL:
-                colModel.xsdDatatype = "xsd:decimal";
-
-
-        }
+        //Find the corresponding xsd-Type, defaulting to the type corresponding to STRING
+        //TODO: Some of the types may not be empty in xsd!
+        if(elementTypeToXsdTypeMap.containsKey(elementType))
+            colModel.xsdDatatype = elementTypeToXsdTypeMap.get(elementType);
+        else
+            colModel.xsdDatatype = elementTypeToXsdTypeMap.get(FormElementModel.ElementType.STRING);
 
         return colModel;
     }
