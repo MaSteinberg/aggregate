@@ -21,35 +21,34 @@ import com.github.mustachejava.MustacheFactory;
 import org.opendatakit.aggregate.client.filter.FilterGroup;
 import org.opendatakit.aggregate.client.submission.SubmissionUISummary;
 import org.opendatakit.aggregate.constants.common.FormElementNamespace;
+import org.opendatakit.aggregate.datamodel.FormDataModel;
 import org.opendatakit.aggregate.datamodel.FormElementModel;
 import org.opendatakit.aggregate.form.IForm;
 import org.opendatakit.aggregate.format.Row;
 import org.opendatakit.aggregate.format.SubmissionFormatter;
 import org.opendatakit.aggregate.format.element.BasicElementFormatter;
 import org.opendatakit.aggregate.format.element.ElementFormatter;
+import org.opendatakit.aggregate.format.header.BasicHeaderFormatter;
+import org.opendatakit.aggregate.format.header.HeaderFormatter;
 import org.opendatakit.aggregate.format.structure.rdf.models.*;
 import org.opendatakit.aggregate.server.GenerateHeaderInfo;
 import org.opendatakit.aggregate.submission.Submission;
 import org.opendatakit.common.persistence.exception.ODKDatastoreException;
 import org.opendatakit.common.web.CallingContext;
-import org.opendatakit.common.web.constants.HtmlConsts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class RdfFormatterWithFilters implements SubmissionFormatter {
     private final Logger logger = LoggerFactory.getLogger(RdfFormatterWithFilters.class);
 
     private ElementFormatter elemFormatter;
-    private List<FormElementModel> propertyNames;
-    private List<String> headers;
+    private List<FormElementModel> columnFormElementModels;
+    private List<String> headerNames;
+    List<FormElementModel.ElementType> headerTypes;
     private final IForm form;
     private final PrintWriter output;
     private List<FormElementNamespace> namespaces;
@@ -71,13 +70,15 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
         form = xform;
         output = printWriter;
 
-        headers = new ArrayList<String>();
         SubmissionUISummary summary = new SubmissionUISummary(form.getViewableName());
+        HeaderFormatter headerFormatter = new BasicHeaderFormatter(false, true, true);
 
         GenerateHeaderInfo headerGenerator = new GenerateHeaderInfo(filterGroup, summary, form);
         headerGenerator.processForHeaderInfo(form.getTopLevelGroupElement());
-        propertyNames = headerGenerator.getIncludedElements();
+        columnFormElementModels = headerGenerator.getIncludedElements();
         namespaces = headerGenerator.includedFormElementNamespaces();
+        headerNames = headerFormatter.generateHeaders(form, form.getTopLevelGroupElement(), columnFormElementModels);
+        headerTypes = headerFormatter.getHeaderTypes(); //TODO this needs the same size as headerNames or we get a problem
         elemFormatter = new BasicElementFormatter(false, true, true, false);
 
         //Initialize Mustache & compile the templates
@@ -107,10 +108,11 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
         toplevelModel = modelBuilder.buildTopLevelModel(this.form);
         toplevelMustache.execute(output, toplevelModel);
 
+        //Columns
         //For each column create the ColumnModel and fill the template
         output.append("#Each column describes one observation\n");
-        for(FormElementModel col : propertyNames){
-            ColumnModel columnModel = modelBuilder.buildColumnModel(toplevelModel, col.getElementName());
+        for(int col = 0; col < headerNames.size(); col++){
+            ColumnModel columnModel = modelBuilder.buildColumnModel(toplevelModel, headerNames.get(col), headerTypes.get(col));
             columnModels.add(columnModel);
             columnMustache.execute(output, columnModel);
         }
@@ -128,12 +130,14 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
     public void processSubmissionSegment(List<Submission> submissions, CallingContext cc) throws ODKDatastoreException {
         //For each row create the ColumnModel and fill the template
         for (Submission sub : submissions) {
-            Row row = sub.getFormattedValuesAsRow(namespaces, propertyNames, elemFormatter, false, cc);
+            //Rows
+            Row row = sub.getFormattedValuesAsRow(namespaces, columnFormElementModels, elemFormatter, false, cc);
             List<String> formattedValues = row.getFormattedValues();
 
-            RowModel rowModel = modelBuilder.buildRowModel(toplevelModel, formattedValues, propertyNames, requireRowGuid);
+            RowModel rowModel = modelBuilder.buildRowModel(toplevelModel, formattedValues, columnFormElementModels, requireRowGuid);
             rowMustache.execute(output, rowModel);
 
+            //Cells
             output.append("#Each cell describes one measurement\n");
             int columnNumber = 0;
             for(String cellValue : formattedValues){

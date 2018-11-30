@@ -7,10 +7,52 @@ import org.opendatakit.aggregate.format.structure.rdf.models.ColumnModel;
 import org.opendatakit.aggregate.format.structure.rdf.models.RowModel;
 import org.opendatakit.aggregate.format.structure.rdf.models.TopLevelModel;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ModelBuilder {
+    private static Map<FormElementModel.ElementType, String> xsdTypeMap = new HashMap<>();
     private int rowCounter = 1;
+    //Static initializer for the xsdTypeMap
+    static{
+        //ElementType.BOOLEAN -> Java type Boolean -> XSD-Type Boolean
+        xsdTypeMap.put(FormElementModel.ElementType.BOOLEAN, RdfDataType.BOOLEAN.getXsdTypeValue());
+        //ElementType.JRDATETIME -> Java type Java.util.Date -> XSD-Type dateTime
+        xsdTypeMap.put(FormElementModel.ElementType.JRDATETIME, RdfDataType.DATE_TIME.getXsdTypeValue());
+        //ElementType.JRDATE -> Java type Java.util.Date -> XSD-Type dateTime
+        xsdTypeMap.put(FormElementModel.ElementType.JRDATE, RdfDataType.DATE_TIME.getXsdTypeValue());
+        //ElementType.JRTIME -> Java type Java.util.Date -> XSD-Type dateTime
+        xsdTypeMap.put(FormElementModel.ElementType.JRTIME, RdfDataType.DATE_TIME.getXsdTypeValue());
+        //ElementType.INTEGER -> Java type Long -> XSD-Type integer
+        xsdTypeMap.put(FormElementModel.ElementType.INTEGER, RdfDataType.INTEGER.getXsdTypeValue());
+        //ElementType.DECIMAL -> Java type BigDecimal -> XSD-Type decimal
+        xsdTypeMap.put(FormElementModel.ElementType.DECIMAL, RdfDataType.DECIMAL.getXsdTypeValue());
+        //ElementType.String -> Java type String -> XSD-Type string
+        xsdTypeMap.put(FormElementModel.ElementType.STRING, RdfDataType.STRING.getXsdTypeValue());
+        //ElementType.SELECT1 -> Java type String -> XSD-Type String
+        xsdTypeMap.put(FormElementModel.ElementType.SELECT1, RdfDataType.STRING.getXsdTypeValue());
+        //TODO Proper Mappings for GEOPOINT, GEOTRACE, GEOSHAPE, BINARY, SELECTN, REPEAT, GROUP, METADATA
+    }
+
+    private enum RdfDataType{
+        STRING("xsd:string"),
+        INTEGER("xsd:integer"),
+        INT("xsd:int"),
+        DECIMAL("xsd:decimal"),
+        BOOLEAN("xsd:boolean"),
+        DATE_TIME("xsd:dateTime");
+
+        private String xsdType;
+
+        private RdfDataType(String value){
+            this.xsdType = xsdType;
+        }
+
+        public String getXsdTypeValue(){
+            return this.xsdType;
+        }
+    }
 
     public TopLevelModel buildTopLevelModel(IForm form){
         TopLevelModel topLevelModel = new TopLevelModel();
@@ -27,11 +69,25 @@ public class ModelBuilder {
         return topLevelModel;
     }
 
-    public ColumnModel buildColumnModel(TopLevelModel topLevelModel, String columnHeader){
+    public ColumnModel buildColumnModel(TopLevelModel topLevelModel, String columnHeader, FormElementModel.ElementType elementType){
         ColumnModel colModel = new ColumnModel();
 
         colModel.topLevelModel= topLevelModel;
         colModel.columnHeader = columnHeader;
+
+        //Mapping of the ForElementModel.ElementType to the xsdDatatype
+        switch(elementType){
+            case BOOLEAN:
+                colModel.xsdDatatype = "xsd:boolean";
+                break;
+            case INTEGER:
+                colModel.xsdDatatype = "xsd:int";
+                break;
+            case DECIMAL:
+                colModel.xsdDatatype = "xsd:decimal";
+
+
+        }
 
         return colModel;
     }
