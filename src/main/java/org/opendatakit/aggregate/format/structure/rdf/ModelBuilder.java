@@ -2,10 +2,7 @@ package org.opendatakit.aggregate.format.structure.rdf;
 
 import org.opendatakit.aggregate.datamodel.FormElementModel;
 import org.opendatakit.aggregate.form.IForm;
-import org.opendatakit.aggregate.format.structure.rdf.models.CellModel;
-import org.opendatakit.aggregate.format.structure.rdf.models.ColumnModel;
-import org.opendatakit.aggregate.format.structure.rdf.models.RowModel;
-import org.opendatakit.aggregate.format.structure.rdf.models.TopLevelModel;
+import org.opendatakit.aggregate.format.structure.rdf.models.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -78,9 +75,9 @@ public class ModelBuilder {
         //Find the corresponding xsd-Type, defaulting to the type corresponding to STRING
         //TODO: Some of the types may not be empty in xsd!
         if(elementTypeToXsdTypeMap.containsKey(elementType))
-            colModel.xsdDatatype = elementTypeToXsdTypeMap.get(elementType);
+            colModel.recommendedXsdDatatype = elementTypeToXsdTypeMap.get(elementType);
         else
-            colModel.xsdDatatype = elementTypeToXsdTypeMap.get(FormElementModel.ElementType.STRING);
+            colModel.recommendedXsdDatatype = elementTypeToXsdTypeMap.get(FormElementModel.ElementType.STRING);
 
         return colModel;
     }
@@ -136,15 +133,48 @@ public class ModelBuilder {
         return rowModel;
     }
 
-    public CellModel buildCellModel(TopLevelModel topLevelModel, ColumnModel columnModel, RowModel rowModel, String cellValue){
-        CellModel cellModel = new CellModel();
+    public AbstractCellModel buildCellModel(TopLevelModel topLevelModel, ColumnModel columnModel, RowModel rowModel, String cellValue, FormElementModel.ElementType elementType){
+        switch(elementType){
+            case DECIMAL:
+            case INTEGER:
+            case STRING:
+            case SELECT1:
+            case BOOLEAN:
+            case METADATA:
+                return buildSingleValueCellModel(topLevelModel, columnModel, rowModel, cellValue);
+            case JRDATE:
+            case JRTIME:
+            case JRDATETIME:
+                return buildDateTimeCellModel(topLevelModel, columnModel, rowModel, cellValue);
+            case GEOPOINT:
+                return buildGeolocationCellModel(topLevelModel, columnModel, rowModel, cellValue);
+            default: //TODO Support more types
+                return buildSingleValueCellModel(topLevelModel, columnModel, rowModel, cellValue);
+        }
+    }
 
-        cellModel.topLevelModel = topLevelModel;
-        cellModel.columnModel = columnModel;
-        cellModel.rowModel = rowModel;
-        cellModel.cellValue = cellValue;
-        
-        return cellModel;
+    private AbstractCellModel buildGeolocationCellModel(TopLevelModel topLevelModel, ColumnModel columnModel, RowModel rowModel, String cellValue) {
+        String split[] = cellValue.split(", ", 4);
+        return new GeolocationCellModel(topLevelModel, columnModel, rowModel, split[0], split[1], split[2], split[3]);
+    }
+
+    private AbstractCellModel buildDateTimeCellModel(TopLevelModel topLevelModel, ColumnModel columnModel, RowModel rowModel, String cellValue) {
+        String split[] = cellValue.split(" ", 2);
+        return new DateTimeCellModel(topLevelModel, columnModel, rowModel, split[0], split[1]); //TODO Might want to check if split.length == 2
+    }
+
+    private AbstractCellModel buildDateCellModel(TopLevelModel topLevelModel, ColumnModel columnModel, RowModel rowModel, String cellValue) {
+        String split[] = cellValue.split(" ", 2);
+        return new DateTimeCellModel(topLevelModel, columnModel, rowModel, split[0], null); //TODO Might want to check if split.length == 2
+    }
+
+    private AbstractCellModel buildTimeCellModel(TopLevelModel topLevelModel, ColumnModel columnModel, RowModel rowModel, String cellValue) {
+        String split[] = cellValue.split(" ", 2);
+        return new DateTimeCellModel(topLevelModel, columnModel, rowModel, null, split[1]); //TODO Might want to check if split.length == 2
+    }
+
+    private AbstractCellModel buildSingleValueCellModel(TopLevelModel topLevelModel, ColumnModel columnModel, RowModel rowModel, String cellValue) {
+        return new SingleValueCellModel(topLevelModel, columnModel, rowModel, cellValue);
     }
 
     /*
