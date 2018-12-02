@@ -4,6 +4,7 @@ import org.opendatakit.aggregate.datamodel.FormElementModel;
 import org.opendatakit.aggregate.form.IForm;
 import org.opendatakit.aggregate.format.structure.rdf.models.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -143,14 +144,32 @@ public class ModelBuilder {
             case METADATA:
                 return buildSingleValueCellModel(topLevelModel, columnModel, rowModel, cellValue);
             case JRDATE:
+                return buildDateCellModel(topLevelModel, columnModel, rowModel, cellValue);
             case JRTIME:
+                return buildTimeCellModel(topLevelModel, columnModel, rowModel, cellValue);
             case JRDATETIME:
                 return buildDateTimeCellModel(topLevelModel, columnModel, rowModel, cellValue);
             case GEOPOINT:
                 return buildGeolocationCellModel(topLevelModel, columnModel, rowModel, cellValue);
+            case GEOTRACE:
+                return buildGeotraceCellModel(topLevelModel, columnModel, rowModel, cellValue);
             default: //TODO Support more types
                 return buildSingleValueCellModel(topLevelModel, columnModel, rowModel, cellValue);
         }
+    }
+
+    private AbstractCellModel buildGeotraceCellModel(TopLevelModel topLevelModel, ColumnModel columnModel, RowModel rowModel, String cellValue) {
+        String locationStrings[] = cellValue.split(";");
+        List<GeopathElement> pathElements = new ArrayList<>();
+        for (int i = 0; i < locationStrings.length; i++) {
+            String locationString = locationStrings[i];
+            String split[] = locationString.split(" ", 4);
+            //If we have less than four elements in split it's because the last location's data was cut off due to the
+            // DB field length restriction - so it's an incomplete record and we just discard the last location(s)
+            if (split.length >= 4)
+                pathElements.add(new GeopathElement(i+1, new Location(split[0], split[1], split[2], split[3])));
+        }
+        return new GeopathCellModel(topLevelModel, columnModel, rowModel, pathElements);
     }
 
     private AbstractCellModel buildGeolocationCellModel(TopLevelModel topLevelModel, ColumnModel columnModel, RowModel rowModel, String cellValue) {

@@ -9,7 +9,7 @@
 {{!Relate the Measurement to the MeasuredValue}}
 :measurement_{{rowModel.rowId}}_{{columnModel.columnHeader}}_latitude oboe-core:hasValue :measuredValue_{{rowModel.rowId}}_{{columnModel.columnHeader}}_latitude .
 {{!Relate the actual latitude-value to the MeasuredValue}}
-:measuredValue_{{rowModel.rowId}}_{{columnModel.columnHeader}}_longitude oboe-core:hasCode "{{latitude}}"^^{{columnModel.xsdDatatype}} .
+:measuredValue_{{rowModel.rowId}}_{{columnModel.columnHeader}}_longitude oboe-core:hasCode "{{location.latitude}}"^^{{columnModel.xsdDatatype}} .
 
 #Longitude component
 {{!Construct an oboe-core:Measurement for the longitude}}
@@ -21,7 +21,7 @@
 {{!Relate the Measurement to the MeasuredValue}}
 :measurement_{{rowModel.rowId}}_{{columnModel.columnHeader}}_longitude oboe-core:hasValue :measuredValue_{{rowModel.rowId}}_{{columnModel.columnHeader}}_longitude .
 {{!Relate the actual longitude-value to the MeasuredValue}}
-:measuredValue_{{rowModel.rowId}}_{{columnModel.columnHeader}}_longitude oboe-core:hasCode "{{longitude}}"^^{{columnModel.xsdDatatype}} .
+:measuredValue_{{rowModel.rowId}}_{{columnModel.columnHeader}}_longitude oboe-core:hasCode "{{location.longitude}}"^^{{columnModel.xsdDatatype}} .
 
 #Altitude component
 {{!Construct an oboe-core:Measurement for the altitude}}
@@ -33,7 +33,7 @@
 {{!Relate the Measurement to the MeasuredValue}}
 :measurement_{{rowModel.rowId}}_{{columnModel.columnHeader}}_altitude oboe-core:hasValue :measuredValue_{{rowModel.rowId}}_{{columnModel.columnHeader}}_altitude .
 {{!Relate the actual altitude-value to the MeasuredValue}}
-:measuredValue_{{rowModel.rowId}}_{{columnModel.columnHeader}}_altitude oboe-core:hasCode "{{altitude}}"^^{{columnModel.xsdDatatype}} .
+:measuredValue_{{rowModel.rowId}}_{{columnModel.columnHeader}}_altitude oboe-core:hasCode "{{location.altitude}}"^^{{columnModel.xsdDatatype}} .
 
 #Accuracy component
 {{!Construct an oboe-core:Measurement for the accuracy}}
@@ -45,4 +45,4 @@
 {{!Relate the Measurement to the MeasuredValue}}
 :measurement_{{rowModel.rowId}}_{{columnModel.columnHeader}}_accuracy oboe-core:hasValue :measuredValue_{{rowModel.rowId}}_{{columnModel.columnHeader}}_accuracy .
 {{!Relate the actual accuracy-value to the MeasuredValue}}
-:measuredValue_{{rowModel.rowId}}_{{columnModel.columnHeader}}_accuracy oboe-core:hasCode "{{accuracy}}"^^{{columnModel.xsdDatatype}} .
+:measuredValue_{{rowModel.rowId}}_{{columnModel.columnHeader}}_accuracy oboe-core:hasCode "{{location.accuracy}}"^^{{columnModel.xsdDatatype}} .
