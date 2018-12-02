@@ -1,0 +1,48 @@
+#Row {{rowModel.rowId}}, Column {{columnModel.columnHeader}}
+#Latitude component
+{{!Construct an oboe-core:Measurement for the latitude}}
+:measurement_{{rowModel.rowId}}_{{columnModel.columnHeader}}_latitude rdf:type oboe-core:Measurement .
+{{!Relate the Measurement to the Observation}}
+:column_{{columnModel.columnHeader}} oboe-core:hasMeasurement :measurement_{{rowModel.rowId}}_{{columnModel.columnHeader}}_latitude .
+{{!Construct an oboe-core:MeasuredValue for the latitude}}
+:measuredValue_{{rowModel.rowId}}_{{columnModel.columnHeader}}_latitude rdf:type oboe-core:MeasuredValue .
+{{!Relate the Measurement to the MeasuredValue}}
+:measurement_{{rowModel.rowId}}_{{columnModel.columnHeader}}_latitude oboe-core:hasValue :measuredValue_{{rowModel.rowId}}_{{columnModel.columnHeader}}_latitude .
+{{!Relate the actual latitude-value to the MeasuredValue}}
+:measuredValue_{{rowModel.rowId}}_{{columnModel.columnHeader}}_longitude oboe-core:hasCode "{{latitude}}"^^{{columnModel.xsdDatatype}} .
+
+#Longitude component
+{{!Construct an oboe-core:Measurement for the longitude}}
+:measurement_{{rowModel.rowId}}_{{columnModel.columnHeader}}_longitude rdf:type oboe-core:Measurement .
+{{!Relate the Measurement to the Observation}}
+:column_{{columnModel.columnHeader}} oboe-core:hasMeasurement :measurement_{{rowModel.rowId}}_{{columnModel.columnHeader}}_longitude .
+{{!Construct an oboe-core:MeasuredValue for the longitude}}
+:measuredValue_{{rowModel.rowId}}_{{columnModel.columnHeader}}_longitude rdf:type oboe-core:MeasuredValue .
+{{!Relate the Measurement to the MeasuredValue}}
+:measurement_{{rowModel.rowId}}_{{columnModel.columnHeader}}_longitude oboe-core:hasValue :measuredValue_{{rowModel.rowId}}_{{columnModel.columnHeader}}_longitude .
+{{!Relate the actual longitude-value to the MeasuredValue}}
+:measuredValue_{{rowModel.rowId}}_{{columnModel.columnHeader}}_longitude oboe-core:hasCode "{{longitude}}"^^{{columnModel.xsdDatatype}} .
+
+#Altitude component
+{{!Construct an oboe-core:Measurement for the altitude}}
+:measurement_{{rowModel.rowId}}_{{columnModel.columnHeader}}_altitude rdf:type oboe-core:Measurement .
+{{!Relate the Measurement to the Observation}}
+:column_{{columnModel.columnHeader}} oboe-core:hasMeasurement :measurement_{{rowModel.rowId}}_{{columnModel.columnHeader}}_altitude .
+{{!Construct an oboe-core:MeasuredValue for the altitude}}
+:measuredValue_{{rowModel.rowId}}_{{columnModel.columnHeader}}_altitude rdf:type oboe-core:MeasuredValue .
+{{!Relate the Measurement to the MeasuredValue}}
+:measurement_{{rowModel.rowId}}_{{columnModel.columnHeader}}_altitude oboe-core:hasValue :measuredValue_{{rowModel.rowId}}_{{columnModel.columnHeader}}_altitude .
+{{!Relate the actual altitude-value to the MeasuredValue}}
+:measuredValue_{{rowModel.rowId}}_{{columnModel.columnHeader}}_altitude oboe-core:hasCode "{{altitude}}"^^{{columnModel.xsdDatatype}} .
+
+#Accuracy component
+{{!Construct an oboe-core:Measurement for the accuracy}}
+:measurement_{{rowModel.rowId}}_{{columnModel.columnHeader}}_accuracy rdf:type oboe-core:Measurement .
+{{!Relate the Measurement to the Observation}}
+:column_{{columnModel.columnHeader}} oboe-core:hasMeasurement :measurement_{{rowModel.rowId}}_{{columnModel.columnHeader}}_accuracy .
+{{!Construct an oboe-core:MeasuredValue for the accuracy}}
+:measuredValue_{{rowModel.rowId}}_{{columnModel.columnHeader}}_accuracy rdf:type oboe-core:MeasuredValue .
+{{!Relate the Measurement to the MeasuredValue}}
+:measurement_{{rowModel.rowId}}_{{columnModel.columnHeader}}_accuracy oboe-core:hasValue :measuredValue_{{rowModel.rowId}}_{{columnModel.columnHeader}}_accuracy .
+{{!Relate the actual accuracy-value to the MeasuredValue}}
+:measuredValue_{{rowModel.rowId}}_{{columnModel.columnHeader}}_accuracy oboe-core:hasCode "{{accuracy}}"^^{{columnModel.xsdDatatype}} .
