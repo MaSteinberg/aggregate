@@ -1,5 +1,6 @@
 package org.opendatakit.aggregate.format.structure.rdf.models;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MultiValueCellModel extends AbstractCellModel {

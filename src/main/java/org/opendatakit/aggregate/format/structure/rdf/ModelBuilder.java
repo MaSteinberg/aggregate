@@ -4,10 +4,7 @@ import org.opendatakit.aggregate.datamodel.FormElementModel;
 import org.opendatakit.aggregate.form.IForm;
 import org.opendatakit.aggregate.format.structure.rdf.models.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ModelBuilder {
     private int rowCounter = 1;
@@ -96,6 +93,8 @@ public class ModelBuilder {
             case BOOLEAN:
             case METADATA:
                 return buildSingleValueCellModel(topLevelModel, columnModel, rowModel, cellValue);
+            case SELECTN:
+                return buildMultiValueCellModel(topLevelModel, columnModel, rowModel, cellValue);
             case JRDATE:
                 return buildDateCellModel(topLevelModel, columnModel, rowModel, cellValue);
             case JRTIME:
@@ -109,6 +108,12 @@ public class ModelBuilder {
             default: //TODO Support more types
                 return buildSingleValueCellModel(topLevelModel, columnModel, rowModel, cellValue);
         }
+    }
+
+    private AbstractCellModel buildMultiValueCellModel(TopLevelModel topLevelModel, ColumnModel columnModel, RowModel rowModel, String cellValue) {
+        //The values are separated by a space and can not include a  space themselves
+        String values[] = cellValue.split(" ");
+        return new MultiValueCellModel(topLevelModel, columnModel, rowModel, Arrays.asList(values));
     }
 
     private AbstractCellModel buildGeotraceCellModel(TopLevelModel topLevelModel, ColumnModel columnModel, RowModel rowModel, String cellValue) {
