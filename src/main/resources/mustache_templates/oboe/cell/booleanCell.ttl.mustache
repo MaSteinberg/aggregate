@@ -9,6 +9,6 @@
 :measurement_{{rowModel.rowId}}_{{columnModel.columnHeader}} oboe-core:hasValue :measuredValue_{{rowModel.rowId}}_{{columnModel.columnHeader}} .
 {{!Relate the actual cell-value to the MeasuredValue}}
 {{#cellValue}}
-:measuredValue_{{rowModel.rowId}}_{{columnModel.columnHeader}} oboe-core:hasCode "{{cellValue}}"^^xsd:integer .
+:measuredValue_{{rowModel.rowId}}_{{columnModel.columnHeader}} oboe-core:hasCode "{{cellValue}}"^^xsd:boolean .
 {{/cellValue}}
 

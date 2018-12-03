@@ -10,47 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ModelBuilder {
-    private static Map<FormElementModel.ElementType, String> elementTypeToXsdTypeMap = new HashMap<>();
     private int rowCounter = 1;
-    //Static initializer for the xsdTypeMap
-    static{
-        //ElementType.BOOLEAN -> Java type Boolean -> XSD-Type Boolean
-        elementTypeToXsdTypeMap.put(FormElementModel.ElementType.BOOLEAN, RdfDataType.BOOLEAN.getXsdTypeValue());
-        //ElementType.JRDATETIME -> Java type Java.util.Date -> XSD-Type dateTime
-        elementTypeToXsdTypeMap.put(FormElementModel.ElementType.JRDATETIME, RdfDataType.DATE_TIME.getXsdTypeValue());
-        //ElementType.JRDATE -> Java type Java.util.Date -> XSD-Type dateTime
-        elementTypeToXsdTypeMap.put(FormElementModel.ElementType.JRDATE, RdfDataType.DATE_TIME.getXsdTypeValue());
-        //ElementType.JRTIME -> Java type Java.util.Date -> XSD-Type dateTime
-        elementTypeToXsdTypeMap.put(FormElementModel.ElementType.JRTIME, RdfDataType.DATE_TIME.getXsdTypeValue());
-        //ElementType.INTEGER -> Java type Long -> XSD-Type integer
-        elementTypeToXsdTypeMap.put(FormElementModel.ElementType.INTEGER, RdfDataType.INTEGER.getXsdTypeValue());
-        //ElementType.DECIMAL -> Java type BigDecimal -> XSD-Type decimal
-        elementTypeToXsdTypeMap.put(FormElementModel.ElementType.DECIMAL, RdfDataType.DECIMAL.getXsdTypeValue());
-        //ElementType.String -> Java type String -> XSD-Type string
-        elementTypeToXsdTypeMap.put(FormElementModel.ElementType.STRING, RdfDataType.STRING.getXsdTypeValue());
-        //ElementType.SELECT1 -> Java type String -> XSD-Type String
-        elementTypeToXsdTypeMap.put(FormElementModel.ElementType.SELECT1, RdfDataType.STRING.getXsdTypeValue());
-        //TODO Proper Mappings for GEOPOINT, GEOTRACE, GEOSHAPE, BINARY, SELECTN, REPEAT, GROUP, METADATA
-    }
-
-    private enum RdfDataType{
-        STRING("xsd:string"),
-        INTEGER("xsd:integer"),
-        INT("xsd:int"),
-        DECIMAL("xsd:decimal"),
-        BOOLEAN("xsd:boolean"),
-        DATE_TIME("xsd:dateTime");
-
-        private String xsdType;
-
-        RdfDataType(String value){
-            this.xsdType = value;
-        }
-
-        public String getXsdTypeValue(){
-            return this.xsdType;
-        }
-    }
 
     public TopLevelModel buildTopLevelModel(IForm form){
         TopLevelModel topLevelModel = new TopLevelModel();
@@ -72,14 +32,6 @@ public class ModelBuilder {
 
         colModel.topLevelModel= topLevelModel;
         colModel.columnHeader = columnHeader;
-
-        //Find the corresponding xsd-Type, defaulting to the type corresponding to STRING
-        //TODO: Some of the types may not be empty in xsd!
-        if(elementTypeToXsdTypeMap.containsKey(elementType))
-            colModel.recommendedXsdDatatype = elementTypeToXsdTypeMap.get(elementType);
-        else
-            colModel.recommendedXsdDatatype = elementTypeToXsdTypeMap.get(FormElementModel.ElementType.STRING);
-
         return colModel;
     }
 
@@ -89,6 +41,7 @@ public class ModelBuilder {
         rowModel.topLevelModel = topLevelModel;
         if(formattedValues.size() == headers.size()){
             //Use the header names to identify the fields that contain row-related metadata
+            //TODO not a good idea for obvious reasons...
             for(int i = 0; i < headers.size(); i++){
                 String val = formattedValues.get(i);
                 if(!isNullOrEmpty(val)){
@@ -167,7 +120,7 @@ public class ModelBuilder {
             //If we have less than four elements in split it's because the last location's data was cut off due to the
             // DB field length restriction - so it's an incomplete record and we just discard the last location(s)
             if (split.length >= 4)
-                pathElements.add(new GeopathElement(i+1, new Location(split[0], split[1], split[2], split[3])));
+                pathElements.add(new GeopathElement(i + 1, new Location(split[0], split[1], split[2], split[3])));
         }
         return new GeopathCellModel(topLevelModel, columnModel, rowModel, pathElements);
     }

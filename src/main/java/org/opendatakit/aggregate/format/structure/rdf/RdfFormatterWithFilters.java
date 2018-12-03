@@ -113,6 +113,7 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
         elementTypeToCellMustacheMap.put(INTEGER, mf.compile(cellTemplateRoot + "integerCell.ttl.mustache"));
         elementTypeToCellMustacheMap.put(STRING, mf.compile(cellTemplateRoot + "stringCell.ttl.mustache"));
         elementTypeToCellMustacheMap.put(SELECT1, mf.compile(cellTemplateRoot + "select1Cell.ttl.mustache"));
+        elementTypeToCellMustacheMap.put(BOOLEAN, mf.compile(cellTemplateRoot + "booleanCell.ttl.mustache"));
         elementTypeToCellMustacheMap.put(JRDATE, mf.compile(cellTemplateRoot + "dateCell.ttl.mustache"));
         elementTypeToCellMustacheMap.put(JRTIME, mf.compile(cellTemplateRoot + "timeCell.ttl.mustache"));
         elementTypeToCellMustacheMap.put(JRDATETIME, mf.compile(cellTemplateRoot + "dateTimeCell.ttl.mustache"));
@@ -128,6 +129,8 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
                 add(new RdfNamespace("rdfs", "http://www.w3.org/2000/01/rdf-schema#"));
                 add(new RdfNamespace("owl", "http://www.w3.org/2002/07/owl#"));
                 add(new RdfNamespace("oboe-core", "http://ecoinformatics.org/oboe/oboe.1.2/oboe-core.owl#"));
+                add(new RdfNamespace("xsd", "http://www.w3.org/2001/XMLSchema#"));
+                add(new RdfNamespace("geo", "http://www.w3.org/2003/01/geo/wgs84_pos#"));
             }
         };
         NamespacesModel namespacesModel = new NamespacesModel("http://example.org", namespaces);
@@ -183,6 +186,7 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
                 } else{
                     cellMustache = elementTypeToCellMustacheMap.get(STRING);
                 }
+                output.append("#Element type: " + elementType.name() + "\n");
                 cellMustache.execute(output, cellModel);
                 columnNumber++;
             }
