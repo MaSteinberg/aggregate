@@ -9,4 +9,9 @@ public class GeotraceCellModel extends AbstractCellModel {
         super(columnModel, rowModel);
         this.locationList = locationList;
     }
+
+    public GeotraceCellModel(TopLevelModel topLevelModel, ColumnModel columnModel, RowModel rowModel) {
+        super(columnModel, rowModel);
+        this.locationList = null;
+    }
 }

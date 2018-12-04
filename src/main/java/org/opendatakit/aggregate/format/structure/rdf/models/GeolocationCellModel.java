@@ -7,4 +7,9 @@ public class GeolocationCellModel extends AbstractCellModel {
         super(columnModel, rowModel);
         this.location = new Location(latitude, longitude, altitude, accuracy);
     }
+
+    public GeolocationCellModel(TopLevelModel topLevelModel, ColumnModel columnModel, RowModel rowModel) {
+        super(columnModel, rowModel);
+        this.location = null;
+    }
 }

@@ -89,6 +89,7 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
         //Workaround: headerNames and headerTypes have extra columns for GEOPOINTs altitude and accuracy while our elementFormatter just
         //includes them in a single String, split by ", " (which is easier to process)
         //So we remove the additional entries from headerNames and headerTypes
+        //TODO Test if the order of the columns (which this routine relies on) is reliable!
         int col = 0;
         while(col < headerNames.size()){
             if(headerTypes.get(col) == GEOPOINT){
