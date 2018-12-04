@@ -89,6 +89,7 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
         //Workaround: headerNames and headerTypes have extra columns for GEOPOINTs altitude and accuracy while our elementFormatter just
         //includes them in a single String, split by ", " (which is easier to process)
         //So we remove the additional entries from headerNames and headerTypes
+        //TODO Test if the order of the columns (which this routine relies on) is reliable!
         int col = 0;
         while(col < headerNames.size()){
             if(headerTypes.get(col) == GEOPOINT){
@@ -118,6 +119,8 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
         elementTypeToCellMustacheMap.put(JRTIME, mf.compile(cellTemplateRoot + "timeCell.ttl.mustache"));
         elementTypeToCellMustacheMap.put(JRDATETIME, mf.compile(cellTemplateRoot + "dateTimeCell.ttl.mustache"));
         elementTypeToCellMustacheMap.put(GEOPOINT, mf.compile(cellTemplateRoot + "geolocationCell.ttl.mustache"));
+        elementTypeToCellMustacheMap.put(GEOTRACE, mf.compile(cellTemplateRoot + "geotraceCell.ttl.mustache"));
+        elementTypeToCellMustacheMap.put(GEOSHAPE, mf.compile(cellTemplateRoot + "geoshapeCell.ttl.mustache"));
         elementTypeToCellMustacheMap.put(SELECTN, mf.compile(cellTemplateRoot + "multipleChoiceCell.ttl.mustache"));
     }
 

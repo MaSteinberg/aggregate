@@ -9,4 +9,10 @@ public class DateTimeCellModel extends AbstractCellModel {
         this.date = date;
         this.time = time;
     }
+
+    public DateTimeCellModel(TopLevelModel topLevelModel, ColumnModel columnModel, RowModel rowModel) {
+        super(columnModel, rowModel);
+        this.date = null;
+        this.time = null;
+    }
 }

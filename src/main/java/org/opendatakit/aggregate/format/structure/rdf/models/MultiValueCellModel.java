@@ -9,4 +9,9 @@ public class MultiValueCellModel extends AbstractCellModel {
         super(columnModel, rowModel);
         this.cellValues = cellValues;
     }
+
+    public MultiValueCellModel(TopLevelModel topLevelModel, ColumnModel columnModel, RowModel rowModel) {
+        super(columnModel, rowModel);
+        this.cellValues = null;
+    }
 }

@@ -65,47 +65,77 @@ public class ModelBuilder {
                 return buildGeolocationCellModel(topLevelModel, columnModel, rowModel, cellValue);
             case GEOTRACE:
                 return buildGeotraceCellModel(topLevelModel, columnModel, rowModel, cellValue);
+            case GEOSHAPE:
+                return buildGeoshapeCellModel(topLevelModel, columnModel, rowModel, cellValue);
             default: //TODO Support more types
                 return buildSingleValueCellModel(topLevelModel, columnModel, rowModel, cellValue);
         }
     }
 
-    private AbstractCellModel buildMultiValueCellModel(TopLevelModel topLevelModel, ColumnModel columnModel, RowModel rowModel, String cellValue) {
-        //The values are separated by a space and can not include a  space themselves
-        String values[] = cellValue.split(" ");
-        return new MultiValueCellModel(topLevelModel, columnModel, rowModel, Arrays.asList(values));
-    }
-
-    private AbstractCellModel buildGeotraceCellModel(TopLevelModel topLevelModel, ColumnModel columnModel, RowModel rowModel, String cellValue) {
+    private AbstractCellModel buildGeoshapeCellModel(TopLevelModel topLevelModel, ColumnModel columnModel, RowModel rowModel, String cellValue) {
+        if(cellValue == null)
+            return new GeotraceCellModel(topLevelModel, columnModel, rowModel);
         String locationStrings[] = cellValue.split(";");
-        List<GeopathElement> pathElements = new ArrayList<>();
+        List<GeotraceElement> pathElements = new ArrayList<>();
         for (int i = 0; i < locationStrings.length; i++) {
             String locationString = locationStrings[i];
             String split[] = locationString.split(" ", 4);
             //If we have less than four elements in split it's because the last location's data was cut off due to the
-            // DB field length restriction - so it's an incomplete record and we just discard the last location(s)
+            //DB field length restriction - so it's an incomplete record and we just discard the last location(s)
             if (split.length >= 4)
-                pathElements.add(new GeopathElement(i + 1, new Location(split[0], split[1], split[2], split[3])));
+                pathElements.add(new GeotraceElement(i + 1, new Location(split[0], split[1], split[2], split[3])));
         }
-        return new GeopathCellModel(topLevelModel, columnModel, rowModel, pathElements);
+        return new GeotraceCellModel(topLevelModel, columnModel, rowModel, pathElements);
+    }
+
+    private AbstractCellModel buildMultiValueCellModel(TopLevelModel topLevelModel, ColumnModel columnModel, RowModel rowModel, String cellValue) {
+        //The values are separated by a space and can not include a  space themselves
+        if(cellValue == null)
+            return new MultiValueCellModel(topLevelModel, columnModel, rowModel);
+        String values[] = cellValue.split(" ");
+        return new MultiValueCellModel(topLevelModel, columnModel, rowModel, Arrays.asList(values));
     }
 
     private AbstractCellModel buildGeolocationCellModel(TopLevelModel topLevelModel, ColumnModel columnModel, RowModel rowModel, String cellValue) {
+        if(cellValue == null)
+            return new GeolocationCellModel(topLevelModel, columnModel, rowModel);
         String split[] = cellValue.split(", ", 4);
         return new GeolocationCellModel(topLevelModel, columnModel, rowModel, split[0], split[1], split[2], split[3]);
     }
 
+    private AbstractCellModel buildGeotraceCellModel(TopLevelModel topLevelModel, ColumnModel columnModel, RowModel rowModel, String cellValue) {
+        if(cellValue == null)
+            return new GeotraceCellModel(topLevelModel, columnModel, rowModel);
+        String locationStrings[] = cellValue.split(";");
+        List<GeotraceElement> pathElements = new ArrayList<>();
+        for (int i = 0; i < locationStrings.length; i++) {
+            String locationString = locationStrings[i];
+            String split[] = locationString.split(" ", 4);
+            //If we have less than four elements in split it's because the last location's data was cut off due to the
+            //DB field length restriction - so it's an incomplete record and we just discard the last location(s)
+            if (split.length >= 4)
+                pathElements.add(new GeotraceElement(i + 1, new Location(split[0], split[1], split[2], split[3])));
+        }
+        return new GeotraceCellModel(topLevelModel, columnModel, rowModel, pathElements);
+    }
+
     private AbstractCellModel buildDateTimeCellModel(TopLevelModel topLevelModel, ColumnModel columnModel, RowModel rowModel, String cellValue) {
+        if(cellValue == null)
+            return new DateTimeCellModel(topLevelModel, columnModel, rowModel);
         String split[] = cellValue.split(" ", 2);
         return new DateTimeCellModel(topLevelModel, columnModel, rowModel, split[0], split[1]); //TODO Might want to check if split.length == 2
     }
 
     private AbstractCellModel buildDateCellModel(TopLevelModel topLevelModel, ColumnModel columnModel, RowModel rowModel, String cellValue) {
+        if(cellValue == null)
+            return new DateTimeCellModel(topLevelModel, columnModel, rowModel);
         String split[] = cellValue.split(" ", 2);
         return new DateTimeCellModel(topLevelModel, columnModel, rowModel, split[0], null); //TODO Might want to check if split.length == 2
     }
 
     private AbstractCellModel buildTimeCellModel(TopLevelModel topLevelModel, ColumnModel columnModel, RowModel rowModel, String cellValue) {
+        if(cellValue == null)
+            return new DateTimeCellModel(topLevelModel, columnModel, rowModel);
         String split[] = cellValue.split(" ", 2);
         return new DateTimeCellModel(topLevelModel, columnModel, rowModel, null, split[1]); //TODO Might want to check if split.length == 2
     }
