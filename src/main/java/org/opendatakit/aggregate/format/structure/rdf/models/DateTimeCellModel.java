@@ -5,7 +5,7 @@ public class DateTimeCellModel extends AbstractCellModel {
     String time;
 
     public DateTimeCellModel(TopLevelModel topLevelModel, ColumnModel columnModel, RowModel rowModel, String date, String time) {
-        super(topLevelModel, columnModel, rowModel);
+        super(columnModel, rowModel);
         this.date = date;
         this.time = time;
     }

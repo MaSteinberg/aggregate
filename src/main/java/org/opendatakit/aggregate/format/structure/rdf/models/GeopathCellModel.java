@@ -6,7 +6,7 @@ public class GeopathCellModel extends AbstractCellModel {
     List<GeopathElement> locationList;
 
     public GeopathCellModel(TopLevelModel topLevelModel, ColumnModel columnModel, RowModel rowModel, List<GeopathElement> locationList) {
-        super(topLevelModel, columnModel, rowModel);
+        super(columnModel, rowModel);
         this.locationList = locationList;
     }
 }
