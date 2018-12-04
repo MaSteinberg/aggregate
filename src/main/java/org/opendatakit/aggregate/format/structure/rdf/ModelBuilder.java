@@ -65,11 +65,29 @@ public class ModelBuilder {
                 return buildGeolocationCellModel(topLevelModel, columnModel, rowModel, cellValue);
             case GEOTRACE:
                 return buildGeotraceCellModel(topLevelModel, columnModel, rowModel, cellValue);
+            case GEOSHAPE:
+                return buildGeoshapeCellModel(topLevelModel, columnModel, rowModel, cellValue);
             default: //TODO Support more types
                 return buildSingleValueCellModel(topLevelModel, columnModel, rowModel, cellValue);
         }
     }
-    
+
+    private AbstractCellModel buildGeoshapeCellModel(TopLevelModel topLevelModel, ColumnModel columnModel, RowModel rowModel, String cellValue) {
+        if(cellValue == null)
+            return new GeotraceCellModel(topLevelModel, columnModel, rowModel);
+        String locationStrings[] = cellValue.split(";");
+        List<GeotraceElement> pathElements = new ArrayList<>();
+        for (int i = 0; i < locationStrings.length; i++) {
+            String locationString = locationStrings[i];
+            String split[] = locationString.split(" ", 4);
+            //If we have less than four elements in split it's because the last location's data was cut off due to the
+            //DB field length restriction - so it's an incomplete record and we just discard the last location(s)
+            if (split.length >= 4)
+                pathElements.add(new GeotraceElement(i + 1, new Location(split[0], split[1], split[2], split[3])));
+        }
+        return new GeotraceCellModel(topLevelModel, columnModel, rowModel, pathElements);
+    }
+
     private AbstractCellModel buildMultiValueCellModel(TopLevelModel topLevelModel, ColumnModel columnModel, RowModel rowModel, String cellValue) {
         //The values are separated by a space and can not include a  space themselves
         if(cellValue == null)
