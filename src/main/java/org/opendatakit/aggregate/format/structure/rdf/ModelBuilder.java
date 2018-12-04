@@ -44,7 +44,7 @@ public class ModelBuilder {
         return new RowModel(topLevelModel, id);
     }
 
-    public AbstractCellModel buildCellModel(TopLevelModel topLevelModel, ColumnModel columnModel, RowModel rowModel, String cellValue, FormElementModel.ElementType elementType){
+    public AbstractCellModel buildCellModel(ColumnModel columnModel, RowModel rowModel, String cellValue, FormElementModel.ElementType elementType){
         switch(elementType){
             case DECIMAL:
             case INTEGER:
@@ -52,29 +52,29 @@ public class ModelBuilder {
             case SELECT1:
             case BOOLEAN:
             case METADATA:
-                return buildSingleValueCellModel(topLevelModel, columnModel, rowModel, cellValue);
+                return buildSingleValueCellModel(columnModel, rowModel, cellValue);
             case SELECTN:
-                return buildMultiValueCellModel(topLevelModel, columnModel, rowModel, cellValue);
+                return buildMultiValueCellModel(columnModel, rowModel, cellValue);
             case JRDATE:
-                return buildDateCellModel(topLevelModel, columnModel, rowModel, cellValue);
+                return buildDateCellModel(columnModel, rowModel, cellValue);
             case JRTIME:
-                return buildTimeCellModel(topLevelModel, columnModel, rowModel, cellValue);
+                return buildTimeCellModel(columnModel, rowModel, cellValue);
             case JRDATETIME:
-                return buildDateTimeCellModel(topLevelModel, columnModel, rowModel, cellValue);
+                return buildDateTimeCellModel(columnModel, rowModel, cellValue);
             case GEOPOINT:
-                return buildGeolocationCellModel(topLevelModel, columnModel, rowModel, cellValue);
+                return buildGeolocationCellModel(columnModel, rowModel, cellValue);
             case GEOTRACE:
-                return buildGeotraceCellModel(topLevelModel, columnModel, rowModel, cellValue);
+                return buildGeotraceCellModel(columnModel, rowModel, cellValue);
             case GEOSHAPE:
-                return buildGeoshapeCellModel(topLevelModel, columnModel, rowModel, cellValue);
+                return buildGeoshapeCellModel(columnModel, rowModel, cellValue);
             default: //TODO Support more types
-                return buildSingleValueCellModel(topLevelModel, columnModel, rowModel, cellValue);
+                return buildSingleValueCellModel(columnModel, rowModel, cellValue);
         }
     }
 
-    private AbstractCellModel buildGeoshapeCellModel(TopLevelModel topLevelModel, ColumnModel columnModel, RowModel rowModel, String cellValue) {
+    private AbstractCellModel buildGeoshapeCellModel(ColumnModel columnModel, RowModel rowModel, String cellValue) {
         if(cellValue == null)
-            return new GeotraceCellModel(topLevelModel, columnModel, rowModel);
+            return new GeotraceCellModel(columnModel, rowModel);
         String locationStrings[] = cellValue.split(";");
         List<GeotraceElement> pathElements = new ArrayList<>();
         for (int i = 0; i < locationStrings.length; i++) {
@@ -85,27 +85,27 @@ public class ModelBuilder {
             if (split.length >= 4)
                 pathElements.add(new GeotraceElement(i + 1, new Location(split[0], split[1], split[2], split[3])));
         }
-        return new GeotraceCellModel(topLevelModel, columnModel, rowModel, pathElements);
+        return new GeotraceCellModel(columnModel, rowModel, pathElements);
     }
 
-    private AbstractCellModel buildMultiValueCellModel(TopLevelModel topLevelModel, ColumnModel columnModel, RowModel rowModel, String cellValue) {
+    private AbstractCellModel buildMultiValueCellModel(ColumnModel columnModel, RowModel rowModel, String cellValue) {
         //The values are separated by a space and can not include a  space themselves
         if(cellValue == null)
-            return new MultiValueCellModel(topLevelModel, columnModel, rowModel);
+            return new MultiValueCellModel(columnModel, rowModel);
         String values[] = cellValue.split(" ");
-        return new MultiValueCellModel(topLevelModel, columnModel, rowModel, Arrays.asList(values));
+        return new MultiValueCellModel(columnModel, rowModel, Arrays.asList(values));
     }
 
-    private AbstractCellModel buildGeolocationCellModel(TopLevelModel topLevelModel, ColumnModel columnModel, RowModel rowModel, String cellValue) {
+    private AbstractCellModel buildGeolocationCellModel(ColumnModel columnModel, RowModel rowModel, String cellValue) {
         if(cellValue == null)
-            return new GeolocationCellModel(topLevelModel, columnModel, rowModel);
+            return new GeolocationCellModel(columnModel, rowModel);
         String split[] = cellValue.split(", ", 4);
-        return new GeolocationCellModel(topLevelModel, columnModel, rowModel, split[0], split[1], split[2], split[3]);
+        return new GeolocationCellModel(columnModel, rowModel, split[0], split[1], split[2], split[3]);
     }
 
-    private AbstractCellModel buildGeotraceCellModel(TopLevelModel topLevelModel, ColumnModel columnModel, RowModel rowModel, String cellValue) {
+    private AbstractCellModel buildGeotraceCellModel(ColumnModel columnModel, RowModel rowModel, String cellValue) {
         if(cellValue == null)
-            return new GeotraceCellModel(topLevelModel, columnModel, rowModel);
+            return new GeotraceCellModel(columnModel, rowModel);
         String locationStrings[] = cellValue.split(";");
         List<GeotraceElement> pathElements = new ArrayList<>();
         for (int i = 0; i < locationStrings.length; i++) {
@@ -116,31 +116,31 @@ public class ModelBuilder {
             if (split.length >= 4)
                 pathElements.add(new GeotraceElement(i + 1, new Location(split[0], split[1], split[2], split[3])));
         }
-        return new GeotraceCellModel(topLevelModel, columnModel, rowModel, pathElements);
+        return new GeotraceCellModel(columnModel, rowModel, pathElements);
     }
 
-    private AbstractCellModel buildDateTimeCellModel(TopLevelModel topLevelModel, ColumnModel columnModel, RowModel rowModel, String cellValue) {
+    private AbstractCellModel buildDateTimeCellModel(ColumnModel columnModel, RowModel rowModel, String cellValue) {
         if(cellValue == null)
-            return new DateTimeCellModel(topLevelModel, columnModel, rowModel);
+            return new DateTimeCellModel(columnModel, rowModel);
         String split[] = cellValue.split(" ", 2);
-        return new DateTimeCellModel(topLevelModel, columnModel, rowModel, split[0], split[1]); //TODO Might want to check if split.length == 2
+        return new DateTimeCellModel(columnModel, rowModel, split[0], split[1]); //TODO Might want to check if split.length == 2
     }
 
-    private AbstractCellModel buildDateCellModel(TopLevelModel topLevelModel, ColumnModel columnModel, RowModel rowModel, String cellValue) {
+    private AbstractCellModel buildDateCellModel(ColumnModel columnModel, RowModel rowModel, String cellValue) {
         if(cellValue == null)
-            return new DateTimeCellModel(topLevelModel, columnModel, rowModel);
+            return new DateTimeCellModel(columnModel, rowModel);
         String split[] = cellValue.split(" ", 2);
-        return new DateTimeCellModel(topLevelModel, columnModel, rowModel, split[0], null); //TODO Might want to check if split.length == 2
+        return new DateTimeCellModel(columnModel, rowModel, split[0], null); //TODO Might want to check if split.length == 2
     }
 
-    private AbstractCellModel buildTimeCellModel(TopLevelModel topLevelModel, ColumnModel columnModel, RowModel rowModel, String cellValue) {
+    private AbstractCellModel buildTimeCellModel(ColumnModel columnModel, RowModel rowModel, String cellValue) {
         if(cellValue == null)
-            return new DateTimeCellModel(topLevelModel, columnModel, rowModel);
+            return new DateTimeCellModel(columnModel, rowModel);
         String split[] = cellValue.split(" ", 2);
-        return new DateTimeCellModel(topLevelModel, columnModel, rowModel, null, split[1]); //TODO Might want to check if split.length == 2
+        return new DateTimeCellModel(columnModel, rowModel, null, split[1]); //TODO Might want to check if split.length == 2
     }
 
-    private AbstractCellModel buildSingleValueCellModel(TopLevelModel topLevelModel, ColumnModel columnModel, RowModel rowModel, String cellValue) {
-        return new SingleValueCellModel(topLevelModel, columnModel, rowModel, cellValue);
+    private AbstractCellModel buildSingleValueCellModel(ColumnModel columnModel, RowModel rowModel, String cellValue) {
+        return new SingleValueCellModel(columnModel, rowModel, cellValue);
     }
 }

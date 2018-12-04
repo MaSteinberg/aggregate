@@ -4,13 +4,13 @@ public class DateTimeCellModel extends AbstractCellModel {
     String date;
     String time;
 
-    public DateTimeCellModel(TopLevelModel topLevelModel, ColumnModel columnModel, RowModel rowModel, String date, String time) {
+    public DateTimeCellModel(ColumnModel columnModel, RowModel rowModel, String date, String time) {
         super(columnModel, rowModel);
         this.date = date;
         this.time = time;
     }
 
-    public DateTimeCellModel(TopLevelModel topLevelModel, ColumnModel columnModel, RowModel rowModel) {
+    public DateTimeCellModel(ColumnModel columnModel, RowModel rowModel) {
         super(columnModel, rowModel);
         this.date = null;
         this.time = null;

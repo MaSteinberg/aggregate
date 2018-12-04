@@ -21,7 +21,6 @@ import com.github.mustachejava.MustacheFactory;
 import org.opendatakit.aggregate.client.filter.FilterGroup;
 import org.opendatakit.aggregate.client.submission.SubmissionUISummary;
 import org.opendatakit.aggregate.constants.common.FormElementNamespace;
-import org.opendatakit.aggregate.datamodel.FormDataModel;
 import org.opendatakit.aggregate.datamodel.FormElementModel;
 import org.opendatakit.aggregate.form.IForm;
 import org.opendatakit.aggregate.format.Row;
@@ -182,7 +181,7 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
             int columnNumber = 0;
             for(String cellValue : formattedValues){
                 FormElementModel.ElementType elementType = headerTypes.get(columnNumber);
-                AbstractCellModel cellModel = modelBuilder.buildCellModel(toplevelModel, columnModels.get(columnNumber), rowModel, cellValue, elementType);
+                AbstractCellModel cellModel = modelBuilder.buildCellModel(columnModels.get(columnNumber), rowModel, cellValue, elementType);
                 //Grab the suitable cell-template, defaulting to the String-template
                 Mustache cellMustache;
                 if(elementTypeToCellMustacheMap.containsKey(elementType)){
