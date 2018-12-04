@@ -7,12 +7,10 @@ import java.util.Date;
 public class RowModel {
     public TopLevelModel topLevelModel;
     public String rowId;
-    public String creator;
-    public String startTime;
-    public String endTime;
-    public String today;
-    public String phone;
-    public String subscriberId;
-    public String simSerial;
-    public String deviceId;
+
+    public RowModel(TopLevelModel topLevelModel, String rowId) {
+        this.topLevelModel = topLevelModel;
+        this.rowId = rowId;
+    }
 }
+
