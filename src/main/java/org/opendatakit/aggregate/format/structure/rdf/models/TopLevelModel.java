@@ -1,23 +1,23 @@
 package org.opendatakit.aggregate.format.structure.rdf.models;
 
-import java.util.Date;
-
 public class TopLevelModel {
-    public String id;
-    public String name;
-    public String description;
-    public String creationDate;
-    public String creationUser;
+    public String toplevelEntityIdentifier;
+    public String formId;
+    public String formName;
+    public String formDescription;
+    public String formCreationDate;
+    public String formCreationUser;
     public String lastUpdate;
-    public String version;
+    public String formVersion;
 
-    public TopLevelModel(String id, String name, String description, String creationDate, String creationUser, String lastUpdate, String version) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.creationDate = creationDate;
-        this.creationUser = creationUser;
+    public TopLevelModel(String toplevelEntityIdentifier, String formId, String formName, String formDescription, String formCreationDate, String formCreationUser, String lastUpdate, String formVersion) {
+        this.toplevelEntityIdentifier = toplevelEntityIdentifier;
+        this.formId = formId;
+        this.formName = formName;
+        this.formDescription = formDescription;
+        this.formCreationDate = formCreationDate;
+        this.formCreationUser = formCreationUser;
         this.lastUpdate = lastUpdate;
-        this.version = version;
+        this.formVersion = formVersion;
     }
 }

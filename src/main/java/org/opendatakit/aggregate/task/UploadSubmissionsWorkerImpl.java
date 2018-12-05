@@ -237,7 +237,7 @@ public class UploadSubmissionsWorkerImpl {
     // been marked as completely uploaded until later. This is particularly
     // significant for briefcase-uploaded data, which preserves the
     // submissionDate,
-    // but would have a much-later markedAsCompleteDate, creationDate and
+    // but would have a much-later markedAsCompleteDate, formCreationDate and
     // lastUpdatedDate.
     String lastUploadKey = formServiceCursor.getLastUploadKey();
     List<Submission> submissions = querySubmissionsDateRange(startDate, endDate, lastUploadKey);
