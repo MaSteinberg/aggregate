@@ -102,15 +102,16 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
         }
 
         //Initialize Mustache & compile the templates
+        String groupTemplateRoot = "mustache_templates/" + templateGroup;
         mf = new DefaultMustacheFactory();
-        this.namespacesMustache = mf.compile("mustache_templates/oboe/namespaces.ttl.mustache");
-        this.toplevelMustache = mf.compile("mustache_templates/oboe/toplevel.ttl.mustache");
-        this.columnMustache = mf.compile("mustache_templates/oboe/column.ttl.mustache");
-        this.rowMustache = mf.compile("mustache_templates/oboe/row.ttl.mustache");
+        this.namespacesMustache = mf.compile(groupTemplateRoot + "/namespaces.ttl.mustache");
+        this.toplevelMustache = mf.compile(groupTemplateRoot + "/toplevel.ttl.mustache");
+        this.columnMustache = mf.compile(groupTemplateRoot + "/column.ttl.mustache");
+        this.rowMustache = mf.compile(groupTemplateRoot + "/row.ttl.mustache");
 
         //Assign and compile the cell templates
         elementTypeToCellMustacheMap = new HashMap();
-        String cellTemplateRoot = "mustache_templates/" + templateGroup + "/cell/";
+        String cellTemplateRoot = groupTemplateRoot + "/cell/";
         elementTypeToCellMustacheMap.put(DECIMAL, mf.compile(cellTemplateRoot + "decimalCell.ttl.mustache"));
         elementTypeToCellMustacheMap.put(INTEGER, mf.compile(cellTemplateRoot + "integerCell.ttl.mustache"));
         elementTypeToCellMustacheMap.put(STRING, mf.compile(cellTemplateRoot + "stringCell.ttl.mustache"));
