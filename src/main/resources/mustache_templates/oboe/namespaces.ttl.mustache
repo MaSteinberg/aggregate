@@ -1,0 +1,13 @@
+{{!User defined namespaces}}
+@base <{{base}}> .
+@prefix : <{{base}}> .
+{{#namespaces}}
+    @prefix {{prefix}}: <{{uri}}> .
+{{/namespaces}}
+{{!All namespaces that are used in any oboe templates}}
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix oboe-core: <http://ecoinformatics.org/oboe/oboe.1.2/oboe-core.owl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> .
