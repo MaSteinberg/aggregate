@@ -60,6 +60,7 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
     private String templateGroup = "oboe";
 
     private MustacheFactory mf;
+    private Mustache namespacesMustache;
     private Mustache toplevelMustache;
     private Mustache columnMustache;
     private Mustache rowMustache;
@@ -102,6 +103,7 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
 
         //Initialize Mustache & compile the templates
         mf = new DefaultMustacheFactory();
+        this.namespacesMustache = mf.compile("mustache_templates/oboe/namespaces.ttl.mustache");
         this.toplevelMustache = mf.compile("mustache_templates/oboe/toplevel.ttl.mustache");
         this.columnMustache = mf.compile("mustache_templates/oboe/column.ttl.mustache");
         this.rowMustache = mf.compile("mustache_templates/oboe/row.ttl.mustache");
@@ -126,18 +128,9 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
     @Override
     public void beforeProcessSubmissions(CallingContext cc) throws ODKDatastoreException {
         //Namespaces
-        List<RdfNamespace> namespaces = new ArrayList<RdfNamespace>(){
-            {
-                add(new RdfNamespace("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#"));
-                add(new RdfNamespace("rdfs", "http://www.w3.org/2000/01/rdf-schema#"));
-                add(new RdfNamespace("owl", "http://www.w3.org/2002/07/owl#"));
-                add(new RdfNamespace("oboe-core", "http://ecoinformatics.org/oboe/oboe.1.2/oboe-core.owl#"));
-                add(new RdfNamespace("xsd", "http://www.w3.org/2001/XMLSchema#"));
-                add(new RdfNamespace("geo", "http://www.w3.org/2003/01/geo/wgs84_pos#"));
-            }
-        };
+        //We have to guarantee prefix-Uniqueness or the resulting RDF file won't be valid
+        List<RdfNamespace> namespaces = new ArrayList<>();
         NamespacesModel namespacesModel = new NamespacesModel("http://example.org", namespaces);
-        Mustache namespacesMustache = mf.compile("mustache_templates/common/namespaces.ttl.mustache");
         namespacesMustache.execute(output, namespacesModel );
 
         //Toplevel
