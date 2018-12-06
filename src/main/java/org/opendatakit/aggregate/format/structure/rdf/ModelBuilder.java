@@ -60,20 +60,8 @@ public class ModelBuilder {
         }
     }
 
-    private AbstractCellModel buildGeoshapeCellModel(ColumnModel columnModel, RowModel rowModel, String cellValue, String cellEntityIdentifier) {
-        if(cellValue == null)
-            return new GeotraceCellModel(columnModel, rowModel, cellEntityIdentifier);
-        String locationStrings[] = cellValue.split(";");
-        List<GeotraceElement> pathElements = new ArrayList<>();
-        for (int i = 0; i < locationStrings.length; i++) {
-            String locationString = locationStrings[i];
-            String split[] = locationString.split(" ", 4);
-            //If we have less than four elements in split it's because the last location's data was cut off due to the
-            //DB field length restriction - so it's an incomplete record and we just discard the last location(s)
-            if (split.length >= 4)
-                pathElements.add(new GeotraceElement(i + 1, new Location(split[0], split[1], split[2], split[3])));
-        }
-        return new GeotraceCellModel(columnModel, rowModel, pathElements, cellEntityIdentifier);
+    private AbstractCellModel buildSingleValueCellModel(ColumnModel columnModel, RowModel rowModel, String cellValue, String cellEntityIdentifier) {
+        return new SingleValueCellModel(columnModel, rowModel, cellValue, cellEntityIdentifier);
     }
 
     private AbstractCellModel buildMultiValueCellModel(ColumnModel columnModel, RowModel rowModel, String cellValue, String cellEntityIdentifier) {
@@ -84,6 +72,27 @@ public class ModelBuilder {
         return new MultiValueCellModel(columnModel, rowModel, Arrays.asList(values), cellEntityIdentifier);
     }
 
+    private AbstractCellModel buildDateCellModel(ColumnModel columnModel, RowModel rowModel, String cellValue, String cellEntityIdentifier) {
+        if(cellValue == null)
+            return new DateTimeCellModel(columnModel, rowModel, cellEntityIdentifier);
+        String split[] = cellValue.split(" ", 2);
+        return new DateTimeCellModel(columnModel, rowModel, split[0], null, cellEntityIdentifier); //TODO Might want to check if split.length == 2
+    }
+
+    private AbstractCellModel buildTimeCellModel(ColumnModel columnModel, RowModel rowModel, String cellValue, String cellEntityIdentifier) {
+        if(cellValue == null)
+            return new DateTimeCellModel(columnModel, rowModel, cellEntityIdentifier);
+        String split[] = cellValue.split(" ", 2);
+        return new DateTimeCellModel(columnModel, rowModel, null, split[1], cellEntityIdentifier); //TODO Might want to check if split.length == 2
+    }
+
+    private AbstractCellModel buildDateTimeCellModel(ColumnModel columnModel, RowModel rowModel, String cellValue, String cellEntityIdentifier) {
+        if(cellValue == null)
+            return new DateTimeCellModel(columnModel, rowModel, cellEntityIdentifier);
+        String split[] = cellValue.split(" ", 2);
+        return new DateTimeCellModel(columnModel, rowModel, split[0], split[1], cellEntityIdentifier); //TODO Might want to check if split.length == 2
+    }
+    
     private AbstractCellModel buildGeolocationCellModel(ColumnModel columnModel, RowModel rowModel, String cellValue, String cellEntityIdentifier) {
         if(cellValue == null)
             return new GeolocationCellModel(columnModel, rowModel, cellEntityIdentifier);
@@ -107,28 +116,24 @@ public class ModelBuilder {
         return new GeotraceCellModel(columnModel, rowModel, pathElements, cellEntityIdentifier);
     }
 
-    private AbstractCellModel buildDateTimeCellModel(ColumnModel columnModel, RowModel rowModel, String cellValue, String cellEntityIdentifier) {
+    private AbstractCellModel buildGeoshapeCellModel(ColumnModel columnModel, RowModel rowModel, String cellValue, String cellEntityIdentifier) {
+        //We reuse the GeotraceCellModel since it stores the same information we need for a Geoshape
         if(cellValue == null)
-            return new DateTimeCellModel(columnModel, rowModel, cellEntityIdentifier);
-        String split[] = cellValue.split(" ", 2);
-        return new DateTimeCellModel(columnModel, rowModel, split[0], split[1], cellEntityIdentifier); //TODO Might want to check if split.length == 2
+            return new GeotraceCellModel(columnModel, rowModel, cellEntityIdentifier);
+        String locationStrings[] = cellValue.split(";");
+        List<GeotraceElement> pathElements = new ArrayList<>();
+        for (int i = 0; i < locationStrings.length; i++) {
+            String locationString = locationStrings[i];
+            String split[] = locationString.split(" ", 4);
+            //If we have less than four elements in split it's because the last location's data was cut off due to the
+            //DB field length restriction - so it's an incomplete record and we just discard the last location(s)
+            if (split.length >= 4)
+                pathElements.add(new GeotraceElement(i + 1, new Location(split[0], split[1], split[2], split[3])));
+        }
+        return new GeotraceCellModel(columnModel, rowModel, pathElements, cellEntityIdentifier);
     }
 
-    private AbstractCellModel buildDateCellModel(ColumnModel columnModel, RowModel rowModel, String cellValue, String cellEntityIdentifier) {
-        if(cellValue == null)
-            return new DateTimeCellModel(columnModel, rowModel, cellEntityIdentifier);
-        String split[] = cellValue.split(" ", 2);
-        return new DateTimeCellModel(columnModel, rowModel, split[0], null, cellEntityIdentifier); //TODO Might want to check if split.length == 2
-    }
 
-    private AbstractCellModel buildTimeCellModel(ColumnModel columnModel, RowModel rowModel, String cellValue, String cellEntityIdentifier) {
-        if(cellValue == null)
-            return new DateTimeCellModel(columnModel, rowModel, cellEntityIdentifier);
-        String split[] = cellValue.split(" ", 2);
-        return new DateTimeCellModel(columnModel, rowModel, null, split[1], cellEntityIdentifier); //TODO Might want to check if split.length == 2
-    }
 
-    private AbstractCellModel buildSingleValueCellModel(ColumnModel columnModel, RowModel rowModel, String cellValue, String cellEntityIdentifier) {
-        return new SingleValueCellModel(columnModel, rowModel, cellValue, cellEntityIdentifier);
-    }
+
 }
