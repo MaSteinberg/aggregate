@@ -74,6 +74,8 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
     private Mustache toplevelMustache;
     private Mustache columnMustache;
     private Mustache rowMustache;
+    private Mustache genericCellMustache;
+
     private Map<FormElementModel.ElementType, Mustache> elementTypeToCellMustacheMap;
 
     private ModelBuilder modelBuilder = new ModelBuilder();
@@ -123,9 +125,10 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
         this.toplevelMustache = mf.compile(groupTemplateRoot + "/toplevel.ttl.mustache");
         this.columnMustache = mf.compile(groupTemplateRoot + "/column.ttl.mustache");
         this.rowMustache = mf.compile(groupTemplateRoot + "/row.ttl.mustache");
+        this.genericCellMustache = mf.compile(groupTemplateRoot + "/cell.ttl.mustache");
         //Assign and compile the cell templates
         elementTypeToCellMustacheMap = new HashMap();
-        String cellTemplateRoot = groupTemplateRoot + "/cell/";
+        String cellTemplateRoot = groupTemplateRoot + "/elementTypeCells/";
         elementTypeToCellMustacheMap.put(DECIMAL, mf.compile(cellTemplateRoot + "decimalCell.ttl.mustache"));
         elementTypeToCellMustacheMap.put(INTEGER, mf.compile(cellTemplateRoot + "integerCell.ttl.mustache"));
         elementTypeToCellMustacheMap.put(STRING, mf.compile(cellTemplateRoot + "stringCell.ttl.mustache"));
@@ -256,14 +259,16 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
 
                 FormElementModel.ElementType elementType = headerTypes.get(columnNumber);
                 AbstractCellModel cellModel = modelBuilder.buildCellModel(columnModels.get(columnNumber), rowModel, cellValue, cellEntityIdentifier, elementType);
-                //Grab the suitable cell-template, defaulting to the String-template
+                //Use the generic cell-template
+                genericCellMustache.execute(output, cellModel);
+
+                //Grab the suitable elementType-specific template, defaulting to the String-template
                 Mustache cellMustache;
                 if(elementTypeToCellMustacheMap.containsKey(elementType)){
                     cellMustache = elementTypeToCellMustacheMap.get(elementType);
                 } else{
                     cellMustache = elementTypeToCellMustacheMap.get(STRING);
                 }
-                output.append("#Element type: " + elementType.name() + "\n");
                 cellMustache.execute(output, cellModel);
                 columnNumber++;
             }
