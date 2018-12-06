@@ -1,0 +1,6 @@
+{{!Relate the actual cell-value to the MeasuredValue}}
+{{#date}}
+{{#time}}
+:measuredValue_{{rowModel.rowId}}_{{columnModel.columnHeader}} oboe-core:hasCode "{{date}}T{{time}}"^^xsd:dateTime .
+{{/time}}
+{{/date}}

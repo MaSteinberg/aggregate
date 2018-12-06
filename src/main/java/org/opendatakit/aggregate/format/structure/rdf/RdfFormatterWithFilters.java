@@ -34,10 +34,14 @@ import org.opendatakit.aggregate.server.GenerateHeaderInfo;
 import org.opendatakit.aggregate.submission.Submission;
 import org.opendatakit.common.persistence.exception.ODKDatastoreException;
 import org.opendatakit.common.web.CallingContext;
+import org.opendatakit.common.web.constants.HtmlConsts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -58,12 +62,20 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
 
     private boolean requireRowGuid = false;
     private String templateGroup = "oboe";
+    private int rowCounter = 1;
 
     private MustacheFactory mf;
+    private Mustache toplevelIdentifierMustache;
+    private Mustache columnIdentifierMustache;
+    private Mustache rowIdentifierMustache;
+    private Mustache cellIdentifierMustache;
+
     private Mustache namespacesMustache;
     private Mustache toplevelMustache;
     private Mustache columnMustache;
     private Mustache rowMustache;
+    private Mustache genericCellMustache;
+
     private Map<FormElementModel.ElementType, Mustache> elementTypeToCellMustacheMap;
 
     private ModelBuilder modelBuilder = new ModelBuilder();
@@ -89,7 +101,6 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
         //Workaround: headerNames and headerTypes have extra columns for GEOPOINTs altitude and accuracy while our elementFormatter just
         //includes them in a single String, split by ", " (which is easier to process)
         //So we remove the additional entries from headerNames and headerTypes
-        //TODO Test if the order of the columns (which this routine relies on) is reliable!
         int col = 0;
         while(col < headerNames.size()){
             if(headerTypes.get(col) == GEOPOINT){
@@ -104,14 +115,20 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
         //Initialize Mustache & compile the templates
         String groupTemplateRoot = "mustache_templates/" + templateGroup;
         mf = new DefaultMustacheFactory();
+        //Identifier templates
+        this.toplevelIdentifierMustache = mf.compile("mustache_templates/common/toplevelIdentifier.mustache");
+        this.columnIdentifierMustache = mf.compile("mustache_templates/common/columnIdentifier.mustache");
+        this.rowIdentifierMustache = mf.compile("mustache_templates/common/rowIdentifier.mustache");
+        this.cellIdentifierMustache = mf.compile("mustache_templates/common/cellIdentifier.mustache");
+        //Turtle templates
         this.namespacesMustache = mf.compile(groupTemplateRoot + "/namespaces.ttl.mustache");
         this.toplevelMustache = mf.compile(groupTemplateRoot + "/toplevel.ttl.mustache");
         this.columnMustache = mf.compile(groupTemplateRoot + "/column.ttl.mustache");
         this.rowMustache = mf.compile(groupTemplateRoot + "/row.ttl.mustache");
-
+        this.genericCellMustache = mf.compile(groupTemplateRoot + "/cell.ttl.mustache");
         //Assign and compile the cell templates
         elementTypeToCellMustacheMap = new HashMap();
-        String cellTemplateRoot = groupTemplateRoot + "/cell/";
+        String cellTemplateRoot = groupTemplateRoot + "/elementTypeCells/";
         elementTypeToCellMustacheMap.put(DECIMAL, mf.compile(cellTemplateRoot + "decimalCell.ttl.mustache"));
         elementTypeToCellMustacheMap.put(INTEGER, mf.compile(cellTemplateRoot + "integerCell.ttl.mustache"));
         elementTypeToCellMustacheMap.put(STRING, mf.compile(cellTemplateRoot + "stringCell.ttl.mustache"));
@@ -135,14 +152,40 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
         namespacesMustache.execute(output, namespacesModel );
 
         //Toplevel
-        toplevelModel = modelBuilder.buildTopLevelModel(this.form);
+        //Generate toplevel identifier via template
+        ByteArrayOutputStream identifierStream = new ByteArrayOutputStream();
+        PrintWriter identifierWriter;
+        String toplevelEntityIdentifier = "";
+        try {
+            identifierWriter = new PrintWriter(new OutputStreamWriter(identifierStream, HtmlConsts.UTF8_ENCODE));
+            toplevelIdentifierMustache.execute(identifierWriter, this.form.getFormId());
+            identifierWriter.close();
+            toplevelEntityIdentifier = identifierStream.toString();
+            identifierStream.reset();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        toplevelModel = modelBuilder.buildTopLevelModel(this.form, toplevelEntityIdentifier);
         toplevelMustache.execute(output, toplevelModel);
 
         //Columns
-        //For each column create the ColumnModel and fill the template
         output.append("#Each column describes one observation\n");
         for(int col = 0; col < headerNames.size(); col++){
-            ColumnModel columnModel = modelBuilder.buildColumnModel(toplevelModel, headerNames.get(col), headerTypes.get(col));
+            //Generate column identifier via template
+            String columnEntityIdentifier = "";
+            try {
+                identifierWriter = new PrintWriter(new OutputStreamWriter(identifierStream, HtmlConsts.UTF8_ENCODE));
+                columnIdentifierMustache.execute(identifierWriter, headerNames.get(col));
+                identifierWriter.close();
+                columnEntityIdentifier = identifierStream.toString();
+                identifierStream.reset();
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+
+            //For each column create the ColumnModel and fill the template
+            ColumnModel columnModel = modelBuilder.buildColumnModel(toplevelModel, headerNames.get(col), headerTypes.get(col), columnEntityIdentifier);
             columnModels.add(columnModel);
             columnMustache.execute(output, columnModel);
         }
@@ -158,32 +201,74 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
 
     @Override
     public void processSubmissionSegment(List<Submission> submissions, CallingContext cc) throws ODKDatastoreException {
-        //For each row create the ColumnModel and fill the template
+        //Rows
         for (Submission sub : submissions) {
-            //Rows
             Row row = sub.getFormattedValuesAsRow(namespaces, columnFormElementModels, elemFormatter, false, cc);
             List<String> formattedValues = row.getFormattedValues();
+
+            //Generate row identifier via template
+            String rowId = "";
+            if(requireRowGuid){
+                //Use the header names to identify the fields that contain row-related metadata
+                for(int i = 0; i < columnFormElementModels.size(); i++){
+                    String header = columnFormElementModels.get(i).getElementName();
+                    if (header.equals("instanceID"))
+                        rowId = formattedValues.get(i);
+                }
+            } else{
+                //If we don't require globally unique row IDs we can use simple numbers
+                rowId = String.valueOf(rowCounter);
+                rowCounter++;
+            }
+            ByteArrayOutputStream identifierStream = new ByteArrayOutputStream();
+            PrintWriter identifierWriter;
+            String rowEntityIdentifier = "";
+            try {
+                identifierWriter = new PrintWriter(new OutputStreamWriter(identifierStream, HtmlConsts.UTF8_ENCODE));
+                rowIdentifierMustache.execute(identifierWriter, rowId);
+                identifierWriter.close();
+                rowEntityIdentifier = identifierStream.toString();
+                identifierStream.reset();
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
 
             if(formattedValues.size() != headerTypes.size() || formattedValues.size() != headerNames.size()){
                 System.out.println("Houston, we have a problem!"); //TODO Remove
             }
 
-            RowModel rowModel = modelBuilder.buildRowModel(toplevelModel, formattedValues, columnFormElementModels, requireRowGuid);
+            //For each row create the RowModel and fill the template
+            RowModel rowModel = modelBuilder.buildRowModel(toplevelModel, formattedValues, columnFormElementModels, rowId, rowEntityIdentifier, requireRowGuid);
             rowMustache.execute(output, rowModel);
 
             //Cells
             int columnNumber = 0;
             for(String cellValue : formattedValues){
+                CellIdentifierModel cellIdModel = modelBuilder.buildCellIdentifierModel(columnModels.get(columnNumber), rowModel);
+                //Generate cell identifier via template
+                String cellEntityIdentifier = "";
+                try {
+                    identifierWriter = new PrintWriter(new OutputStreamWriter(identifierStream, HtmlConsts.UTF8_ENCODE));
+                    cellIdentifierMustache.execute(identifierWriter, cellIdModel);
+                    identifierWriter.close();
+                    cellEntityIdentifier = identifierStream.toString();
+                    identifierStream.reset();
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+
                 FormElementModel.ElementType elementType = headerTypes.get(columnNumber);
-                AbstractCellModel cellModel = modelBuilder.buildCellModel(columnModels.get(columnNumber), rowModel, cellValue, elementType);
-                //Grab the suitable cell-template, defaulting to the String-template
+                AbstractCellModel cellModel = modelBuilder.buildCellModel(columnModels.get(columnNumber), rowModel, cellValue, cellEntityIdentifier, elementType);
+                //Use the generic cell-template
+                genericCellMustache.execute(output, cellModel);
+
+                //Grab the suitable elementType-specific template, defaulting to the String-template
                 Mustache cellMustache;
                 if(elementTypeToCellMustacheMap.containsKey(elementType)){
                     cellMustache = elementTypeToCellMustacheMap.get(elementType);
                 } else{
                     cellMustache = elementTypeToCellMustacheMap.get(STRING);
                 }
-                output.append("#Element type: " + elementType.name() + "\n");
                 cellMustache.execute(output, cellModel);
                 columnNumber++;
             }

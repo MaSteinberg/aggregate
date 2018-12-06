@@ -1,12 +1,3 @@
-#Row {{rowModel.rowId}}, Column {{columnModel.columnHeader}}
-{{!Construct an oboe-core:Measurement for the latitude}}
-:measurement_{{rowModel.rowId}}_{{columnModel.columnHeader}} rdf:type oboe-core:Measurement .
-{{!Relate the Measurement to the Observation}}
-:column_{{columnModel.columnHeader}} oboe-core:hasMeasurement :measurement_{{rowModel.rowId}}_{{columnModel.columnHeader}}  .
-{{!Construct an oboe-core:MeasuredValue for the latitude}}
-:measuredValue_{{rowModel.rowId}}_{{columnModel.columnHeader}} rdf:type oboe-core:MeasuredValue .
-{{!Relate the Measurement to the MeasuredValue}}
-:measurement_{{rowModel.rowId}}_{{columnModel.columnHeader}} oboe-core:hasValue :measuredValue_{{rowModel.rowId}}_{{columnModel.columnHeader}} .
 {{!Define the MeasuredValue to point to a collection}}
 :measuredValue_{{rowModel.rowId}}_{{columnModel.columnHeader}} oboe-core:hasCode (
 {{#locationList}}
@@ -20,4 +11,3 @@
     :shapeElement{{rowModel.rowId}}_{{columnModel.columnHeader}}_{{pathElementIndex}} geo:long "{{location.longitude}}" .
     :shapeElement{{rowModel.rowId}}_{{columnModel.columnHeader}}_{{pathElementIndex}} geo:alt "{{location.altitude}}" .
 {{/locationList}}
-
