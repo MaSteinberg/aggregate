@@ -7,6 +7,7 @@ import org.opendatakit.aggregate.form.FormFactory;
 import org.opendatakit.aggregate.form.IForm;
 import org.opendatakit.aggregate.servlet.ServletUtilBase;
 import org.opendatakit.aggregate.submission.SubmissionKey;
+import org.opendatakit.aggregate.task.RdfGenerator;
 import org.opendatakit.aggregate.task.RdfWorkerImpl;
 import org.opendatakit.common.persistence.exception.ODKDatastoreException;
 import org.opendatakit.common.persistence.exception.ODKOverQuotaException;
@@ -79,6 +80,11 @@ public class RdfGeneratorTaskServlet extends ServletUtilBase {
             return;
         }
 
+        //Get user-selected export parameters
+        String baseURI = getParameter(req, RdfGenerator.RDF_BASEURI_KEY);
+        Boolean requireRowUUIDs = Boolean.parseBoolean(getParameter(req, RdfGenerator.RDF_REQUIREUUIDS_KEY));
+        String templateGroup = getParameter(req, RdfGenerator.RDF_TEMPLATE_KEY);
+
         IForm form = null;
         try {
             form = FormFactory.retrieveFormByFormId(formId, cc);
@@ -105,7 +111,7 @@ public class RdfGeneratorTaskServlet extends ServletUtilBase {
             return; // ill-formed definition
         }
 
-        RdfWorkerImpl impl = new RdfWorkerImpl(form, persistentResultsKey, attemptCount, cc);
+        RdfWorkerImpl impl = new RdfWorkerImpl(form, persistentResultsKey, attemptCount, baseURI, requireRowUUIDs, templateGroup, cc);
 
         impl.generateRdf();
     }

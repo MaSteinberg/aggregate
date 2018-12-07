@@ -60,8 +60,8 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
     private final PrintWriter output;
     private List<FormElementNamespace> namespaces;
 
-    private boolean requireRowGuid = false;
-    private String templateGroup = "oboe";
+    private String baseURI;
+    private boolean requireRowUUIDs;
     private int rowCounter = 1;
 
     private MustacheFactory mf;
@@ -83,9 +83,12 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
     private List<ColumnModel> columnModels = new ArrayList<>();
 
     public RdfFormatterWithFilters(IForm xform, String webServerUrl, PrintWriter printWriter,
-                                   FilterGroup filterGroup) {
+                                   FilterGroup filterGroup, String baseURI, Boolean requireRowUUID, String templateGroup) {
         form = xform;
         output = printWriter;
+
+        this.baseURI = baseURI;
+        this.requireRowUUIDs = requireRowUUID;
 
         SubmissionUISummary summary = new SubmissionUISummary(form.getViewableName());
         HeaderFormatter headerFormatter = new BasicHeaderFormatter(false, true, true);
@@ -148,7 +151,7 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
         //Namespaces
         //We have to guarantee prefix-Uniqueness or the resulting RDF file won't be valid
         List<RdfNamespace> namespaces = new ArrayList<>();
-        NamespacesModel namespacesModel = new NamespacesModel("http://example.org", namespaces);
+        NamespacesModel namespacesModel = new NamespacesModel(this.baseURI, namespaces);
         namespacesMustache.execute(output, namespacesModel );
 
         //Toplevel
@@ -208,7 +211,7 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
 
             //Generate row identifier via template
             String rowId = "";
-            if(requireRowGuid){
+            if(this.requireRowUUIDs){
                 //Use the header names to identify the fields that contain row-related metadata
                 for(int i = 0; i < columnFormElementModels.size(); i++){
                     String header = columnFormElementModels.get(i).getElementName();
@@ -238,7 +241,7 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
             }
 
             //For each row create the RowModel and fill the template
-            RowModel rowModel = modelBuilder.buildRowModel(toplevelModel, formattedValues, columnFormElementModels, rowId, rowEntityIdentifier, requireRowGuid);
+            RowModel rowModel = modelBuilder.buildRowModel(toplevelModel, formattedValues, columnFormElementModels, rowId, rowEntityIdentifier, this.requireRowUUIDs);
             rowMustache.execute(output, rowModel);
 
             //Cells

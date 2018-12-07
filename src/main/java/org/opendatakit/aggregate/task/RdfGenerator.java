@@ -16,6 +16,7 @@
 package org.opendatakit.aggregate.task;
 
 import org.opendatakit.aggregate.form.IForm;
+import org.opendatakit.aggregate.form.PersistentResults;
 import org.opendatakit.aggregate.submission.SubmissionKey;
 import org.opendatakit.common.persistence.exception.ODKDatastoreException;
 import org.opendatakit.common.web.CallingContext;
@@ -27,6 +28,9 @@ import org.opendatakit.common.web.CallingContext;
  *
  */
 public interface RdfGenerator {
-    public void createRdfTask(IForm form, SubmissionKey persistentResultsKey,
+    public static final String RDF_BASEURI_KEY = "RDFBASEURI";
+    public static final String RDF_REQUIREUUIDS_KEY = "RDFUUIDS";
+    public static final String RDF_TEMPLATE_KEY = "RDFTEMPLATEGROUP";
+    public void createRdfTask(IForm form, PersistentResults persistentResults,
                               long attemptCount, CallingContext cc) throws ODKDatastoreException;
 }

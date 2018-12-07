@@ -50,13 +50,22 @@ public class RdfWorkerImpl {
     private final IForm form;
     private final SubmissionKey persistentResultsKey;
     private final Long attemptCount;
+
+    private String baseURI;
+    private Boolean requireRowUUIDs;
+    private String templateGroup;
+
     private final CallingContext cc;
 
     public RdfWorkerImpl(IForm form, SubmissionKey persistentResultsKey, Long attemptCount,
+                         String baseURI, Boolean requireRowUUIDs, String templateGroup,
                          CallingContext cc) {
         this.form = form;
         this.persistentResultsKey = persistentResultsKey;
         this.attemptCount = attemptCount;
+        this.baseURI = baseURI;
+        this.requireRowUUIDs = requireRowUUIDs;
+        this.templateGroup = templateGroup;
         this.cc = cc;
         if (attemptCount == null) {
             throw new IllegalArgumentException("attempt count cannot be null");
@@ -92,7 +101,7 @@ public class RdfWorkerImpl {
             filterGroup.setQueryFetchLimit(ServletConsts.EXPORT_CURSOR_CHUNK_SIZE);
 
             query = new QueryByUIFilterGroup(form, filterGroup, QueryByUIFilterGroup.CompletionFlag.ONLY_COMPLETE_SUBMISSIONS, cc);
-            formatter = new RdfFormatterWithFilters(form, cc.getServerURL(), pw, filterGroup);
+            formatter = new RdfFormatterWithFilters(form, cc.getServerURL(), pw, filterGroup, this.baseURI, this.requireRowUUIDs, this.templateGroup);
 
             logger.info("after setup of RDF file generation for " + form.getFormId());
             formatter.beforeProcessSubmissions(cc);
