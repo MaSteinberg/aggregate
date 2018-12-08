@@ -150,12 +150,9 @@ public final class ExportPopup extends AbstractPopupBase {
         popup.setPopupPositionAndShow(popup.getPositionCallBack());
         hide();
       } else if (type == ExportType.RDF){
-        secureRequest(
-            SecureGWT.getFormService(),
-            (rpc, sc, cb) -> rpc.createRdfFileFromFilter(filterGroup, cb),
-            this::onSuccess,
-            this::onFailure
-        );
+        RdfOptionsPopup popup = new RdfOptionsPopup(formId, filterGroup);
+        popup.setPopupPositionAndShow(popup.getPositionCallBack());
+        hide();
       }
 
       else {

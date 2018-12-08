@@ -16,24 +16,22 @@
 
 package org.opendatakit.aggregate.server;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import java.io.File;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
 import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.io.FileUtils;
 import org.opendatakit.aggregate.ContextFactory;
 import org.opendatakit.aggregate.client.exception.FormNotAvailableException;
 import org.opendatakit.aggregate.client.exception.RequestFailureException;
 import org.opendatakit.aggregate.client.filter.FilterGroup;
-import org.opendatakit.aggregate.client.form.ExportSummary;
-import org.opendatakit.aggregate.client.form.FormSummary;
-import org.opendatakit.aggregate.client.form.GeopointElementList;
-import org.opendatakit.aggregate.client.form.KmlOptionsSummary;
-import org.opendatakit.aggregate.client.form.KmlSelection;
+import org.opendatakit.aggregate.client.form.*;
 import org.opendatakit.aggregate.constants.BeanDefs;
 import org.opendatakit.aggregate.constants.ErrorConsts;
 import org.opendatakit.aggregate.constants.HtmlUtil;
@@ -55,6 +53,7 @@ import org.opendatakit.common.persistence.client.exception.DatastoreFailureExcep
 import org.opendatakit.common.persistence.exception.ODKDatastoreException;
 import org.opendatakit.common.persistence.exception.ODKEntityNotFoundException;
 import org.opendatakit.common.persistence.exception.ODKOverQuotaException;
+import org.opendatakit.common.security.client.exception.AccessDeniedException;
 import org.opendatakit.common.web.CallingContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -206,6 +205,73 @@ public class FormServiceImpl extends RemoteServiceServlet implements
   }
 
   @Override
+  public RdfExportOptions getRdfExportSettings() throws AccessDeniedException, RequestFailureException, DatastoreFailureException {
+    List<String> necessaryFilesFirstLevel = new ArrayList<>();
+    necessaryFilesFirstLevel.add("cell");
+    necessaryFilesFirstLevel.add("column");
+    necessaryFilesFirstLevel.add("namespaces");
+    necessaryFilesFirstLevel.add("row");
+    necessaryFilesFirstLevel.add("toplevel");
+
+    List<String> necessaryCellTemplates = new ArrayList<>();
+    necessaryCellTemplates.add("booleanCell");
+    necessaryCellTemplates.add("dateCell");
+    necessaryCellTemplates.add("dateTimeCell");
+    necessaryCellTemplates.add("decimalCell");
+    necessaryCellTemplates.add("geolocationCell");
+    necessaryCellTemplates.add("geotraceCell");
+    necessaryCellTemplates.add("integerCell");
+    necessaryCellTemplates.add("multipleChoiceCell");
+    necessaryCellTemplates.add("select1Cell");
+    necessaryCellTemplates.add("stringCell");
+    necessaryCellTemplates.add("timeCell");
+
+    RdfExportOptions options = new RdfExportOptions();
+    String templateRoot = "src/main/resources/mustache_templates/";
+    File templatesDirectory = new File(templateRoot);
+    if(templatesDirectory.isDirectory()) {
+      String fileExt[];
+      fileExt = new String[]{"ttl.mustache"};
+      //List subdirectories
+      //https://stackoverflow.com/a/5125258
+      String[] subDirectories = templatesDirectory.list((current, name) -> new File(current, name).isDirectory());
+      if (subDirectories != null){
+        for (int i = 0; i < subDirectories.length; i++) {
+          if (!subDirectories[i].equals("common")) {
+            boolean isTemplateGroupValid = true;
+            //Test if the directory contains a valid template-group by checking if all necessary files are in it
+            //First check the immediate files
+            File subDir = new File(templateRoot + subDirectories[i]);
+            for (String necessaryFile : necessaryFilesFirstLevel) {
+              if (!new File(subDir, necessaryFile + "." + fileExt[0]).exists()) {
+                isTemplateGroupValid = false;
+              }
+            }
+            //Now check if the elementTypeCells directory exists
+            File elementTypeCellsDir = new File(subDir, "elementTypeCells");
+            if (!elementTypeCellsDir.exists() || !elementTypeCellsDir.isDirectory())
+              isTemplateGroupValid = false;
+            else {
+              //It exists, now check if it contains the necessary files
+              for (String necessaryFile : necessaryCellTemplates) {
+                if (!new File(elementTypeCellsDir, necessaryFile + "." + fileExt[0]).exists()) {
+                  isTemplateGroupValid = false;
+                }
+              }
+            }
+            //If all necessary directories and files were found, add the subdirectory-name as a valid template group
+            if(isTemplateGroupValid){
+              options.addTemplateGroup(subDirectories[i]);
+              System.out.println("Found valid templateGroup! " + subDirectories[i]);
+            }
+          }
+        }
+      }
+    }
+    return options;
+  }
+
+  @Override
   public GeopointElementList getGpsCoordnates(String formId) throws RequestFailureException, DatastoreFailureException {
     HttpServletRequest req = this.getThreadLocalRequest();
     CallingContext cc = ContextFactory.getCallingContext(this, req);
@@ -329,7 +395,7 @@ public class FormServiceImpl extends RemoteServiceServlet implements
   }
 
   @Override
-  public Boolean createRdfFileFromFilter(FilterGroup group) throws RequestFailureException, DatastoreFailureException {
+  public Boolean createRdfFileFromFilter(FilterGroup group, String baseURI, Boolean requireRowUUIDs, String templateGroup) throws RequestFailureException, DatastoreFailureException {
     HttpServletRequest req = this.getThreadLocalRequest();
     CallingContext cc = ContextFactory.getCallingContext(this, req);
 
@@ -350,19 +416,25 @@ public class FormServiceImpl extends RemoteServiceServlet implements
       filterGrp.setIsPublic(false); // make the filter not visible in the UI since it's an internal filter for export
       filterGrp.persist(cc);
 
-      // create csv job
+      // create rdf job
       IForm form = FormFactory.retrieveFormByFormId(filterGrp.getFormId(), cc);
       if (!form.hasValidFormDefinition()) {
         throw new RequestFailureException(ErrorConsts.FORM_DEFINITION_INVALID); // ill-formed definition
       }
-      PersistentResults r = new PersistentResults(ExportType.RDF, form, filterGrp, null, cc);
+
+      //Build parameter map
+      Map<String, String> params = new HashMap<>();
+      params.put(RdfGenerator.RDF_BASEURI_KEY, baseURI);
+      params.put(RdfGenerator.RDF_REQUIREUUIDS_KEY, String.valueOf(requireRowUUIDs));
+      params.put(RdfGenerator.RDF_TEMPLATE_KEY, templateGroup);
+      PersistentResults r = new PersistentResults(ExportType.RDF, form, filterGrp, params, cc);
       r.persist(cc);
 
-      // create csv task
+      // create rdf task
       CallingContext ccDaemon = ContextFactory.getCallingContext(this, req);
       ccDaemon.setAsDaemon(true);
       RdfGenerator generator = (RdfGenerator) cc.getBean(BeanDefs.RDF_BEAN);
-      generator.createRdfTask(form, r.getSubmissionKey(), 1L, ccDaemon);
+      generator.createRdfTask(form, r, 1L, ccDaemon);
       return true;
 
     } catch (ODKFormNotFoundException e) {
