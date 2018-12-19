@@ -22,10 +22,12 @@ import java.io.PrintWriter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.opendatakit.aggregate.parser.SemanticsParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opendatakit.aggregate.ContextFactory;
@@ -45,6 +47,7 @@ import org.opendatakit.common.persistence.exception.ODKEntityPersistException;
 import org.opendatakit.common.web.CallingContext;
 import org.opendatakit.common.web.constants.BasicConsts;
 import org.opendatakit.common.web.constants.HtmlConsts;
+import org.xml.sax.SAXException;
 
 /**
  * Servlet to upload, parse, and save an XForm
@@ -251,7 +254,11 @@ public class FormUploadServlet extends ServletUtilBase {
         xmlFileName = formXmlData.getFilename();
       }
 
+
       try {
+        SemanticsParser semParser = new SemanticsParser();
+        semParser.parseSemantics(inputXml);
+
         parser = new FormParserForJavaRosa(formName, formXmlData, inputXml, xmlFileName,
             uploadedFormItems, warnings, cc);
         logger.info("Upload form successful: " + parser.getFormId());
@@ -382,6 +389,14 @@ public class FormUploadServlet extends ServletUtilBase {
         e.printStackTrace();
         resp.sendError(HttpServletResponse.SC_BAD_REQUEST,
             ErrorConsts.PARSING_PROBLEM + "\n" + e.toString());
+      } catch (SAXException e) {
+        e.printStackTrace();
+        resp.sendError(HttpServletResponse.SC_BAD_REQUEST,
+                ErrorConsts.PARSING_PROBLEM + "\n" + e.toString());
+      } catch (ParserConfigurationException e) {
+        e.printStackTrace();
+        resp.sendError(HttpServletResponse.SC_BAD_REQUEST,
+                ErrorConsts.PARSING_PROBLEM + "\n" + e.toString());
       }
     } catch (FileUploadException e) {
       logger.error("Form upload persistence error: " + e.toString());
