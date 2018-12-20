@@ -16,13 +16,13 @@
 
 package org.opendatakit.aggregate.server;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
-import java.io.File;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.net.URL;
 import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 
@@ -57,6 +57,7 @@ import org.opendatakit.common.security.client.exception.AccessDeniedException;
 import org.opendatakit.common.web.CallingContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.ResourceUtils;
 
 public class FormServiceImpl extends RemoteServiceServlet implements
     org.opendatakit.aggregate.client.form.FormService {
@@ -206,69 +207,16 @@ public class FormServiceImpl extends RemoteServiceServlet implements
 
   @Override
   public RdfExportOptions getRdfExportSettings() throws AccessDeniedException, RequestFailureException, DatastoreFailureException {
-    List<String> necessaryFilesFirstLevel = new ArrayList<>();
-    necessaryFilesFirstLevel.add("cell");
-    necessaryFilesFirstLevel.add("column");
-    necessaryFilesFirstLevel.add("namespaces");
-    necessaryFilesFirstLevel.add("row");
-    necessaryFilesFirstLevel.add("toplevel");
-
-    List<String> necessaryCellTemplates = new ArrayList<>();
-    necessaryCellTemplates.add("booleanCell");
-    necessaryCellTemplates.add("dateCell");
-    necessaryCellTemplates.add("dateTimeCell");
-    necessaryCellTemplates.add("decimalCell");
-    necessaryCellTemplates.add("geolocationCell");
-    necessaryCellTemplates.add("geotraceCell");
-    necessaryCellTemplates.add("integerCell");
-    necessaryCellTemplates.add("multipleChoiceCell");
-    necessaryCellTemplates.add("select1Cell");
-    necessaryCellTemplates.add("stringCell");
-    necessaryCellTemplates.add("timeCell");
-
     RdfExportOptions options = new RdfExportOptions();
-    String templateRoot = "src/main/resources/mustache_templates/";
-    File templatesDirectory = new File(templateRoot);
-    if(templatesDirectory.isDirectory()) {
-      String fileExt[];
-      fileExt = new String[]{"ttl.mustache"};
-      //List subdirectories
-      //https://stackoverflow.com/a/5125258
-      String[] subDirectories = templatesDirectory.list((current, name) -> new File(current, name).isDirectory());
-      if (subDirectories != null){
-        for (int i = 0; i < subDirectories.length; i++) {
-          if (!subDirectories[i].equals("common")) {
-            boolean isTemplateGroupValid = true;
-            //Test if the directory contains a valid template-group by checking if all necessary files are in it
-            //First check the immediate files
-            File subDir = new File(templateRoot + subDirectories[i]);
-            for (String necessaryFile : necessaryFilesFirstLevel) {
-              if (!new File(subDir, necessaryFile + "." + fileExt[0]).exists()) {
-                isTemplateGroupValid = false;
-              }
-            }
-            //Now check if the elementTypeCells directory exists
-            File elementTypeCellsDir = new File(subDir, "elementTypeCells");
-            if (!elementTypeCellsDir.exists() || !elementTypeCellsDir.isDirectory())
-              isTemplateGroupValid = false;
-            else {
-              //It exists, now check if it contains the necessary files
-              for (String necessaryFile : necessaryCellTemplates) {
-                if (!new File(elementTypeCellsDir, necessaryFile + "." + fileExt[0]).exists()) {
-                  isTemplateGroupValid = false;
-                }
-              }
-            }
-            //If all necessary directories and files were found, add the subdirectory-name as a valid template group
-            if(isTemplateGroupValid){
-              options.addTemplateGroup(subDirectories[i]);
-              System.out.println("Found valid templateGroup! " + subDirectories[i]);
-            }
-          }
-        }
-      }
+    try {
+      File file = ResourceUtils.getFile("classpath:rdfExport/rdfExportTemplateConfig.yml");
+      ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+      options = mapper.readValue(file, RdfExportOptions.class);
+      return options;
+    } catch (IOException e) {
+      e.printStackTrace();
+      return options;
     }
-    return options;
   }
 
   @Override
