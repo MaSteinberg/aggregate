@@ -207,15 +207,14 @@ public class FormServiceImpl extends RemoteServiceServlet implements
 
   @Override
   public RdfExportOptions getRdfExportSettings() throws AccessDeniedException, RequestFailureException, DatastoreFailureException {
-    RdfExportOptions options = new RdfExportOptions();
     try {
       File file = ResourceUtils.getFile("classpath:rdfExport/rdfExportTemplateConfig.yml");
       ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-      options = mapper.readValue(file, RdfExportOptions.class);
+      RdfExportOptions options = mapper.readValue(file, RdfExportOptions.class);
       return options;
     } catch (IOException e) {
       e.printStackTrace();
-      return options;
+      return null;
     }
   }
 

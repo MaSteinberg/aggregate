@@ -120,7 +120,7 @@ public class RdfOptionsPopup extends AbstractPopupBase {
             //Display the registered templates in a dropdown-list
             layout.setWidget(3, 0, new HTML("<h3>Template</h3>"));
             templateGroupDropdown = new ListBox();
-            for(String template : result.getRegisteredTemplates()){
+            for(String template : result.getRegisteredTemplateList()){
                 templateGroupDropdown.addItem(template);
             }
             templateGroupDropdown.setVisibleItemCount(1);

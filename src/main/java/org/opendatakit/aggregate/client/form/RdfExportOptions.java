@@ -1,5 +1,8 @@
 package org.opendatakit.aggregate.client.form;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +19,10 @@ public class RdfExportOptions implements Serializable {
         this.templates = templates;
     }
 
+    public Map<String, TemplateMetrics> getTemplates() {
+        return templates;
+    }
+
     public void setAvailableMetrics(List<String> availableMetrics) {
         this.availableMetrics = availableMetrics;
     }
@@ -24,7 +31,8 @@ public class RdfExportOptions implements Serializable {
         return availableMetrics;
     }
 
-    public Set<String> getRegisteredTemplates(){
+    @JsonIgnore
+    public Set<String> getRegisteredTemplateList(){
         return this.templates.keySet();
     }
 
