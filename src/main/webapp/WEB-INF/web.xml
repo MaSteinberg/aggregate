@@ -454,6 +454,15 @@
 		<url-pattern>/gae/jsonFileGeneratorTask</url-pattern>
 	</servlet-mapping>
 
+    <servlet>
+        <servlet-name>rdfGeneratorTask</servlet-name>
+        <servlet-class>org.opendatakit.aggregate.task.gae.servlet.RdfGeneratorTaskServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>rdfGeneratorTask</servlet-name>
+        <url-pattern>/gae/rdfGeneratorTask</url-pattern>
+    </servlet-mapping>
+
 	<servlet>
 		<servlet-name>uploadSubmissionsTask</servlet-name>
 		<servlet-class>org.opendatakit.aggregate.task.gae.servlet.UploadSubmissionsTaskServlet</servlet-class>
