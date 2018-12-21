@@ -116,13 +116,13 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
         }
 
         //Initialize Mustache & compile the templates
-        String groupTemplateRoot = "mustache_templates/" + templateGroup;
+        String groupTemplateRoot = "rdfExport/mustache_templates/" + templateGroup;
         mf = new DefaultMustacheFactory();
         //Identifier templates
-        this.toplevelIdentifierMustache = mf.compile("mustache_templates/common/toplevelIdentifier.mustache");
-        this.columnIdentifierMustache = mf.compile("mustache_templates/common/columnIdentifier.mustache");
-        this.rowIdentifierMustache = mf.compile("mustache_templates/common/rowIdentifier.mustache");
-        this.cellIdentifierMustache = mf.compile("mustache_templates/common/cellIdentifier.mustache");
+        this.toplevelIdentifierMustache = mf.compile("rdfExport/mustache_templates/common/toplevelIdentifier.mustache");
+        this.columnIdentifierMustache = mf.compile("rdfExport/mustache_templates/common/columnIdentifier.mustache");
+        this.rowIdentifierMustache = mf.compile("rdfExport/mustache_templates/common/rowIdentifier.mustache");
+        this.cellIdentifierMustache = mf.compile("rdfExport/mustache_templates/common/cellIdentifier.mustache");
         //Turtle templates
         this.namespacesMustache = mf.compile(groupTemplateRoot + "/namespaces.ttl.mustache");
         this.toplevelMustache = mf.compile(groupTemplateRoot + "/toplevel.ttl.mustache");

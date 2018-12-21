@@ -1,0 +1,15 @@
+availableMetrics:
+- Creator
+- Unit
+- Characteristic
+templates:
+  oboe:
+    optionalMetrics:
+    - Creator
+    - Unit
+    - Characteristic
+  oboeTest:
+    optionalMetrics:
+    - Creator
+    requiredMetrics:
+    - Unit
