@@ -256,12 +256,14 @@ public class FormUploadServlet extends ServletUtilBase {
 
 
       try {
-        SemanticsParser semParser = new SemanticsParser();
-        semParser.parseSemantics(inputXml);
 
         parser = new FormParserForJavaRosa(formName, formXmlData, inputXml, xmlFileName,
             uploadedFormItems, warnings, cc);
         logger.info("Upload form successful: " + parser.getFormId());
+
+        SemanticsParser semParser = new SemanticsParser();
+        semParser.parseSemantics(inputXml, parser.getFormId(), cc);
+
         // GAE requires some settle time before these entries will be
         // accurately retrieved. Do not re-fetch the form after it has been
         // uploaded.
