@@ -18,9 +18,6 @@ import java.util.List;
 public class SemanticsTable extends CommonFieldsBase {
     private static final String TABLE_NAME = "_semantics";
 
-    private static final DataField URI_MD5_FORM_ID = new DataField("URI_MD5_FORM_ID", DataField.DataType.URI,
-            false, PersistConsts.URI_STRING_LEN).setIndexable(DataField.IndexType.HASH);
-
     private static final DataField FORM_ID = new DataField("FORM_ID", DataField.DataType.STRING,
             false, PersistConsts.DEFAULT_MAX_STRING_LENGTH);
 
@@ -43,7 +40,6 @@ public class SemanticsTable extends CommonFieldsBase {
     private SemanticsTable(String databaseSchema){
         super(databaseSchema, TABLE_NAME);
 
-        fieldList.add(URI_MD5_FORM_ID);
         fieldList.add(FORM_ID);
         fieldList.add(FIELD_NAME);
         fieldList.add(METRIC_NAME);
@@ -67,16 +63,6 @@ public class SemanticsTable extends CommonFieldsBase {
     }
 
     // Getters and Setters
-    public String getUriMd5FormId(){
-        return getStringField(URI_MD5_FORM_ID);
-    }
-
-    public void setUriMd5FormId(String value){
-        if(!setStringField(URI_MD5_FORM_ID, value)){
-            throw new IllegalStateException("Overflow UriMd5FormId");
-        }
-    }
-
     public String getFormId(){
         return getStringField(FORM_ID);
     }
@@ -138,7 +124,6 @@ public class SemanticsTable extends CommonFieldsBase {
         SemanticsTable st;
         SemanticsTable stRelation = SemanticsTable.assertRelation(cc);
         st = ds.createEntityUsingRelation(stRelation, user);
-        st.setUriMd5FormId(CommonFieldsBase.newMD5HashUri(formId));
         st.setFormId(formId);
         st.setFieldName(fieldName);
         st.setMetricName(metricName);
@@ -153,9 +138,8 @@ public class SemanticsTable extends CommonFieldsBase {
         List<SemanticsTable> out = new ArrayList();
         try{
             SemanticsTable stRelation = SemanticsTable.assertRelation(cc);
-            String formIdMd5 = CommonFieldsBase.newMD5HashUri(formId);
             Query q = cc.getDatastore().createQuery(stRelation, "SemanticsTable.findEntriesByFormId", cc.getCurrentUser());
-            q.addFilter(SemanticsTable.URI_MD5_FORM_ID, Query.FilterOperation.EQUAL, formIdMd5);
+            q.addFilter(SemanticsTable.FORM_ID, Query.FilterOperation.EQUAL, formId);
             List<? extends CommonFieldsBase> l = q.executeQuery();
             for(CommonFieldsBase b : l){
                 SemanticsTable t = (SemanticsTable) b;

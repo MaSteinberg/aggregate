@@ -38,7 +38,7 @@ public class SemanticsParser {
         private String formId;
         private CallingContext cc;
 
-        public SemanticsEventHandler(String formId, CallingContext cc) {
+        SemanticsEventHandler(String formId, CallingContext cc) {
             this.formId = formId;
             this.cc = cc;
         }
