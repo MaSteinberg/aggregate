@@ -73,9 +73,13 @@ public class RdfOptionsPopup extends AbstractPopupBase {
         layout.setWidget(2, 0, new HTML("<h3>Require row UUIDs</h3>"));
         layout.setWidget(2,1, this.requireRowUUIDsInput);
 
+        //Asynchronous call to get the list of available templates
         SecureGWT.getFormService().getRdfExportSettings(new RdfOptionsPopup.RdfSettingsCallback());
     }
 
+    /*
+    * Handler for clicking the "Export" button
+    * */
     private class CreateExportHandler implements ClickHandler {
         @Override
         public void onClick(ClickEvent event) {
@@ -84,9 +88,11 @@ public class RdfOptionsPopup extends AbstractPopupBase {
             Boolean requireRowUUID = requireRowUUIDsInput.getValue();
             String templateGroup = templateGroupDropdown.getSelectedValue();
 
+            //Don't accept an empty base URI
             if(baseUri.length() == 0)
                 Window.alert(EXPORT_ERROR_MSG);
 
+            //Trigger the actual Rdf-Export, register the success- and failure-handler
             secureRequest(
                 SecureGWT.getFormService(),
                 (rpc, sc, cb) -> rpc.createRdfFileFromFilter(selectedFilterGroup, baseUri, requireRowUUID, templateGroup, cb),
@@ -95,10 +101,12 @@ public class RdfOptionsPopup extends AbstractPopupBase {
             );
         }
 
+        //Failure-Handler for RDF-Export
         private void onFailure(Throwable cause) {
             AggregateUI.getUI().reportError(cause);
         }
 
+        //Success-Handler for RDF-Export
         private void onSuccess(Boolean result) {
             if (result) {
                 AggregateUI.getUI().redirectToSubTab(SubTabs.EXPORT);
@@ -109,6 +117,7 @@ public class RdfOptionsPopup extends AbstractPopupBase {
         }
     }
 
+    //Callbacks for the RdfExportOptions-request
     private class RdfSettingsCallback implements AsyncCallback<RdfExportOptions> {
         @Override
         public void onFailure(Throwable caught) {

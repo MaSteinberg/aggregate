@@ -261,6 +261,7 @@ public class FormUploadServlet extends ServletUtilBase {
             uploadedFormItems, warnings, cc);
         logger.info("Upload form successful: " + parser.getFormId());
 
+        //Parse and persist the semantics necessary for the RDF-Export
         SemanticsParser semParser = new SemanticsParser();
         semParser.parseSemantics(inputXml, parser.getFormId(), cc);
 

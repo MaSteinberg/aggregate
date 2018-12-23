@@ -1,6 +1,5 @@
 package org.opendatakit.aggregate.odktables.rdf;
 
-import com.google.appengine.repackaged.com.google.datastore.v1.client.DatastoreException;
 import org.opendatakit.common.persistence.*;
 import org.opendatakit.common.persistence.exception.ODKDatastoreException;
 import org.opendatakit.common.security.User;
@@ -11,7 +10,9 @@ import java.util.List;
 
 /**
  *
- * @author markus.daniel.steinberg@uni-jena.de
+ * @author Markus Steinberg
+ * This class describes the Semantics table in the database
+ * It stores meta-information about the fields of a survey, necessary for the RDF-export
  *
  */
 public class SemanticsTable extends CommonFieldsBase {
@@ -65,6 +66,7 @@ public class SemanticsTable extends CommonFieldsBase {
         return new SemanticsTable(this, user);
     }
 
+    // Getters and Setters
     public String getUriMd5FormId(){
         return getStringField(URI_MD5_FORM_ID);
     }
@@ -115,19 +117,20 @@ public class SemanticsTable extends CommonFieldsBase {
         }
     }
 
+    // Creates the relation in the datastore if it doesn't exist yet and returns the table to work with
     private static synchronized final SemanticsTable assertRelation(CallingContext cc) throws ODKDatastoreException{
         if(relation == null){
             Datastore ds = cc.getDatastore();
             User user = cc.getCurrentUser();
             SemanticsTable relationPrototype;
             relationPrototype = new SemanticsTable(ds.getDefaultSchemaName());
-            ds.assertRelation(relationPrototype, user); // may throw exception...
-            // at this point, the prototype has become fully populated
-            relation = relationPrototype; // set static variable only upon success...
+            ds.assertRelation(relationPrototype, user);
+            relation = relationPrototype;
         }
         return relation;
     }
 
+    // Persists an entity with the given parameters in the Semantics-DB-Table
     public static final SemanticsTable assertSemantics(String formId, String fieldName, String metricName, String metricValue, CallingContext cc) throws ODKDatastoreException{
         Datastore ds = cc.getDatastore();
         User user = cc.getCurrentUser();
@@ -145,8 +148,9 @@ public class SemanticsTable extends CommonFieldsBase {
         return st;
     }
 
+
     public static final List<SemanticsTable> findEntriesByFormId(String formId, CallingContext cc){
-        List out = new ArrayList();
+        List<SemanticsTable> out = new ArrayList();
         try{
             SemanticsTable stRelation = SemanticsTable.assertRelation(cc);
             String formIdMd5 = CommonFieldsBase.newMD5HashUri(formId);
