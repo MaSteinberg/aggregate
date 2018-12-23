@@ -55,7 +55,7 @@ public class SemanticsParser {
                     String attributeName = attributes.getQName(i);
                     if(val != null && val.trim().length() > 0) {
                         //Store the value either as the fieldName or in a Map<AttributeName, Value>
-                        if (val.equals("fieldName")) {
+                        if (attributeName.equals("fieldName")) {
                             fieldName = val;
                         } else {
                             termValueMap.put(attributeName, val);
