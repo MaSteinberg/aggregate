@@ -30,6 +30,7 @@ import org.opendatakit.aggregate.format.element.ElementFormatter;
 import org.opendatakit.aggregate.format.header.BasicHeaderFormatter;
 import org.opendatakit.aggregate.format.header.HeaderFormatter;
 import org.opendatakit.aggregate.format.structure.rdf.models.*;
+import org.opendatakit.aggregate.odktables.rdf.SemanticsTable;
 import org.opendatakit.aggregate.server.GenerateHeaderInfo;
 import org.opendatakit.aggregate.submission.Submission;
 import org.opendatakit.common.persistence.exception.ODKDatastoreException;
@@ -59,6 +60,7 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
     private final IForm form;
     private final PrintWriter output;
     private List<FormElementNamespace> namespaces;
+    private Map<String, Map<String, String>> semantics; //(fieldName -> (metricName -> metricValue))
 
     private String baseURI;
     private boolean requireRowUUIDs;
@@ -97,7 +99,7 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
         headerGenerator.processForHeaderInfo(form.getTopLevelGroupElement());
         columnFormElementModels = headerGenerator.getIncludedElements();
         namespaces = headerGenerator.includedFormElementNamespaces();
-        headerNames = headerFormatter.generateHeaders(form, form.getTopLevelGroupElement(), columnFormElementModels);
+        headerNames = headerFormatter.generateHeaders(form, form.getTopLevelGroupElement(), columnFormElementModels); //TODO This most likely doesn't include the filter
         headerTypes = headerFormatter.getHeaderTypes(); //TODO this needs the same size as headerNames or we get a problem
         elemFormatter = new BasicElementFormatter(false, true, true, false);
 
@@ -116,7 +118,7 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
         }
 
         //Initialize Mustache & compile the templates
-        String groupTemplateRoot = "rdfExport/mustache_templates/" + templateGroup;
+        String templateGroupRoot = "rdfExport/mustache_templates/" + templateGroup;
         mf = new DefaultMustacheFactory();
         //Identifier templates
         this.toplevelIdentifierMustache = mf.compile("rdfExport/mustache_templates/common/toplevelIdentifier.mustache");
@@ -124,14 +126,14 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
         this.rowIdentifierMustache = mf.compile("rdfExport/mustache_templates/common/rowIdentifier.mustache");
         this.cellIdentifierMustache = mf.compile("rdfExport/mustache_templates/common/cellIdentifier.mustache");
         //Turtle templates
-        this.namespacesMustache = mf.compile(groupTemplateRoot + "/namespaces.ttl.mustache");
-        this.toplevelMustache = mf.compile(groupTemplateRoot + "/toplevel.ttl.mustache");
-        this.columnMustache = mf.compile(groupTemplateRoot + "/column.ttl.mustache");
-        this.rowMustache = mf.compile(groupTemplateRoot + "/row.ttl.mustache");
-        this.genericCellMustache = mf.compile(groupTemplateRoot + "/cell.ttl.mustache");
+        this.namespacesMustache = mf.compile(templateGroupRoot + "/namespaces.ttl.mustache");
+        this.toplevelMustache = mf.compile(templateGroupRoot + "/toplevel.ttl.mustache");
+        this.columnMustache = mf.compile(templateGroupRoot + "/column.ttl.mustache");
+        this.rowMustache = mf.compile(templateGroupRoot + "/row.ttl.mustache");
+        this.genericCellMustache = mf.compile(templateGroupRoot + "/cell.ttl.mustache");
         //Assign and compile the cell templates
         elementTypeToCellMustacheMap = new HashMap();
-        String cellTemplateRoot = groupTemplateRoot + "/elementTypeCells/";
+        String cellTemplateRoot = templateGroupRoot + "/elementTypeCells/";
         elementTypeToCellMustacheMap.put(DECIMAL, mf.compile(cellTemplateRoot + "decimalCell.ttl.mustache"));
         elementTypeToCellMustacheMap.put(INTEGER, mf.compile(cellTemplateRoot + "integerCell.ttl.mustache"));
         elementTypeToCellMustacheMap.put(STRING, mf.compile(cellTemplateRoot + "stringCell.ttl.mustache"));
@@ -148,6 +150,25 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
 
     @Override
     public void beforeProcessSubmissions(CallingContext cc) throws ODKDatastoreException {
+        //Gather the semantic information that was submitted during form upload
+        List<SemanticsTable> sem = SemanticsTable.findEntriesByFormId(this.form.getFormId(), cc);
+        semantics = new HashMap<>();
+        for(SemanticsTable t : sem){
+            Map<String, String> tmp;
+            String fieldName = t.getFieldName();
+            if(!semantics.containsKey(t.getFieldName())){
+                tmp = new HashMap<>();
+            } else{
+                tmp = semantics.get(fieldName);
+            }
+            tmp.put(t.getMetricName(), t.getMetricValue());
+            semantics.put(fieldName, tmp);
+        }
+
+        //Check if we have all required information (fail-fast)
+
+
+
         //Namespaces
         //We have to guarantee prefix-Uniqueness or the resulting RDF file won't be valid
         List<RdfNamespace> namespaces = new ArrayList<>();
