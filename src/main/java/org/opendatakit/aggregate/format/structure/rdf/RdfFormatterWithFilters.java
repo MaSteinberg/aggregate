@@ -19,6 +19,7 @@ import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheFactory;
 import org.opendatakit.aggregate.client.filter.FilterGroup;
+import org.opendatakit.aggregate.client.form.RdfExportOptions;
 import org.opendatakit.aggregate.client.submission.SubmissionUISummary;
 import org.opendatakit.aggregate.constants.common.FormElementNamespace;
 import org.opendatakit.aggregate.datamodel.FormElementModel;
@@ -32,6 +33,7 @@ import org.opendatakit.aggregate.format.header.HeaderFormatter;
 import org.opendatakit.aggregate.format.structure.rdf.models.*;
 import org.opendatakit.aggregate.odktables.rdf.SemanticsTable;
 import org.opendatakit.aggregate.server.GenerateHeaderInfo;
+import org.opendatakit.aggregate.server.RdfTemplateConfigManager;
 import org.opendatakit.aggregate.submission.Submission;
 import org.opendatakit.common.persistence.exception.ODKDatastoreException;
 import org.opendatakit.common.web.CallingContext;
@@ -164,10 +166,6 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
             tmp.put(t.getMetricName(), t.getMetricValue());
             semantics.put(fieldName, tmp);
         }
-
-        //Check if we have all required information (fail-fast)
-
-
 
         //Namespaces
         //We have to guarantee prefix-Uniqueness or the resulting RDF file won't be valid

@@ -6,6 +6,7 @@ import org.apache.tools.ant.taskdefs.Javadoc;
 import org.opendatakit.aggregate.client.form.RdfExportOptions;
 import org.opendatakit.aggregate.constants.common.UIConsts;
 import org.opendatakit.aggregate.server.FormServiceImpl;
+import org.opendatakit.aggregate.server.RdfTemplateConfigManager;
 import org.opendatakit.common.web.constants.HtmlConsts;
 import org.springframework.util.ResourceUtils;
 
@@ -34,9 +35,7 @@ public class RdfTemplateConfigServlet extends ServletUtilBase {
             resp.setContentType(HtmlConsts.RESP_TYPE_JSON);
             resp.setCharacterEncoding(HtmlConsts.UTF8_ENCODE);
             resp.addHeader("Access-Control-Allow-Origin", "*");
-            File file = ResourceUtils.getFile("classpath:rdfExport/rdfExportTemplateConfig.yml");
-            ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory());
-            RdfExportOptions options = yamlMapper.readValue(file, RdfExportOptions.class);
+            RdfExportOptions options = RdfTemplateConfigManager.getRdfExportOptions();
             ObjectMapper jsonMapper = new ObjectMapper();
             jsonMapper.writeValue(out, options);
         } catch (IOException e) {
