@@ -54,6 +54,8 @@ public class UIConsts {
   public static final String UPLOAD_TABLE_FROM_CSV_SERVLET_ADDR =
       "uploadTableFromCSV";
 
+  public static final String TEMPLATE_CONFIG_SERVLET_ADDR = "rdfTemplateConfig";
+
   public static final String SUBMISSION_SERVLET_ADDR = "submission";
   public static final String ERROR_NO_FILTERS = "You need at least one filter to save a group.";
   public static final String ERROR_NO_NAME = "You need to provide a name for this filter group to continue";

@@ -120,6 +120,7 @@ dependencies {
   compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: versions.jackson
   compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: versions.jackson
   compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-xml', version: versions.jackson
+  compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: versions.jackson
   compile group: 'com.fasterxml.jackson.jaxrs', name: 'jackson-jaxrs-json-provider', version: versions.jackson
   compile group: 'com.fasterxml.jackson.jaxrs', name: 'jackson-jaxrs-xml-provider', version: versions.jackson
   compile group: 'org.apache.geronimo.specs', name: 'geronimo-jaxrs_1.1_spec', version: versions.geronimo

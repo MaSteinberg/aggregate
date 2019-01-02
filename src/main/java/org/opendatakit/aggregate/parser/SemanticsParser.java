@@ -16,16 +16,10 @@ import java.util.List;
 import java.util.Map;
 
 public class SemanticsParser {
-    private List<String> availableTerms;
     private Map<String, Map<String, String>> termValueMaps;
 
     public void parseSemantics(String xmlDocument) throws SAXException, ParserConfigurationException, IOException {
-        availableTerms = new ArrayList<>();
         termValueMaps = new HashMap<>();
-        //TODO This information should be stored in a config file
-        availableTerms.add("Creator");
-        availableTerms.add("Device");
-        availableTerms.add("Unit");
 
         SAXParserFactory spf = SAXParserFactory.newInstance();
         spf.setNamespaceAware(true);
@@ -39,12 +33,17 @@ public class SemanticsParser {
         @Override
         public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
             if(qName.equals("sem:node")){
-                String controlName = attributes.getValue("fieldName");
+                String controlName = "";
                 Map<String, String> termValueMap = new HashMap<>();
-                for (String term: availableTerms) {
-                    String val = attributes.getValue(term);
-                    if(val != null && val.trim().length() > 0){
-                        termValueMap.put(term, val);
+                for(int i = 0; i < attributes.getLength(); i++){
+                    String val = attributes.getValue(i);
+                    String attributeName = attributes.getQName(i);
+                    if(val != null && val.trim().length() > 0) {
+                        if (attributeName.equals("fieldName")) {
+                            controlName = val;
+                        } else {
+                            termValueMap.put(attributeName, val);
+                        }
                     }
                 }
                 termValueMaps.put(controlName, termValueMap);
