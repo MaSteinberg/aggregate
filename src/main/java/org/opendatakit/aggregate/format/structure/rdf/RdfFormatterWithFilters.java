@@ -18,8 +18,10 @@ package org.opendatakit.aggregate.format.structure.rdf;
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheFactory;
+import org.apache.commons.lang3.StringUtils;
 import org.opendatakit.aggregate.client.filter.FilterGroup;
 import org.opendatakit.aggregate.client.form.RdfExportOptions;
+import org.opendatakit.aggregate.client.form.TemplateMetrics;
 import org.opendatakit.aggregate.client.submission.SubmissionUISummary;
 import org.opendatakit.aggregate.constants.common.FormElementNamespace;
 import org.opendatakit.aggregate.datamodel.FormElementModel;
@@ -45,10 +47,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.IntStream;
 
 import static org.opendatakit.aggregate.datamodel.FormElementModel.ElementType.*;
 
@@ -62,6 +62,7 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
     private final IForm form;
     private final PrintWriter output;
     private List<FormElementNamespace> namespaces;
+    private String templateGroup;
     private Map<String, Map<String, String>> semantics; //(fieldName -> (metricName -> metricValue))
 
     private String baseURI;
@@ -93,6 +94,7 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
 
         this.baseURI = baseURI;
         this.requireRowUUIDs = requireRowUUID;
+        this.templateGroup = templateGroup;
 
         SubmissionUISummary summary = new SubmissionUISummary(form.getViewableName());
         HeaderFormatter headerFormatter = new BasicHeaderFormatter(false, true, true);
@@ -120,7 +122,7 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
         }
 
         //Initialize Mustache & compile the templates
-        String templateGroupRoot = "rdfExport/mustache_templates/" + templateGroup;
+        String templateGroupRoot = "rdfExport/mustache_templates/" + this.templateGroup;
         mf = new DefaultMustacheFactory();
         //Identifier templates
         this.toplevelIdentifierMustache = mf.compile("rdfExport/mustache_templates/common/toplevelIdentifier.mustache");
@@ -167,6 +169,29 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
             semantics.put(fieldName, tmp);
         }
 
+        //Grab the template config
+        TemplateMetrics templateConfig = RdfTemplateConfigManager.getRdfExportOptions().getTemplateMetrics(this.templateGroup);
+        List<String> requiredMetrics = templateConfig.getRequiredMetrics();
+
+        //Check if we have all required information (fail-fast)
+        if(requiredMetrics != null) {
+            for(String requiredMetric : requiredMetrics) {
+                for (FormElementModel col : this.columnFormElementModels) {
+                    //"instanceID" is a special case - it's automatically generated and thus semantic information
+                    //can't be entered by the form author
+                    if(!col.getElementName().equals("instanceID")){
+                        Map<String, String> semanticsForColumn = semantics.get(col.getElementName());
+                        if (    semanticsForColumn == null ||
+                                !(semanticsForColumn.containsKey(requiredMetric)) ||
+                                semanticsForColumn.get(requiredMetric) == null ||
+                                semanticsForColumn.get(requiredMetric).trim().length() == 0){
+                            throw new ODKDatastoreException("Missing required semantic information for field " + col.getElementName());
+                        }
+                    }
+                }
+            }
+        }
+
         //Namespaces
         //We have to guarantee prefix-Uniqueness or the resulting RDF file won't be valid
         List<RdfNamespace> namespaces = new ArrayList<>();
@@ -194,22 +219,29 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
         //Columns
         output.append("#Each column describes one observation\n");
         for(int col = 0; col < headerNames.size(); col++){
-            //Generate column identifier via template
-            String columnEntityIdentifier = "";
-            try {
-                identifierWriter = new PrintWriter(new OutputStreamWriter(identifierStream, HtmlConsts.UTF8_ENCODE));
-                columnIdentifierMustache.execute(identifierWriter, headerNames.get(col));
-                identifierWriter.close();
-                columnEntityIdentifier = identifierStream.toString();
-                identifierStream.reset();
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
+            String colName = headerNames.get(col);
+            //InstanceID is a special case - it's not to be considered a field for the RDF export
+            if(colName.equals("instanceID")){
+                //Adding a null-value to the list of column models makes indexing easier in the cells-section
+                columnModels.add(null);
+            } else{
+                //Generate column identifier via template
+                String columnEntityIdentifier = "";
+                try {
+                    identifierWriter = new PrintWriter(new OutputStreamWriter(identifierStream, HtmlConsts.UTF8_ENCODE));
+                    columnIdentifierMustache.execute(identifierWriter, headerNames.get(col));
+                    identifierWriter.close();
+                    columnEntityIdentifier = identifierStream.toString();
+                    identifierStream.reset();
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
 
-            //For each column create the ColumnModel and fill the template
-            ColumnModel columnModel = modelBuilder.buildColumnModel(toplevelModel, headerNames.get(col), headerTypes.get(col), columnEntityIdentifier);
-            columnModels.add(columnModel);
-            columnMustache.execute(output, columnModel);
+                //For each column create the ColumnModel and fill the template
+                ColumnModel columnModel = modelBuilder.buildColumnModel(toplevelModel, colName, headerTypes.get(col), columnEntityIdentifier);
+                columnModels.add(columnModel);
+                columnMustache.execute(output, columnModel);
+            }
         }
     }
 
@@ -266,32 +298,54 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
             //Cells
             int columnNumber = 0;
             for(String cellValue : formattedValues){
-                CellIdentifierModel cellIdModel = modelBuilder.buildCellIdentifierModel(columnModels.get(columnNumber), rowModel);
-                //Generate cell identifier via template
-                String cellEntityIdentifier = "";
-                try {
-                    identifierWriter = new PrintWriter(new OutputStreamWriter(identifierStream, HtmlConsts.UTF8_ENCODE));
-                    cellIdentifierMustache.execute(identifierWriter, cellIdModel);
-                    identifierWriter.close();
-                    cellEntityIdentifier = identifierStream.toString();
-                    identifierStream.reset();
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
+                String columnName = columnFormElementModels.get(columnNumber).getElementName();
+                //InstanceID is a special case - it's not to be considered a field for the RDF export
+                if(!columnName.equals("instanceID")) {
+                    //Generate cell identifier via template
+                    CellIdentifierModel cellIdModel = modelBuilder.buildCellIdentifierModel(columnModels.get(columnNumber), rowModel);
+                    String cellEntityIdentifier = "";
+                    try {
+                        identifierWriter = new PrintWriter(new OutputStreamWriter(identifierStream, HtmlConsts.UTF8_ENCODE));
+                        cellIdentifierMustache.execute(identifierWriter, cellIdModel);
+                        identifierWriter.close();
+                        cellEntityIdentifier = identifierStream.toString();
+                        identifierStream.reset();
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
 
-                FormElementModel.ElementType elementType = headerTypes.get(columnNumber);
-                AbstractCellModel cellModel = modelBuilder.buildCellModel(columnModels.get(columnNumber), rowModel, cellValue, cellEntityIdentifier, elementType);
-                //Use the generic cell-template
-                genericCellMustache.execute(output, cellModel);
+                    //For each semantic metric that is referencing another column we have to replace the _col_<columnName>
+                    //with the respective value of the column
+                    Map<String, String> columnSemantics = semantics.get(columnName);
+                    //We need a (shallow) copy of the semantics to adapt the values for the given row
+                    Map<String, String> semanticsForGivenRow = new HashMap<>(columnSemantics);
+                    for(Map.Entry<String, String> entry : semanticsForGivenRow.entrySet()){
+                        if(entry.getValue().startsWith("_col_")){
+                            String referenceColumn = StringUtils.removeStart(entry.getValue(), "_col_");
+                            //Find index of the referenced column
+                            //Adapted from https://stackoverflow.com/a/43605785
+                            int index = IntStream.range(0, columnFormElementModels.size())
+                                    .filter(i -> columnFormElementModels.get(i).getElementName().equals(referenceColumn))
+                                    .findFirst().orElseThrow(() -> new ODKDatastoreException("Semantic information is referencing the non-existing column " + referenceColumn));
+                            String referenceValue = formattedValues.get(index);
+                            entry.setValue(referenceValue);
+                        }
+                    }
 
-                //Grab the suitable elementType-specific template, defaulting to the String-template
-                Mustache cellMustache;
-                if(elementTypeToCellMustacheMap.containsKey(elementType)){
-                    cellMustache = elementTypeToCellMustacheMap.get(elementType);
-                } else{
-                    cellMustache = elementTypeToCellMustacheMap.get(STRING);
+                    FormElementModel.ElementType elementType = headerTypes.get(columnNumber);
+                    AbstractCellModel cellModel = modelBuilder.buildCellModel(columnModels.get(columnNumber), rowModel, cellValue, cellEntityIdentifier, elementType, semanticsForGivenRow);
+                    //Use the generic cell-template
+                    genericCellMustache.execute(output, cellModel);
+
+                    //Grab the suitable elementType-specific template, defaulting to the String-template
+                    Mustache cellMustache;
+                    if (elementTypeToCellMustacheMap.containsKey(elementType)) {
+                        cellMustache = elementTypeToCellMustacheMap.get(elementType);
+                    } else {
+                        cellMustache = elementTypeToCellMustacheMap.get(STRING);
+                    }
+                    cellMustache.execute(output, cellModel);
                 }
-                cellMustache.execute(output, cellModel);
                 columnNumber++;
             }
         }

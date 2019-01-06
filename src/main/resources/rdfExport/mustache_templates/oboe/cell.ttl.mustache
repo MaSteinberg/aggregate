@@ -7,3 +7,15 @@
 :measuredValue_{{rowModel.rowId}}_{{columnModel.columnHeader}} rdf:type oboe-core:MeasuredValue .
 {{!Relate the Measurement to the MeasuredValue}}
 {{cellEntityIdentifier}} oboe-core:hasValue :measuredValue_{{rowModel.rowId}}_{{columnModel.columnHeader}} .
+{{!Use semantic information}}
+{{!Creator - optional}}
+{{#semantics.Creator}}
+{{cellEntityIdentifier}} dcterms:creator :creator_{{columnModel.columnHeader}}_{{rowModel.rowId}} .
+:creator_{{columnModel.columnHeader}}_{{rowModel.rowId}} rdf:type foaf:Person .
+:creator_{{columnModel.columnHeader}}_{{rowModel.rowId}} foaf:name "{{semantics.Creator}}" .
+{{/semantics.Creator}}
+{{!Characteristic - required}}
+{{cellEntityIdentifier}} oboe-core:ofCharacteristic "{{semantics.Characteristic}}" .
+{{!Unit - required}}
+{{cellEntityIdentifier}} om:hasUnit "{{semantics.Unit}}" .
+

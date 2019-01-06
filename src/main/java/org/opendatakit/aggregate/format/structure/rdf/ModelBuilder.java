@@ -32,7 +32,8 @@ public class ModelBuilder {
         return new RowModel(topLevelModel, rowId, rowIdentifier);
     }
 
-    public AbstractCellModel buildCellModel(ColumnModel columnModel, RowModel rowModel, String cellValue, String cellEntityIdentifier, FormElementModel.ElementType elementType){
+    public AbstractCellModel buildCellModel(ColumnModel columnModel, RowModel rowModel, String cellValue, String cellEntityIdentifier, FormElementModel.ElementType elementType, Map<String, String> semantics){
+        AbstractCellModel out;
         switch(elementType){
             case DECIMAL:
             case INTEGER:
@@ -40,69 +41,69 @@ public class ModelBuilder {
             case SELECT1:
             case BOOLEAN:
             case METADATA:
-                return buildSingleValueCellModel(columnModel, rowModel, cellValue, cellEntityIdentifier);
+                return buildSingleValueCellModel(columnModel, rowModel, cellValue, cellEntityIdentifier, semantics);
             case SELECTN:
-                return buildMultiValueCellModel(columnModel, rowModel, cellValue, cellEntityIdentifier);
+                return buildMultiValueCellModel(columnModel, rowModel, cellValue, cellEntityIdentifier, semantics);
             case JRDATE:
-                return buildDateCellModel(columnModel, rowModel, cellValue, cellEntityIdentifier);
+                return buildDateCellModel(columnModel, rowModel, cellValue, cellEntityIdentifier, semantics);
             case JRTIME:
-                return buildTimeCellModel(columnModel, rowModel, cellValue, cellEntityIdentifier);
+                return buildTimeCellModel(columnModel, rowModel, cellValue, cellEntityIdentifier, semantics);
             case JRDATETIME:
-                return buildDateTimeCellModel(columnModel, rowModel, cellValue, cellEntityIdentifier);
+                return buildDateTimeCellModel(columnModel, rowModel, cellValue, cellEntityIdentifier, semantics);
             case GEOPOINT:
-                return buildGeolocationCellModel(columnModel, rowModel, cellValue, cellEntityIdentifier);
+                return buildGeolocationCellModel(columnModel, rowModel, cellValue, cellEntityIdentifier, semantics);
             case GEOTRACE:
-                return buildGeotraceCellModel(columnModel, rowModel, cellValue, cellEntityIdentifier);
+                return buildGeotraceCellModel(columnModel, rowModel, cellValue, cellEntityIdentifier, semantics);
             case GEOSHAPE:
-                return buildGeoshapeCellModel(columnModel, rowModel, cellValue, cellEntityIdentifier);
+                return buildGeoshapeCellModel(columnModel, rowModel, cellValue, cellEntityIdentifier, semantics);
             default: //TODO Support more types
-                return buildSingleValueCellModel(columnModel, rowModel, cellValue, cellEntityIdentifier);
+                return buildSingleValueCellModel(columnModel, rowModel, cellValue, cellEntityIdentifier, semantics);
         }
     }
 
-    private AbstractCellModel buildSingleValueCellModel(ColumnModel columnModel, RowModel rowModel, String cellValue, String cellEntityIdentifier) {
-        return new SingleValueCellModel(columnModel, rowModel, cellValue, cellEntityIdentifier);
+    private AbstractCellModel buildSingleValueCellModel(ColumnModel columnModel, RowModel rowModel, String cellValue, String cellEntityIdentifier, Map<String, String> semantics) {
+        return new SingleValueCellModel(columnModel, rowModel, cellValue, cellEntityIdentifier, semantics);
     }
 
-    private AbstractCellModel buildMultiValueCellModel(ColumnModel columnModel, RowModel rowModel, String cellValue, String cellEntityIdentifier) {
+    private AbstractCellModel buildMultiValueCellModel(ColumnModel columnModel, RowModel rowModel, String cellValue, String cellEntityIdentifier, Map<String, String> semantics) {
         //The values are separated by a space and can not include a  space themselves
         if(cellValue == null)
-            return new MultiValueCellModel(columnModel, rowModel, cellEntityIdentifier);
+            return new MultiValueCellModel(columnModel, rowModel, cellEntityIdentifier, semantics);
         String values[] = cellValue.split(" ");
-        return new MultiValueCellModel(columnModel, rowModel, Arrays.asList(values), cellEntityIdentifier);
+        return new MultiValueCellModel(columnModel, rowModel, Arrays.asList(values), cellEntityIdentifier, semantics);
     }
 
-    private AbstractCellModel buildDateCellModel(ColumnModel columnModel, RowModel rowModel, String cellValue, String cellEntityIdentifier) {
+    private AbstractCellModel buildDateCellModel(ColumnModel columnModel, RowModel rowModel, String cellValue, String cellEntityIdentifier, Map<String, String> semantics) {
         if(cellValue == null)
-            return new DateTimeCellModel(columnModel, rowModel, cellEntityIdentifier);
+            return new DateTimeCellModel(columnModel, rowModel, cellEntityIdentifier, semantics);
         String split[] = cellValue.split(" ", 2);
-        return new DateTimeCellModel(columnModel, rowModel, split[0], null, cellEntityIdentifier); //TODO Might want to check if split.length == 2
+        return new DateTimeCellModel(columnModel, rowModel, split[0], null, cellEntityIdentifier, semantics); //TODO Might want to check if split.length == 2
     }
 
-    private AbstractCellModel buildTimeCellModel(ColumnModel columnModel, RowModel rowModel, String cellValue, String cellEntityIdentifier) {
+    private AbstractCellModel buildTimeCellModel(ColumnModel columnModel, RowModel rowModel, String cellValue, String cellEntityIdentifier, Map<String, String> semantics) {
         if(cellValue == null)
-            return new DateTimeCellModel(columnModel, rowModel, cellEntityIdentifier);
+            return new DateTimeCellModel(columnModel, rowModel, cellEntityIdentifier, semantics);
         String split[] = cellValue.split(" ", 2);
-        return new DateTimeCellModel(columnModel, rowModel, null, split[1], cellEntityIdentifier); //TODO Might want to check if split.length == 2
+        return new DateTimeCellModel(columnModel, rowModel, null, split[1], cellEntityIdentifier, semantics); //TODO Might want to check if split.length == 2
     }
 
-    private AbstractCellModel buildDateTimeCellModel(ColumnModel columnModel, RowModel rowModel, String cellValue, String cellEntityIdentifier) {
+    private AbstractCellModel buildDateTimeCellModel(ColumnModel columnModel, RowModel rowModel, String cellValue, String cellEntityIdentifier, Map<String, String> semantics) {
         if(cellValue == null)
-            return new DateTimeCellModel(columnModel, rowModel, cellEntityIdentifier);
+            return new DateTimeCellModel(columnModel, rowModel, cellEntityIdentifier, semantics);
         String split[] = cellValue.split(" ", 2);
-        return new DateTimeCellModel(columnModel, rowModel, split[0], split[1], cellEntityIdentifier); //TODO Might want to check if split.length == 2
+        return new DateTimeCellModel(columnModel, rowModel, split[0], split[1], cellEntityIdentifier, semantics); //TODO Might want to check if split.length == 2
     }
     
-    private AbstractCellModel buildGeolocationCellModel(ColumnModel columnModel, RowModel rowModel, String cellValue, String cellEntityIdentifier) {
+    private AbstractCellModel buildGeolocationCellModel(ColumnModel columnModel, RowModel rowModel, String cellValue, String cellEntityIdentifier, Map<String, String> semantics) {
         if(cellValue == null)
-            return new GeolocationCellModel(columnModel, rowModel, cellEntityIdentifier);
+            return new GeolocationCellModel(columnModel, rowModel, cellEntityIdentifier, semantics);
         String split[] = cellValue.split(", ", 4);
-        return new GeolocationCellModel(columnModel, rowModel, split[0], split[1], split[2], split[3], cellEntityIdentifier);
+        return new GeolocationCellModel(columnModel, rowModel, split[0], split[1], split[2], split[3], cellEntityIdentifier, semantics);
     }
 
-    private AbstractCellModel buildGeotraceCellModel(ColumnModel columnModel, RowModel rowModel, String cellValue, String cellEntityIdentifier) {
+    private AbstractCellModel buildGeotraceCellModel(ColumnModel columnModel, RowModel rowModel, String cellValue, String cellEntityIdentifier, Map<String, String> semantics) {
         if(cellValue == null)
-            return new GeotraceCellModel(columnModel, rowModel, cellEntityIdentifier);
+            return new GeotraceCellModel(columnModel, rowModel, cellEntityIdentifier, semantics);
         String locationStrings[] = cellValue.split(";");
         List<GeotraceElement> pathElements = new ArrayList<>();
         for (int i = 0; i < locationStrings.length; i++) {
@@ -113,13 +114,13 @@ public class ModelBuilder {
             if (split.length >= 4)
                 pathElements.add(new GeotraceElement(i + 1, new Location(split[0], split[1], split[2], split[3])));
         }
-        return new GeotraceCellModel(columnModel, rowModel, pathElements, cellEntityIdentifier);
+        return new GeotraceCellModel(columnModel, rowModel, pathElements, cellEntityIdentifier, semantics);
     }
 
-    private AbstractCellModel buildGeoshapeCellModel(ColumnModel columnModel, RowModel rowModel, String cellValue, String cellEntityIdentifier) {
+    private AbstractCellModel buildGeoshapeCellModel(ColumnModel columnModel, RowModel rowModel, String cellValue, String cellEntityIdentifier, Map<String, String> semantics) {
         //We reuse the GeotraceCellModel since it stores the same information we need for a Geoshape
         if(cellValue == null)
-            return new GeotraceCellModel(columnModel, rowModel, cellEntityIdentifier);
+            return new GeotraceCellModel(columnModel, rowModel, cellEntityIdentifier, semantics);
         String locationStrings[] = cellValue.split(";");
         List<GeotraceElement> pathElements = new ArrayList<>();
         for (int i = 0; i < locationStrings.length; i++) {
@@ -130,7 +131,7 @@ public class ModelBuilder {
             if (split.length >= 4)
                 pathElements.add(new GeotraceElement(i + 1, new Location(split[0], split[1], split[2], split[3])));
         }
-        return new GeotraceCellModel(columnModel, rowModel, pathElements, cellEntityIdentifier);
+        return new GeotraceCellModel(columnModel, rowModel, pathElements, cellEntityIdentifier, semantics);
     }
 
 
