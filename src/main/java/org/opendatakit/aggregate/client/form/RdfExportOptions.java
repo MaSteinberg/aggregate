@@ -45,4 +45,10 @@ public class RdfExportOptions implements Serializable {
     public Set<String> getRegisteredTemplateList(){
         return this.templates.keySet();
     }
+
+    // Utility function returning only the information relevant to a given template name
+    @JsonIgnore
+    public TemplateMetrics getTemplateMetrics(String templateName){
+        return this.templates.get(templateName);
+    }
 }
