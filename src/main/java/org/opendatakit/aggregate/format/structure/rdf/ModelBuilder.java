@@ -33,7 +33,6 @@ public class ModelBuilder {
     }
 
     public AbstractCellModel buildCellModel(ColumnModel columnModel, RowModel rowModel, String cellValue, String cellEntityIdentifier, FormElementModel.ElementType elementType, Map<String, String> semantics){
-        AbstractCellModel out;
         switch(elementType){
             case DECIMAL:
             case INTEGER:
