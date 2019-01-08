@@ -26,36 +26,35 @@ The *optionalMetrics* list should then contain the other metrics that your templ
 There are multiple directories and files that have to be added to the project in order to get your new template group up and running.
 The files are used as input for the [Mustache.java](https://github.com/spullara/mustache.java)-library.
 Therefore they have to comply with the syntax that is expected by the library.
-The following structure has to be added to the `<your-project-root>/src/main/resources/rdfExport/mustache_templates` directory of the project:
+The following structure has to be added to the `<your-project-root>/src/main/resources/rdfExport/mustache_templates` directory of the project (directories are displayed as **bold**, files as *italic* ):
 
-.
-+-- \<yourTemplateName>
-|  +-- elementTypeCells
-|  |  +-- booleanCell.ttl.mustache
-|  |  +-- dateCell.ttl.mustache
-|  |  +-- dateTimeCell.ttl.mustache
-|  |  +-- decimalCell.ttl.mustache
-|  |  +-- geolocationCell.ttl.mustache
-|  |  +-- geoshapeCell.ttl.mustache
-|  |  +-- geotraceCell.ttl.mustache
-|  |  +-- integerCell.ttl.mustache
-|  |  +-- multipleChoiceCell.ttl.mustache
-|  |  +-- select1Cell.ttl.mustache
-|  |  +-- stringCell.ttl.mustache
-|  |  +-- timeCell.ttl.mustache
-|  +-- cell.ttl.mustache
-|  +-- column.ttl.mustache
-|  +-- namespaces.ttl.mustache
-|  +-- row.ttl.mustache
-|  +-- toplevel.ttl.mustache
++ **\<yourTemplateName>**
+  + **elementTypeCells**
+    + *booleanCell.ttl.mustache*
+    + *dateCell.ttl.mustache*
+    + *dateTimeCell.ttl.mustache*
+    + *decimalCell.ttl.mustache*
+    + *geolocationCell.ttl.mustache*
+    + *geoshapeCell.ttl.mustache*
+    + *geotraceCell.ttl.mustache*
+    + *integerCell.ttl.mustache*
+    + *multipleChoiceCell.ttl.mustache*
+    + *select1Cell.ttl.mustache*
+    + *stringCell.ttl.mustache*
+    + *timeCell.ttl.mustache*
+  + *cell.ttl.mustache*
+  + *column.ttl.mustache*
+  + *namespaces.ttl.mustache*
+  + *row.ttl.mustache*
+  + *toplevel.ttl.mustache*
 
 Additionally, you might notice four files located in `<your-project-root>/src/main/resources/rdfExport/mustache_templates/common`:
-.
-+-- common
-|  +-- cellIdentifier.mustache
-|  +-- columnIdentifier.mustache
-|  +-- rowIdentifier.mustache
-|  +-- toplevelIdentifier.mustache
+
++ **common**
+  + *cellIdentifier.mustache*
+  + *columnIdentifier.mustache*
+  + *rowIdentifier.mustache*
+  + *toplevelIdentifier.mustache*
 
 These files are used by all of the RDF template groups and should not be modified.
 The following sections explain the purpose of the files you have to build and the data that can be accessed in each of them.
