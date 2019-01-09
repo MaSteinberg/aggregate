@@ -67,10 +67,10 @@ The following sections explain the purpose of the files you have to build and th
 #### namespaces.ttl.mustache
 This file is responsible for the namespace and prefix definitions.
 The Model for this template provides access to the following fields:
-+ *base* - **String** with the base URI of the resulting RDF file
++ *base* - **String** - Base URI of the resulting RDF file
 + *namespaces* - **List** of namespaces that the form-designer added, each consisting of:
-  + *prefix* - **String** with the prefix for this namespace
-  + *uri* - **String** with the URI of this namespace
+  + *prefix* - **String** - Prefix for this namespace
+  + *uri* - **String** - URI of this namespace
 
 The recommendation for this file is to include the following code:
 ```
@@ -88,3 +88,21 @@ All namespaces that are used in your templates should be added manually below th
 ```
 **Don't rely on the form-designer to add the namespaces that you need!**.
 The form-designer is only responsible for adding **additional** namespaces for semantic information that he provides during form design.
+
+#### toplevel.ttl.mustache
+This file is responsible for defining any RDF statements on the top level of the exportable dataset.
+This template is rendered exactly once for a given export process.
+The model provides access to metadata about the form and the dataset.
+The following fields are exposed:
++ *toplevelEntityIdentifier* - **String** - Can be used as a unique identifier for the top level of the resulting RDF file.
++ *formId* - **String** - Unique identifier of the form used for data collection.
++ *formName* - **String** - Name of the form used for data collection. Not necessarily unique. Might be empty.
++ *formDescription* - **String** - Description of the form used for data collection. Might be empty.
++ *formCreationDate* - **String** - DateTime of the form's creation. Format: yyyy-MM-dd HH:mm:ss.fff
++ *formCreationUser* - **String** - Name of the user who designed the form.
++ *lastUpdate* - **String** - DateTime of the form's latest update. Format: yyyy-MM-dd HH:mm:ss.fff
++ *formVersion* - **String** - Name of the form's latest version. Might be empty.
+
+This template file would usually contain triples that define one or more resources that the other template files can reference.
+The fields exposed by the model can then be attached to these resources.
+Alternatively the template file may be left empty if there is no need for such top level resources.
