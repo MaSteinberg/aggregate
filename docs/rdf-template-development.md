@@ -57,7 +57,34 @@ Additionally, you might notice four files located in `<your-project-root>/src/ma
   + *toplevelIdentifier.mustache*
 
 These files are used by all of the RDF template groups and should not be modified.
+
 The following sections explain the purpose of the files you have to build and the data that can be accessed in each of them.
+
 **General advice**: Use one of the existing template groups as a guideline for the structure and content of the files.
+
 **Terminology**: In the following sections, the object which contains the data that is accessible in the different template-files will be called **model** (in technical terms, this is the Java-object that is passed to the Mustache-renderer).
 
+#### namespaces.ttl.mustache
+This file is responsible for the namespace and prefix definitions.
+The Model for this template provides access to the following fields:
++ *base* - **String** with the base URI of the resulting RDF file
++ *namespaces* - **List** of namespaces that the form-designer added, each consisting of:
+  + *prefix* - **String** with the prefix for this namespace
+  + *uri* - **String** with the URI of this namespace
+
+The recommendation for this file is to include the following code:
+```
+@base <{{base}}> .
+@prefix : <{{base}}> .
+{{#namespaces}}
+    @prefix {{prefix}}: <{{uri}}> .
+{{/namespaces}}
+```
+This snippet will define *base* as the base URI and as the empty prefix and define all other namespaces with their respective prefixes.
+
+All namespaces that are used in your templates should be added manually below the mentioned code-snippet in the following form:
+```
+@prefix ex: <http://example.org/> .
+```
+**Don't rely on the form-designer to add the namespaces that you need!**.
+The form-designer is only responsible for adding **additional** namespaces for semantic information that he provides during form design.
