@@ -169,10 +169,10 @@ The following fields are exposed:
   + *isLiteral* - **Boolean** - Flag signalling whether the *value* should be considered a literal or an RDF resource. Typically the model could be used in the following way: 
   ```
     1 {{#semantics.YourMetricName.isLiteral}}
-    2 {{cellEntityIdentifier}} ex:somePredicate "{{semantics.YourMetricName.value}}" .
+    2   {{cellEntityIdentifier}} ex:somePredicate "{{semantics.YourMetricName.value}}" .
     3 {{/semantics.YourMetricName.isLiteral}}
     4 {{^semantics.YourMetricName.isLiteral}}
-    5 {{cellEntityIdentifier}} ex:somePredicate {{semantics.YourMetricName.value}} .
+    5   {{cellEntityIdentifier}} ex:somePredicate {{semantics.YourMetricName.value}} .
     6 {{/semantics.YourMetricName.isLiteral}}
   ```
   This snippet would render line 2 if the value is considered a literal or line 5 if the value is considered an RDF resource.
