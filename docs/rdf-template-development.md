@@ -6,9 +6,9 @@ This setup includes the registration and configuration of the template group and
 It also described hints and best practices to ensure that the resulting file complies with the [RDF/Turtle syntax](https://www.w3.org/TR/turtle/).
 
 ### Registration and configuration
-RDF template groups are registered in the rdfExportTemplateConfig.yml file located in `<your-project-root>/src/main/resources/rdfExport`.
+RDF template groups are registered in the *rdfExportTemplateConfig.yml*-file located in `<your-project-root>/src/main/resources/rdfExport`.
 The file is written in [YAML](https://yaml.org/spec/1.2/spec.html)-Syntax.
-Please keep in mind that this syntax is indentation-sensitive and is using spaces for indentation.
+Please keep in mind that in many cases this syntax is indentation-sensitive and is using spaces for indentation.
 Furthermore, the convention for this configuration-file is to use [camel case](https://en.wikipedia.org/wiki/Camel_case) if any name consists of more than one word.
 
 The first list in this file defines the semantic information, called metrics, that the template groups can make use of.
@@ -20,7 +20,28 @@ The template group itself is a node that has to contain two lists: *optionalMetr
 They should contain the metrics that your template group can process.
 The *requiredMetrics* list should contain the metrics that you deem indispensible for your template, i.e. your template would either not produce valid RDF if this information was missing or the resulting RDF would not make sense.
 The *optionalMetrics* list should then contain the other metrics that your template can process to enrichen the resulting RDF.
-**Both lists have to be added, even if they are empty.**
+
+The following snippet show a valid *rdfExportTemplateConfig.yml*-file:
+
+```
+availableMetrics:
+- Creator
+- Unit
+- Characteristic
+- YourMetricName
+templates:
+  oboe:
+    optionalMetrics:
+      - Creator
+    requiredMetrics:
+      - Characteristic
+      - Unit
+  myNewTemplate:
+    optionalMetrics:
+      - YourMetricName
+```
+
+
 
 ### Necessary files
 There are multiple directories and files that have to be added to the project in order to get your new template group up and running.
@@ -143,25 +164,25 @@ The following fields are exposed:
 + *rowModel* - Same model as in row.ttl.mustache - Contains metadata about the row that contains the current cell.
 + *columnModel* - Same model as in column.ttl.mustache - Contains metadata about the column that contains the current cell.
 + *cellEntityIdentifier* - **String** - Can be used as a subject, predicate or object in an RDF statement to uniquely identify the current cell.
-+ *semantics* - **Map\<String, SemanticsModel>** - This map contains the metrics that you configured in the `rdfExportTemplateConfig.yml`-file. The SemanticsModel for a given metric can be accessed with `semantics.yourMetricName`. The SemanticsModel exposes the following fields:
++ *semantics* - **Map\<String, SemanticsModel>** - This map contains the metrics that you configured in the `rdfExportTemplateConfig.yml`-file. The SemanticsModel for a given metric can be accessed with `semantics.YourMetricName`. The SemanticsModel exposes the following fields:
   + *value* - **String** - The value of the metric.
   + *isLiteral* - **Boolean** - Flag signalling whether the *value* should be considered a literal or an RDF resource. Typically the model could be used in the following way: 
   ```
-    1 {{#semantics.yourMetricName.isLiteral}}
-    2 {{cellEntityIdentifier}} ex:somePredicate "{{semantics.yourMetricName.value}}" .
-    3 {{/semantics.yourMetricName.isLiteral}}
-    4 {{^semantics.yourMetricName.isLiteral}}
-    5 {{cellEntityIdentifier}} ex:somePredicate {{semantics.yourMetricName.value}} .
-    6 {{/semantics.yourMetricName.isLiteral}}
+    1 {{#semantics.YourMetricName.isLiteral}}
+    2 {{cellEntityIdentifier}} ex:somePredicate "{{semantics.YourMetricName.value}}" .
+    3 {{/semantics.YourMetricName.isLiteral}}
+    4 {{^semantics.YourMetricName.isLiteral}}
+    5 {{cellEntityIdentifier}} ex:somePredicate {{semantics.YourMetricName.value}} .
+    6 {{/semantics.YourMetricName.isLiteral}}
   ```
   This snippet would render line 2 if the value is considered a literal or line 5 if the value is considered an RDF resource.
   In this example the only difference are the quotation marks surrounding the literal value but of course more complex distinctions like using different predicates are possible.
 
-  Please be aware that if you marked a metric as optional the *semantics* map might not contain your metric.
+  Please be aware that if you marked a metric as **optional** the *semantics* map might not contain your metric.
   To make sure no incomplete triples are produced you can use the following snippet:
   ```
-    {{#semantics.yourMetricName}}
-    The code in here is only executed if the map contains yourMetricName.
-    {{/semantics.yourMetricName}}
+    {{#semantics.YourMetricName}}
+    The code in here is only executed if the map contains YourMetricName.
+    {{/semantics.YourMetricName}}
   ```
   As always, feel free to check out the existing templates if anything seems unclear.
