@@ -86,15 +86,15 @@ All namespaces that are used in your templates should be added manually below th
 ```
 @prefix ex: <http://example.org/> .
 ```
-**Don't rely on the form-designer to add the namespaces that you need!**.
+**Do not rely on the form-designer to add the namespaces that you need!**
 The form-designer is only responsible for adding **additional** namespaces for semantic information that he provides during form design.
 
 #### toplevel.ttl.mustache
 This file is responsible for defining any RDF statements on the top level of the exportable dataset.
-This template is rendered exactly once for a given export process.
+The template is rendered exactly once for a given export process.
 The model provides access to metadata about the form and the dataset.
 The following fields are exposed:
-+ *toplevelEntityIdentifier* - **String** - Can be used as a unique identifier for the top level of the resulting RDF file.
++ *toplevelEntityIdentifier* - **String** - Can be used as a subject, predicate or object in an RDF statement to uniquely identify the top level of the resulting RDF file.
 + *formId* - **String** - Unique identifier of the form used for data collection.
 + *formName* - **String** - Name of the form used for data collection. Not necessarily unique. Might be empty.
 + *formDescription* - **String** - Description of the form used for data collection. Might be empty.
@@ -106,3 +106,15 @@ The following fields are exposed:
 This template file would usually contain triples that define one or more resources that the other template files can reference.
 The fields exposed by the model can then be attached to these resources.
 Alternatively the template file may be left empty if there is no need for such top level resources.
+
+#### row.ttl.mustache
+This file is responsible for defining RDF statements on the row level of the exportable dataset.
+The template is rendered exactly once for each submission included in the export.
+The model provides access to metadata about the current row.
+The following fields are exposed:
++ *topLevelModel* - Same model as in toplevel.ttl.mustache - Contains metadata about the form and the dataset.
++ *rowEntityIdentifier* - **String** - Can be used as a subject, predicate or object in an RDF statement to uniquely identify the current submission.
++ *rowId* - **String** - Unique identifier of the current submission. Depending on the selection during the start of the export this is either a whole number (starting at 1, incrementing for each row) or a globally unique identifier (UUID), e.g. `uuid:ace1da01-038f-40af-a1fb-d6758d052c36`.
+
+This template file would usually contain triples that define one or more resources per row that the other template files can reference.
+Alternatively the template file may be left empty if there is no need for such row level resources.
