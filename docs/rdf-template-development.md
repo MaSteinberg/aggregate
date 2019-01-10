@@ -89,7 +89,7 @@ The following sections explain the purpose of the files you have to build and th
 This file is responsible for the namespace and prefix definitions.
 The Model for this template provides access to the following fields:
 + *base* - **String** - Base URI of the resulting RDF file
-+ *namespaces* - **List** of namespaces that the form-designer added, each consisting of:
++ *namespaces* - **List\<RdfNamespace>** of namespaces that the form-designer added, each consisting of:
   + *prefix* - **String** - Prefix for this namespace
   + *uri* - **String** - URI of this namespace
 
@@ -186,3 +186,45 @@ The following fields are exposed:
     {{/semantics.YourMetricName}}
   ```
   As always, feel free to check out the existing templates if anything seems unclear.
+
+#### elementTypeCells
+The *elementTypeCells*-folder contains files for all different data types that can be collected by the survey.
+The recommendation for these files is to attach the value(s) of the cell to the RDF-resources you defined in the other template files, using predicates and XSD-Datatypes in a way that is appropriate for the cell's datatype.
+The different files have different models, described in the following sections.
+Please note that all of these models extend the basic cell model used in *cell.ttl.mustache*, so all fields available in the basic model are also available in the datatype-specific files.
+
+##### booleanCell.ttl.mustache, decimalCell.ttl.mustache, integerCell.ttl.mustache, select1Cell.ttl.mustache, stringCell.ttl.mustache
+The models in these files expose the following fields:
++ *cellValue* - **String** - the collected value of the cell.
+
+##### multipleChoiceCell.ttl.mustache
+The model in this file exposes the following fields:
++ *cellValues* - **List\<String>** - List of the selected values.
+
+You can iterate through the list using a snippet like the following:
+```
+{{#cellValues}}
+  "{{.}}"^^xsd:string
+{{/cellValues}}
+```
+
+##### dateCell.ttl.mustache, timeCell.ttl.mustache, dateTimeCell.ttl.mustache
+The models in these files expose the following fields:
++ *date* - **String** - Date that was collected.
++ *time* - **String** - Time that was collected.
+
+While both fields are available in all three files, please note that *time* might not contain a meaningful or even valid date in *dateCell.ttl.mustache* and accordingly for *date* in *timeCell.ttl.mustache*.
+
+##### geolocationCell.ttl.mustache
+The model in this file exposes the following fields:
++ *location* - **Location** - The location that was collected. This object in turn exposes the fields:
+  + *latitude* - **String** - The latitude of the collected location.
+  + *longitude* - **String** - The longitude of the collected location.
+  + *altitude* - **String** - The altitude of the collected location.
+  + *accuracy* - **String** - The accuracy of the collected location.
+
+##### geotraceCell.ttl.mustache, geoshapeCell.ttl.mustache
+The models in these files expose the following fields:
++ *locationList* - **List\<GeotraceElement>** - List of the collected locations. Each element exposes the fields:
+  + *pathElementIndex* - **Integer** - Ordinal number of this location
+  + *location* - **Location** - The collected location. For the fields that this object exposes, please refer to the geolocationCell.ttl.mustache section
