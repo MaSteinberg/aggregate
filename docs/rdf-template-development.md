@@ -111,6 +111,7 @@ Alternatively the template file may be left empty if there is no need for such t
 This file is responsible for defining RDF statements on the row level of the exportable dataset.
 The template is rendered exactly once for each submission included in the export.
 The model provides access to metadata about the current row.
+It also includes the toplevel-model in case any toplevel information should be processed at the row level.
 The following fields are exposed:
 + *topLevelModel* - Same model as in toplevel.ttl.mustache - Contains metadata about the form and the dataset.
 + *rowEntityIdentifier* - **String** - Can be used as a subject, predicate or object in an RDF statement to uniquely identify the current submission.
@@ -118,3 +119,49 @@ The following fields are exposed:
 
 This template file would usually contain triples that define one or more resources per row that the other template files can reference.
 Alternatively the template file may be left empty if there is no need for such row level resources.
+
+#### column.ttl.mustache
+This file is responsible for defining RDF statements on the column level of the exportable dataset.
+The template is render exactly once for each column (i.e. field collected by the survey) included in the export.
+The model provides access to metadata about the current column.
+It also includes the toplevel-model in case any toplevel information should be processed at the column level.
+The following fields are exposed:
++ *topLevelModel* - Same model as in toplevel.ttl.mustache - Contains metadata about the form and the dataset.
++ *columnEntityIdentifier* - **String** - Can be used as a subject, predicate or object in an RDF statement to uniquely identify the current column.
++ *columnHeader* - **String** - Unique name of the current column. This might differ from the **label** displayed during the survey.
+
+This template file would usually contain triples that define one or more resources per column that the other template files can reference.
+Alternatively the template file may be left empty if there is no need for such column level resources.
+
+#### cell.ttl.mustache
+This file is the first template that is rendered for each of the data elements of the exportable dataset.
+It is rendered exactly once for each cell (i.e. data element), **regardless of the datatype**.
+Thus the model provides access to metadata of the cell that is independent from the datatype.
+It also includes both the column- and row-models in case any of the information contained in those should be processed on the cell level.
+Remember that both the column- and row-models also allow access to the toplevel-model.
+The following fields are exposed:
++ *rowModel* - Same model as in row.ttl.mustache - Contains metadata about the row that contains the current cell.
++ *columnModel* - Same model as in column.ttl.mustache - Contains metadata about the column that contains the current cell.
++ *cellEntityIdentifier* - **String** - Can be used as a subject, predicate or object in an RDF statement to uniquely identify the current cell.
++ *semantics* - **Map\<String, SemanticsModel>** - This map contains the metrics that you configured in the `rdfExportTemplateConfig.yml`-file. The SemanticsModel for a given metric can be accessed with `semantics.yourMetricName`. The SemanticsModel exposes the following fields:
+  + *value* - **String** - The value of the metric.
+  + *isLiteral* - **Boolean** - Flag signalling whether the *value* should be considered a literal or an RDF resource. Typically the model could be used in the following way: 
+  ```
+    1 {{#semantics.yourMetricName.isLiteral}}
+    2 {{cellEntityIdentifier}} ex:somePredicate "{{semantics.yourMetricName.value}}" .
+    3 {{/semantics.yourMetricName.isLiteral}}
+    4 {{^semantics.yourMetricName.isLiteral}}
+    5 {{cellEntityIdentifier}} ex:somePredicate {{semantics.yourMetricName.value}} .
+    6 {{/semantics.yourMetricName.isLiteral}}
+  ```
+  This snippet would render line 2 if the value is considered a literal or line 5 if the value is considered an RDF resource.
+  In this example the only difference are the quotation marks surrounding the literal value but of course more complex distinctions like using different predicates are possible.
+
+  Please be aware that if you marked a metric as optional the *semantics* map might not contain your metric.
+  To make sure no incomplete triples are produced you can use the following snippet:
+  ```
+    {{#semantics.yourMetricName}}
+    The code in here is only executed if the map contains yourMetricName.
+    {{/semantics.yourMetricName}}
+  ```
+  As always, feel free to check out the existing templates if anything seems unclear.
