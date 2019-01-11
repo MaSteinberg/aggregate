@@ -48,6 +48,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.opendatakit.aggregate.datamodel.FormElementModel.ElementType.*;
@@ -57,8 +58,6 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
 
     private ElementFormatter elemFormatter;
     private List<FormElementModel> columnFormElementModels;
-    private List<String> headerNames;
-    List<FormElementModel.ElementType> headerTypes;
     private final IForm form;
     private final PrintWriter output;
     private List<FormElementNamespace> namespaces;
@@ -103,23 +102,10 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
         headerGenerator.processForHeaderInfo(form.getTopLevelGroupElement());
         columnFormElementModels = headerGenerator.getIncludedElements();
         namespaces = headerGenerator.includedFormElementNamespaces();
-        headerNames = headerFormatter.generateHeaders(form, form.getTopLevelGroupElement(), columnFormElementModels); //TODO This most likely doesn't include the filter
-        headerTypes = headerFormatter.getHeaderTypes(); //TODO this needs the same size as headerNames or we get a problem
         elemFormatter = new BasicElementFormatter(false, true, true, false);
 
-        //Workaround: headerNames and headerTypes have extra columns for GEOPOINTs altitude and accuracy while our elementFormatter just
-        //includes them in a single String, split by ", " (which is easier to process)
-        //So we remove the additional entries from headerNames and headerTypes
-        int col = 0;
-        while(col < headerNames.size()){
-            if(headerTypes.get(col) == GEOPOINT){
-                headerTypes.remove(col + 2);
-                headerTypes.remove(col + 1);
-                headerNames.remove(col + 2);
-                headerNames.remove(col + 1);
-            }
-            col++;
-        }
+        //TODO remove
+        List<String> tmp = columnFormElementModels.stream().map(FormElementModel::getElementName).collect(Collectors.toList());
 
         //Initialize Mustache & compile the templates
         String templateGroupRoot = "rdfExport/mustache_templates/" + this.templateGroup;
@@ -218,8 +204,9 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
 
         //Columns
         output.append("#Each column describes one observation\n");
-        for(int col = 0; col < headerNames.size(); col++){
-            String colName = headerNames.get(col);
+        for(int col = 0; col < columnFormElementModels.size(); col++){
+            String colName = columnFormElementModels.get(col).getElementName();
+            FormElementModel.ElementType elementType = columnFormElementModels.get(col).getElementType();
             //InstanceID is a special case - it's not to be considered a field for the RDF export
             if(colName.equals("instanceID")){
                 //Adding a null-value to the list of column models makes indexing easier in the cells-section
@@ -229,7 +216,7 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
                 String columnEntityIdentifier = "";
                 try {
                     identifierWriter = new PrintWriter(new OutputStreamWriter(identifierStream, HtmlConsts.UTF8_ENCODE));
-                    columnIdentifierMustache.execute(identifierWriter, headerNames.get(col));
+                    columnIdentifierMustache.execute(identifierWriter, colName);
                     identifierWriter.close();
                     columnEntityIdentifier = identifierStream.toString();
                     identifierStream.reset();
@@ -238,7 +225,7 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
                 }
 
                 //For each column create the ColumnModel and fill the template
-                ColumnModel columnModel = modelBuilder.buildColumnModel(toplevelModel, colName, headerTypes.get(col), columnEntityIdentifier);
+                ColumnModel columnModel = modelBuilder.buildColumnModel(toplevelModel, colName, elementType, columnEntityIdentifier);
                 columnModels.add(columnModel);
                 columnMustache.execute(output, columnModel);
             }
@@ -287,10 +274,6 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
                 e.printStackTrace();
             }
 
-            if(formattedValues.size() != headerTypes.size() || formattedValues.size() != headerNames.size()){
-                System.out.println("Houston, we have a problem!"); //TODO Remove
-            }
-
             //For each row create the RowModel and fill the template
             RowModel rowModel = modelBuilder.buildRowModel(toplevelModel, formattedValues, columnFormElementModels, rowId, rowEntityIdentifier, this.requireRowUUIDs);
             rowMustache.execute(output, rowModel);
@@ -332,7 +315,7 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
                         }
                     }
 
-                    FormElementModel.ElementType elementType = headerTypes.get(columnNumber);
+                    FormElementModel.ElementType elementType = columnFormElementModels.get(columnNumber).getElementType();
                     AbstractCellModel cellModel = modelBuilder.buildCellModel(columnModels.get(columnNumber), rowModel, cellValue, cellEntityIdentifier, elementType, semanticsForGivenRow);
                     //Use the generic cell-template
                     genericCellMustache.execute(output, cellModel);
