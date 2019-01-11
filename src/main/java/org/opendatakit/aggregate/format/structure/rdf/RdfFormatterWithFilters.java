@@ -248,8 +248,13 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
     public void processSubmissionSegment(List<Submission> submissions, CallingContext cc) throws ODKDatastoreException {
         //Rows
         for (Submission sub : submissions) {
-            Row row = sub.getFormattedValuesAsRow(namespaces, columnFormElementModelsFiltered, elemFormatter, false, cc);
-            List<String> formattedValues = row.getFormattedValues();
+            //Get the values that we want to export
+            Row rowFiltered = sub.getFormattedValuesAsRow(namespaces, columnFormElementModelsFiltered, elemFormatter, false, cc);
+            List<String> formattedValuesFiltered = rowFiltered.getFormattedValues();
+
+            //We also need the unfiltered values to correctly process column-references in the semantics
+            Row rowUnfiltered = sub.getFormattedValuesAsRow(namespaces, columnFormElementModelsUnfiltered, elemFormatter, false, cc);
+            List<String> formattedValuesUnfiltered = rowUnfiltered.getFormattedValues();
 
             //Generate row identifier via template
             String rowId = "";
@@ -258,7 +263,7 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
                 for(int i = 0; i < columnFormElementModelsFiltered.size(); i++){
                     String header = columnFormElementModelsFiltered.get(i).getElementName();
                     if (header.equals("instanceID"))
-                        rowId = formattedValues.get(i);
+                        rowId = formattedValuesFiltered.get(i);
                 }
             } else{
                 //If we don't require globally unique row IDs we can use simple numbers
@@ -279,12 +284,12 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
             }
 
             //For each row create the RowModel and fill the template
-            RowModel rowModel = modelBuilder.buildRowModel(toplevelModel, formattedValues, columnFormElementModelsFiltered, rowId, rowEntityIdentifier, this.requireRowUUIDs);
+            RowModel rowModel = modelBuilder.buildRowModel(toplevelModel, formattedValuesFiltered, columnFormElementModelsFiltered, rowId, rowEntityIdentifier, this.requireRowUUIDs);
             rowMustache.execute(output, rowModel);
 
             //Cells
             int columnNumber = 0;
-            for(String cellValue : formattedValues){
+            for(String cellValue : formattedValuesFiltered){
                 String columnName = columnFormElementModelsFiltered.get(columnNumber).getElementName();
                 //InstanceID is a special case - it's not to be considered a field for the RDF export
                 if(!columnName.equals("instanceID")) {
@@ -304,7 +309,7 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
                     //For each semantic metric that is referencing another column we have to replace the _col_<columnName>
                     //with the respective value of the column
                     Map<String, String> columnSemantics = semantics.get(columnName);
-                    //We need a (shallow) copy of the semantics to adapt the values for the given row
+                    //We need a copy (shallow suffices here) of the semantics to adapt the values for the given row
                     Map<String, String> semanticsForGivenRow = new HashMap<>(columnSemantics);
                     for(Map.Entry<String, String> entry : semanticsForGivenRow.entrySet()){
                         if(entry.getValue().startsWith("_col_")){
@@ -313,7 +318,7 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
                             int index = IntStream.range(0, columnFormElementModelsUnfiltered.size())
                                     .filter(i -> columnFormElementModelsUnfiltered.get(i).getElementName().equals(referenceColumn))
                                     .findFirst().orElseThrow(() -> new ODKDatastoreException("Semantic information is referencing the non-existing column " + referenceColumn));
-                            String referenceValue = formattedValues.get(index);
+                            String referenceValue = formattedValuesUnfiltered.get(index);
                             entry.setValue(referenceValue);
                         }
                     }
