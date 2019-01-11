@@ -13,13 +13,15 @@ public class ModelBuilder {
 
     public TopLevelModel buildTopLevelModel(IForm form, String toplevelIdentifier){
         //Extract the necessary information from the IForm
-        String formId = form.getFormId();
-        String name = form.getViewableName();
-        String description = form.getDescription();
-        String creationDate = form.getCreationDate().toString();
-        String creationUser = form.getCreationUser();
-        String lastUpdate = form.getLastUpdateDate().toString();
-        String version = form.getMajorMinorVersionString();
+        //The getters are inconsistent in whether or not they can return null so
+        //I'll make sure we have empty Strings instead off null
+        String formId = (form.getFormId() == null) ? "" : form.getFormId();
+        String name = (form.getViewableName() == null) ? "": form.getViewableName();
+        String description = (form.getDescription() == null) ? "" : form.getDescription();
+        String creationDate = (form.getCreationDate() == null) ? "" : form.getCreationDate().toString();
+        String creationUser = (form.getCreationUser() == null) ? "" : form.getCreationUser();
+        String lastUpdate = (form.getLastUpdateDate() == null) ? "" : form.getLastUpdateDate().toString();
+        String version = (form.getMajorMinorVersionString() == null) ? "" : form.getMajorMinorVersionString();
 
         return new TopLevelModel(toplevelIdentifier, formId, name, description, creationDate, creationUser, lastUpdate, version);
     }
