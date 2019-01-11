@@ -24,6 +24,7 @@ import org.opendatakit.aggregate.client.form.RdfExportOptions;
 import org.opendatakit.aggregate.client.form.TemplateMetrics;
 import org.opendatakit.aggregate.client.submission.SubmissionUISummary;
 import org.opendatakit.aggregate.constants.common.FormElementNamespace;
+import org.opendatakit.aggregate.constants.common.UIConsts;
 import org.opendatakit.aggregate.datamodel.FormElementModel;
 import org.opendatakit.aggregate.form.IForm;
 import org.opendatakit.aggregate.format.Row;
@@ -57,7 +58,8 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
     private final Logger logger = LoggerFactory.getLogger(RdfFormatterWithFilters.class);
 
     private ElementFormatter elemFormatter;
-    private List<FormElementModel> columnFormElementModels;
+    private List<FormElementModel> columnFormElementModelsFiltered;
+    private List<FormElementModel> columnFormElementModelsUnfiltered;
     private final IForm form;
     private final PrintWriter output;
     private List<FormElementNamespace> namespaces;
@@ -96,16 +98,18 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
         this.templateGroup = templateGroup;
 
         SubmissionUISummary summary = new SubmissionUISummary(form.getViewableName());
-        HeaderFormatter headerFormatter = new BasicHeaderFormatter(false, true, true);
-
         GenerateHeaderInfo headerGenerator = new GenerateHeaderInfo(filterGroup, summary, form);
         headerGenerator.processForHeaderInfo(form.getTopLevelGroupElement());
-        columnFormElementModels = headerGenerator.getIncludedElements();
+        columnFormElementModelsFiltered = headerGenerator.getIncludedElements();
         namespaces = headerGenerator.includedFormElementNamespaces();
         elemFormatter = new BasicElementFormatter(false, true, true, false);
 
-        //TODO remove
-        List<String> tmp = columnFormElementModels.stream().map(FormElementModel::getElementName).collect(Collectors.toList());
+        //We have to store the unfiltered FormElementModels because the semantics might reference a column that
+        //is removed by the filters
+        FilterGroup noFilter = new FilterGroup(UIConsts.FILTER_NONE, this.form.getFormId(), null);
+        GenerateHeaderInfo headerGeneratorUnfiltered = new GenerateHeaderInfo(noFilter, summary, form);
+        headerGeneratorUnfiltered.processForHeaderInfo(form.getTopLevelGroupElement());
+        columnFormElementModelsUnfiltered = headerGeneratorUnfiltered.getIncludedElements();
 
         //Initialize Mustache & compile the templates
         String templateGroupRoot = "rdfExport/mustache_templates/" + this.templateGroup;
@@ -162,7 +166,7 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
         //Check if we have all required information (fail-fast)
         if(requiredMetrics != null) {
             for(String requiredMetric : requiredMetrics) {
-                for (FormElementModel col : this.columnFormElementModels) {
+                for (FormElementModel col : this.columnFormElementModelsFiltered) {
                     //"instanceID" is a special case - it's automatically generated and thus semantic information
                     //can't be entered by the form author
                     if(!col.getElementName().equals("instanceID")){
@@ -204,9 +208,9 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
 
         //Columns
         output.append("#Each column describes one observation\n");
-        for(int col = 0; col < columnFormElementModels.size(); col++){
-            String colName = columnFormElementModels.get(col).getElementName();
-            FormElementModel.ElementType elementType = columnFormElementModels.get(col).getElementType();
+        for(int col = 0; col < columnFormElementModelsFiltered.size(); col++){
+            String colName = columnFormElementModelsFiltered.get(col).getElementName();
+            FormElementModel.ElementType elementType = columnFormElementModelsFiltered.get(col).getElementType();
             //InstanceID is a special case - it's not to be considered a field for the RDF export
             if(colName.equals("instanceID")){
                 //Adding a null-value to the list of column models makes indexing easier in the cells-section
@@ -244,15 +248,15 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
     public void processSubmissionSegment(List<Submission> submissions, CallingContext cc) throws ODKDatastoreException {
         //Rows
         for (Submission sub : submissions) {
-            Row row = sub.getFormattedValuesAsRow(namespaces, columnFormElementModels, elemFormatter, false, cc);
+            Row row = sub.getFormattedValuesAsRow(namespaces, columnFormElementModelsFiltered, elemFormatter, false, cc);
             List<String> formattedValues = row.getFormattedValues();
 
             //Generate row identifier via template
             String rowId = "";
             if(this.requireRowUUIDs){
                 //Use the header names to identify the fields that contain row-related metadata
-                for(int i = 0; i < columnFormElementModels.size(); i++){
-                    String header = columnFormElementModels.get(i).getElementName();
+                for(int i = 0; i < columnFormElementModelsFiltered.size(); i++){
+                    String header = columnFormElementModelsFiltered.get(i).getElementName();
                     if (header.equals("instanceID"))
                         rowId = formattedValues.get(i);
                 }
@@ -275,13 +279,13 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
             }
 
             //For each row create the RowModel and fill the template
-            RowModel rowModel = modelBuilder.buildRowModel(toplevelModel, formattedValues, columnFormElementModels, rowId, rowEntityIdentifier, this.requireRowUUIDs);
+            RowModel rowModel = modelBuilder.buildRowModel(toplevelModel, formattedValues, columnFormElementModelsFiltered, rowId, rowEntityIdentifier, this.requireRowUUIDs);
             rowMustache.execute(output, rowModel);
 
             //Cells
             int columnNumber = 0;
             for(String cellValue : formattedValues){
-                String columnName = columnFormElementModels.get(columnNumber).getElementName();
+                String columnName = columnFormElementModelsFiltered.get(columnNumber).getElementName();
                 //InstanceID is a special case - it's not to be considered a field for the RDF export
                 if(!columnName.equals("instanceID")) {
                     //Generate cell identifier via template
@@ -305,17 +309,16 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
                     for(Map.Entry<String, String> entry : semanticsForGivenRow.entrySet()){
                         if(entry.getValue().startsWith("_col_")){
                             String referenceColumn = StringUtils.removeStart(entry.getValue(), "_col_");
-                            //Find index of the referenced column
-                            //Adapted from https://stackoverflow.com/a/43605785
-                            int index = IntStream.range(0, columnFormElementModels.size())
-                                    .filter(i -> columnFormElementModels.get(i).getElementName().equals(referenceColumn))
+                            //Find index of the referenced column (using the unfiltered FormElementModels here)
+                            int index = IntStream.range(0, columnFormElementModelsUnfiltered.size())
+                                    .filter(i -> columnFormElementModelsUnfiltered.get(i).getElementName().equals(referenceColumn))
                                     .findFirst().orElseThrow(() -> new ODKDatastoreException("Semantic information is referencing the non-existing column " + referenceColumn));
                             String referenceValue = formattedValues.get(index);
                             entry.setValue(referenceValue);
                         }
                     }
 
-                    FormElementModel.ElementType elementType = columnFormElementModels.get(columnNumber).getElementType();
+                    FormElementModel.ElementType elementType = columnFormElementModelsFiltered.get(columnNumber).getElementType();
                     AbstractCellModel cellModel = modelBuilder.buildCellModel(columnModels.get(columnNumber), rowModel, cellValue, cellEntityIdentifier, elementType, semanticsForGivenRow);
                     //Use the generic cell-template
                     genericCellMustache.execute(output, cellModel);
