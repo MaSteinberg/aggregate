@@ -1,11 +1,11 @@
-availableMetrics:
+availableProperties:
 - Creator
 - Unit
 - Characteristic
 templates:
   oboe:
-    optionalMetrics:
+    optionalProperties:
     - Creator
-    requiredMetrics:
+    requiredProperties:
     - Characteristic
     - Unit

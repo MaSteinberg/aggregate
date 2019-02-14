@@ -19,14 +19,15 @@ public abstract class AbstractCellModel {
         //containing that information
         this.semantics = new HashMap<>();
         for(Map.Entry<String, String> entry : semanticsValueMap.entrySet()){
-            SemanticsModel metric;
+            SemanticsModel property;
             if(entry.getValue().startsWith("_onto_")){
-                metric = new SemanticsModel(StringUtils.removeStart(entry.getValue(), "_onto_"), false);
-
+                //Remove _onto_ prefix and replace "__" with ":" since ":" is not allowed in single-choice-questions
+                String val = StringUtils.removeStart(entry.getValue(), "_onto_").replaceFirst("__", ":");
+                property = new SemanticsModel(val, false);
             } else{
-                metric = new SemanticsModel(entry.getValue(), true);
+                property = new SemanticsModel(entry.getValue(), true);
             }
-            this.semantics.put(entry.getKey(), metric);
+            this.semantics.put(entry.getKey(), property);
         }
     }
 }

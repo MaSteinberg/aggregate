@@ -20,8 +20,7 @@ import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.opendatakit.aggregate.client.filter.FilterGroup;
-import org.opendatakit.aggregate.client.form.RdfExportOptions;
-import org.opendatakit.aggregate.client.form.TemplateMetrics;
+import org.opendatakit.aggregate.client.form.TemplateProperties;
 import org.opendatakit.aggregate.client.submission.SubmissionUISummary;
 import org.opendatakit.aggregate.constants.common.FormElementNamespace;
 import org.opendatakit.aggregate.constants.common.UIConsts;
@@ -31,8 +30,6 @@ import org.opendatakit.aggregate.format.Row;
 import org.opendatakit.aggregate.format.SubmissionFormatter;
 import org.opendatakit.aggregate.format.element.BasicElementFormatter;
 import org.opendatakit.aggregate.format.element.ElementFormatter;
-import org.opendatakit.aggregate.format.header.BasicHeaderFormatter;
-import org.opendatakit.aggregate.format.header.HeaderFormatter;
 import org.opendatakit.aggregate.format.structure.rdf.models.*;
 import org.opendatakit.aggregate.odktables.rdf.SemanticsTable;
 import org.opendatakit.aggregate.server.GenerateHeaderInfo;
@@ -49,7 +46,6 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.opendatakit.aggregate.datamodel.FormElementModel.ElementType.*;
@@ -64,7 +60,7 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
     private final PrintWriter output;
     private List<FormElementNamespace> namespaces;
     private String templateGroup;
-    private Map<String, Map<String, String>> semantics; //(fieldName -> (metricName -> metricValue))
+    private Map<String, Map<String, String>> semantics; //(fieldName -> (propertyName -> propertyValue))
 
     private String baseURI;
     private boolean requireRowUUIDs;
@@ -155,26 +151,26 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
             } else{
                 tmp = semantics.get(fieldName);
             }
-            tmp.put(t.getMetricName(), t.getMetricValue());
+            tmp.put(t.getPropertyName(), t.getPropertyValue());
             semantics.put(fieldName, tmp);
         }
 
         //Grab the template config
-        TemplateMetrics templateConfig = RdfTemplateConfigManager.getRdfExportOptions().getTemplateMetrics(this.templateGroup);
-        List<String> requiredMetrics = templateConfig.getRequiredMetrics();
+        TemplateProperties templateConfig = RdfTemplateConfigManager.getRdfExportOptions().getTemplateMetrics(this.templateGroup);
+        List<String> requiredProperties = templateConfig.getRequiredProperties();
 
         //Check if we have all required information (fail-fast)
-        if(requiredMetrics != null) {
-            for(String requiredMetric : requiredMetrics) {
+        if(requiredProperties != null) {
+            for(String requiredProperty : requiredProperties) {
                 for (FormElementModel col : this.columnFormElementModelsFiltered) {
                     //"instanceID" is a special case - it's automatically generated and thus semantic information
                     //can't be entered by the form author
                     if(!col.getElementName().equals("instanceID")){
                         Map<String, String> semanticsForColumn = semantics.get(col.getElementName());
                         if (    semanticsForColumn == null ||
-                                !(semanticsForColumn.containsKey(requiredMetric)) ||
-                                semanticsForColumn.get(requiredMetric) == null ||
-                                semanticsForColumn.get(requiredMetric).trim().length() == 0){
+                                !(semanticsForColumn.containsKey(requiredProperty)) ||
+                                semanticsForColumn.get(requiredProperty) == null ||
+                                semanticsForColumn.get(requiredProperty).trim().length() == 0){
                             throw new ODKDatastoreException("Missing required semantic information for field " + col.getElementName());
                         }
                     }
@@ -306,7 +302,7 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
                         e.printStackTrace();
                     }
 
-                    //For each semantic metric that is referencing another column we have to replace the _col_<columnName>
+                    //For each semantic property that is referencing another column we have to replace the _col_<columnName>
                     //with the respective value of the column
                     Map<String, String> columnSemantics = semantics.get(columnName);
                     //We need a copy (shallow suffices here) of the semantics to adapt the values for the given row

@@ -24,10 +24,10 @@ public class SemanticsTable extends CommonFieldsBase {
     private static final DataField FIELD_NAME = new DataField("FIELD_NAME", DataField.DataType.STRING,
             false, PersistConsts.DEFAULT_MAX_STRING_LENGTH);
 
-    private static final DataField METRIC_NAME = new DataField("METRIC_NAME", DataField.DataType.STRING,
+    private static final DataField PROPERTY_NAME = new DataField("PROPERTY_NAME", DataField.DataType.STRING,
             false, PersistConsts.DEFAULT_MAX_STRING_LENGTH);
 
-    private static final DataField METRIC_VALUE = new DataField("METRIC_VALUE", DataField.DataType.STRING,
+    private static final DataField PROPERTY_VALUE = new DataField("PROPERTY_VALUE", DataField.DataType.STRING,
             false, PersistConsts.DEFAULT_MAX_STRING_LENGTH);
 
     private static SemanticsTable relation = null;
@@ -42,8 +42,8 @@ public class SemanticsTable extends CommonFieldsBase {
 
         fieldList.add(FORM_ID);
         fieldList.add(FIELD_NAME);
-        fieldList.add(METRIC_NAME);
-        fieldList.add(METRIC_VALUE);
+        fieldList.add(PROPERTY_NAME);
+        fieldList.add(PROPERTY_VALUE);
     }
 
     /**
@@ -83,23 +83,23 @@ public class SemanticsTable extends CommonFieldsBase {
         }
     }
 
-    public String getMetricName(){
-        return getStringField(METRIC_NAME);
+    public String getPropertyName(){
+        return getStringField(PROPERTY_NAME);
     }
 
-    public void setMetricName(String value){
-        if(!setStringField(METRIC_NAME, value)){
-            throw new IllegalStateException("Overflow MetricName");
+    public void setPropertyName(String value){
+        if(!setStringField(PROPERTY_NAME, value)){
+            throw new IllegalStateException("Overflow PropertyName");
         }
     }
 
-    public String getMetricValue(){
-        return getStringField(METRIC_VALUE);
+    public String getPropertyValue(){
+        return getStringField(PROPERTY_VALUE);
     }
 
-    public void setMetricValue(String value){
-        if(!setStringField(METRIC_VALUE, value)){
-            throw new IllegalStateException("Overflow MetricValue");
+    public void setPropertyValue(String value){
+        if(!setStringField(PROPERTY_VALUE, value)){
+            throw new IllegalStateException("Overflow PropertyValue");
         }
     }
 
@@ -117,7 +117,7 @@ public class SemanticsTable extends CommonFieldsBase {
     }
 
     // Persists an entity with the given parameters in the Semantics-DB-Table
-    public static final SemanticsTable assertSemantics(String formId, String fieldName, String metricName, String metricValue, CallingContext cc) throws ODKDatastoreException{
+    public static final SemanticsTable assertSemantics(String formId, String fieldName, String propertyName, String propertyValue, CallingContext cc) throws ODKDatastoreException{
         Datastore ds = cc.getDatastore();
         User user = cc.getCurrentUser();
 
@@ -126,8 +126,8 @@ public class SemanticsTable extends CommonFieldsBase {
         st = ds.createEntityUsingRelation(stRelation, user);
         st.setFormId(formId);
         st.setFieldName(fieldName);
-        st.setMetricName(metricName);
-        st.setMetricValue(metricValue);
+        st.setPropertyName(propertyName);
+        st.setPropertyValue(propertyValue);
         ds.putEntity(st, user);
 
         return st;

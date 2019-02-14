@@ -9,34 +9,34 @@ import java.util.Set;
 public class RdfExportOptions implements Serializable {
     private static final long serialVersionUID = 3805983057947175416L;
 
-    private List<String> availableMetrics;
-    private Map<String, TemplateMetrics> templates;
+    private List<String> availableProperties;
+    private Map<String, TemplateProperties> templates;
 
     // Getters and Setters
-    public void setTemplates(Map<String, TemplateMetrics> templates) {
+    public void setTemplates(Map<String, TemplateProperties> templates) {
         this.templates = templates;
     }
 
-    public Map<String, TemplateMetrics> getTemplates() {
+    public Map<String, TemplateProperties> getTemplates() {
         return templates;
     }
 
-    public void setAvailableMetrics(List<String> availableMetrics) {
-        this.availableMetrics = availableMetrics;
+    public void setAvailableProperties(List<String> availableProperties) {
+        this.availableProperties = availableProperties;
     }
 
-    public List<String> getAvailableMetrics() {
-        return availableMetrics;
+    public List<String> getAvailableProperties() {
+        return availableProperties;
     }
 
-    public List<String> getOptionalMetrics(String templateName){
+    public List<String> getOptionalProperties(String templateName){
         //Returns null if "templateName" is not registered
-        return this.templates.get(templateName).getOptionalMetrics();
+        return this.templates.get(templateName).getOptionalProperties();
     }
 
     public List<String> getRequiredMetrics(String templateName){
         //Returns null if "templateName" is not registered
-        return this.templates.get(templateName).getRequiredMetrics();
+        return this.templates.get(templateName).getRequiredProperties();
     }
 
     // Utility function to conveniently get the List of names of all registered templates
@@ -48,7 +48,7 @@ public class RdfExportOptions implements Serializable {
 
     // Utility function returning only the information relevant to a given template name
     @JsonIgnore
-    public TemplateMetrics getTemplateMetrics(String templateName){
+    public TemplateProperties getTemplateMetrics(String templateName){
         return this.templates.get(templateName);
     }
 }
