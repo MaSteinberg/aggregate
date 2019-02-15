@@ -1,11 +1,6 @@
 availableProperties:
-- Creator
-- Unit
-- Characteristic
+  - Creator
+  - Unit
+  - Characteristic
 templates:
-  oboe:
-    optionalProperties:
-    - Creator
-    requiredProperties:
-    - Characteristic
-    - Unit
+  - oboe

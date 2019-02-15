@@ -2,6 +2,7 @@ package org.opendatakit.aggregate.client.form;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -10,45 +11,40 @@ public class RdfExportOptions implements Serializable {
     private static final long serialVersionUID = 3805983057947175416L;
 
     private List<String> availableProperties;
-    private Map<String, TemplateProperties> templates;
+    private Map<String, RdfTemplateConfig> templates;
 
-    // Getters and Setters
-    public void setTemplates(Map<String, TemplateProperties> templates) {
-        this.templates = templates;
-    }
+    //Necessary so that GWT can properly (de-)serialize the object
+    private RdfExportOptions() {}
 
-    public Map<String, TemplateProperties> getTemplates() {
-        return templates;
-    }
-
-    public void setAvailableProperties(List<String> availableProperties) {
+    public RdfExportOptions(List<String> availableProperties, Map<String, RdfTemplateConfig> templates) {
         this.availableProperties = availableProperties;
+        this.templates = templates;
     }
 
     public List<String> getAvailableProperties() {
         return availableProperties;
     }
 
-    public List<String> getOptionalProperties(String templateName){
-        //Returns null if "templateName" is not registered
-        return this.templates.get(templateName).getOptionalProperties();
+    public Map<String, RdfTemplateConfig> getTemplates() {
+        return templates;
     }
 
-    public List<String> getRequiredMetrics(String templateName){
-        //Returns null if "templateName" is not registered
-        return this.templates.get(templateName).getRequiredProperties();
-    }
-
-    // Utility function to conveniently get the List of names of all registered templates
-    // Should be ignored during both Serialization and Deserialization
     @JsonIgnore
-    public Set<String> getRegisteredTemplateList(){
+    public Set<String> getRegisteredTemplateIds(){
         return this.templates.keySet();
     }
 
-    // Utility function returning only the information relevant to a given template name
     @JsonIgnore
-    public TemplateProperties getTemplateMetrics(String templateName){
-        return this.templates.get(templateName);
+    public List<String> getRegisteredTemplatesDisplayNames(){
+        List<String> res = new ArrayList<>();
+        for(RdfTemplateConfig config : templates.values()){
+            res.add(config.getDisplayName());
+        }
+        return res;
+    }
+
+    @JsonIgnore
+    public String getTemplateDisplayName(String templateId){
+        return this.templates.get(templateId).getDisplayName();
     }
 }

@@ -20,6 +20,7 @@ import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.opendatakit.aggregate.client.filter.FilterGroup;
+import org.opendatakit.aggregate.client.form.RdfTemplateConfig;
 import org.opendatakit.aggregate.client.form.TemplateProperties;
 import org.opendatakit.aggregate.client.submission.SubmissionUISummary;
 import org.opendatakit.aggregate.constants.common.FormElementNamespace;
@@ -156,9 +157,11 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
         }
 
         //Grab the template config
-        TemplateProperties templateConfig = RdfTemplateConfigManager.getRdfExportOptions().getTemplateMetrics(this.templateGroup);
-        List<String> requiredProperties = templateConfig.getRequiredProperties();
-
+        RdfTemplateConfig templateConfig = RdfTemplateConfigManager.getRdfTemplateConfig(this.templateGroup);
+        List<String> requiredProperties = null;
+        if(templateConfig.getTemplateProperties() != null){
+            requiredProperties = templateConfig.getTemplateProperties().getRequiredProperties();
+        }
         //Check if we have all required information (fail-fast)
         if(requiredProperties != null) {
             for(String requiredProperty : requiredProperties) {

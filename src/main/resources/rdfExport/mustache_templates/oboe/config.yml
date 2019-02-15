@@ -1,0 +1,7 @@
+displayName: Extensible Observation Ontology
+templateProperties:
+  optionalProperties:
+    - Creator
+  requiredProperties:
+    - Characteristic
+    - Unit
