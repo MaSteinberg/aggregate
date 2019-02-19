@@ -65,6 +65,11 @@ public final class ServletConsts {
   public static final String FORM_ID = "formId";
 
   /**
+   * The name of the property that includes the semantic property name
+   */
+  public static final String SEMANTIC_PROPERTY = "semanticProperty";
+
+  /**
    * For OdkTables:
    * The argument for a tableId.
    */

@@ -331,6 +331,15 @@
     </servlet-mapping>
 
     <servlet>
+        <servlet-name>semanticPropertyAutocomplete</servlet-name>
+        <servlet-class>org.opendatakit.aggregate.servlet.SemanticPropertyAutocompleteServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>semanticPropertyAutocomplete</servlet-name>
+        <url-pattern>/semanticAutocomplete</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
         <servlet-name>formXml</servlet-name>
         <servlet-class>org.opendatakit.aggregate.servlet.FormXmlServlet</servlet-class>
     </servlet>

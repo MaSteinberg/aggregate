@@ -3,10 +3,36 @@ availableProperties:
     Endpoint:
     Query:
   Unit:
-    Endpoint: http://www.example.org
-    Query: asdasd
+    Endpoint: http://192.168.0.8:7200/repositories/om
+    Query: |-
+      PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+      PREFIX : <http://ecoinformatics.org/oboe/oboe.1.2/oboe.owl#>
+      PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+      PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+      SELECT DISTINCT ?uri ?displayName
+      WHERE {
+          ?uri rdf:type om:Unit .
+          OPTIONAL{
+              ?uri rdfs:label ?displayName .
+           	FILTER (lang(?displayName) = 'en')
+          }
+      }
   Characteristic:
-    Endpoint: http://www.mySparqlEndpoint.org
-    Query: dfgdfg
+    Endpoint: http://192.168.0.8:7200/repositories/oboe
+    Query: |-
+      PREFIX oboe-core: <http://ecoinformatics.org/oboe/oboe.1.2/oboe-core.owl#>
+      PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+      PREFIX : <http://ecoinformatics.org/oboe/oboe.1.2/oboe.owl#>
+      SELECT DISTINCT ?uri ?displayName
+      WHERE {
+      	?uri rdfs:subClassOf oboe-core:Characteristic .
+          FILTER NOT EXISTS {
+              ?sub rdfs:subClassOf ?uri .
+          }
+          OPTIONAL{
+              ?uri rdfs:label ?displayName
+          }
+      }
 templates:
   - oboe

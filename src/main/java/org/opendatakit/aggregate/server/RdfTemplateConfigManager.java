@@ -3,10 +3,7 @@ package org.opendatakit.aggregate.server;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.mysql.jdbc.StringUtils;
-import org.opendatakit.aggregate.client.form.RdfExportOptions;
-import org.opendatakit.aggregate.client.form.RdfTemplateConfig;
-import org.opendatakit.aggregate.client.form.RdfToplevelConfig;
-import org.opendatakit.aggregate.client.form.TemplateProperties;
+import org.opendatakit.aggregate.client.form.*;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.ResourceUtils;
 
@@ -64,5 +61,13 @@ public class RdfTemplateConfigManager {
             e.printStackTrace();
             return null;
         }
+    }
+
+    /*
+    Utility to get the configuration of a single property
+     */
+    public static SemanticPropertyConfiguration getPropertyConfig(String property){
+        RdfToplevelConfig config = getToplevelRdfConfig();
+        return config.getAvailableProperties().get(property);
     }
 }
