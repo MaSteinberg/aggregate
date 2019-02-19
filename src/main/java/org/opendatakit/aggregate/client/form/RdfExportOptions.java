@@ -10,19 +10,23 @@ import java.util.Set;
 public class RdfExportOptions implements Serializable {
     private static final long serialVersionUID = 3805983057947175416L;
 
-    private List<String> availableProperties;
+    private Map<String, SemanticPropertyConfiguration> availableProperties;
     private Map<String, RdfTemplateConfig> templates;
 
     //Necessary so that GWT can properly (de-)serialize the object
     private RdfExportOptions() {}
 
-    public RdfExportOptions(List<String> availableProperties, Map<String, RdfTemplateConfig> templates) {
+    public RdfExportOptions(Map<String, SemanticPropertyConfiguration> availableProperties, Map<String, RdfTemplateConfig> templates) {
         this.availableProperties = availableProperties;
         this.templates = templates;
     }
 
-    public List<String> getAvailableProperties() {
+    public Map<String, SemanticPropertyConfiguration> getAvailableProperties() {
         return availableProperties;
+    }
+
+    public void setAvailableProperties(Map<String, SemanticPropertyConfiguration> availableProperties) {
+        this.availableProperties = availableProperties;
     }
 
     public Map<String, RdfTemplateConfig> getTemplates() {

@@ -1,6 +1,12 @@
 availableProperties:
-  - Creator
-  - Unit
-  - Characteristic
+  Creator:
+    Endpoint:
+    Query:
+  Unit:
+    Endpoint: http://www.example.org
+    Query: asdasd
+  Characteristic:
+    Endpoint: http://www.mySparqlEndpoint.org
+    Query: dfgdfg
 templates:
   - oboe

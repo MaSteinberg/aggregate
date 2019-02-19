@@ -1,16 +1,17 @@
 package org.opendatakit.aggregate.client.form;
 
 import java.util.List;
+import java.util.Map;
 
 public class RdfToplevelConfig {
-    private List<String> availableProperties;
+    private Map<String, SemanticPropertyConfiguration> availableProperties;
     private List<String> templates;
 
-    public List<String> getAvailableProperties() {
+    public Map<String, SemanticPropertyConfiguration> getAvailableProperties() {
         return availableProperties;
     }
 
-    public void setAvailableProperties(List<String> availableProperties) {
+    public void setAvailableProperties(Map<String, SemanticPropertyConfiguration> availableProperties) {
         this.availableProperties = availableProperties;
     }
 
