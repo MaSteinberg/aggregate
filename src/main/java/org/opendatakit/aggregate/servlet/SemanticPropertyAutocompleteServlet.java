@@ -41,8 +41,13 @@ public class SemanticPropertyAutocompleteServlet extends ServletUtilBase {
         SemanticPropertyConfiguration config = RdfTemplateConfigManager.getPropertyConfig(prop);
 
         List<SemanticAutocompleteElement> results;
-        if(StringUtils.isBlank(config.getEndpoint()) || StringUtils.isBlank(config.getQuery())){
-            //If either the endpoint or the query is missing, no autocompletion should/can be provided
+        if(config == null || (StringUtils.isBlank(config.getEndpoint()) ^ StringUtils.isBlank(config.getQuery()))){
+            //If we have no configuration for the requested property or
+            //if either the endpoint or the query is missing, return null so the caller knows the configuration
+            //is incorrect/incomplete
+            results = null;
+        } else if(StringUtils.isBlank(config.getEndpoint()) && StringUtils.isBlank(config.getQuery())){
+            //Empty Endpoint and empty Query => Intentionally no autocompletion
             results = new ArrayList<>();
         } else{
             //Issue SPARQL query
@@ -56,7 +61,7 @@ public class SemanticPropertyAutocompleteServlet extends ServletUtilBase {
             resp.setCharacterEncoding(HtmlConsts.UTF8_ENCODE);
             resp.addHeader("Access-Control-Allow-Origin", "*");
             ObjectMapper jsonMapper = new ObjectMapper();
-            jsonMapper.writeValue(out, results);
+            jsonMapper.writerWithDefaultPrettyPrinter().writeValue(out, results);
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -1,10 +1,7 @@
 package org.opendatakit.common.utils;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.rdf4j.query.BindingSet;
-import org.eclipse.rdf4j.query.QueryLanguage;
-import org.eclipse.rdf4j.query.TupleQuery;
-import org.eclipse.rdf4j.query.TupleQueryResult;
+import org.eclipse.rdf4j.query.*;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.sparql.SPARQLRepository;
@@ -46,6 +43,8 @@ public class SparqlQueryManager {
                     //Add query-result to our result-list
                     results.add(new SemanticAutocompleteElement(uri, displayName));
                 }
+            } catch(QueryEvaluationException e){
+                return null;
             }
         }
         return results;
