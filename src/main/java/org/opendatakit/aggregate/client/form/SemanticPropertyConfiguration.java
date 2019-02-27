@@ -2,7 +2,11 @@ package org.opendatakit.aggregate.client.form;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class SemanticPropertyConfiguration {
+import java.io.Serializable;
+
+public class SemanticPropertyConfiguration implements Serializable {
+    private static final long serialVersionUID = 3180598340579147616L;
+
     private String endpoint;
     private String query;
 
