@@ -1,27 +1,27 @@
 package org.opendatakit.aggregate.client.form;
 
 public class SemanticAutocompleteElement {
-    private String uri;
-    private String displayName;
+    private String value;
+    private String label;
 
-    public SemanticAutocompleteElement(String uri, String displayName) {
-        this.uri = uri;
-        this.displayName = displayName;
+    public SemanticAutocompleteElement(String value, String label) {
+        this.value = value;
+        this.label = label;
     }
 
-    public String getUri() {
-        return uri;
+    public String getValue() {
+        return value;
     }
 
-    public void setUri(String uri) {
-        this.uri = uri;
+    public void setValue(String value) {
+        this.value = value;
     }
 
-    public String getDisplayName() {
-        return displayName;
+    public String getLabel() {
+        return label;
     }
 
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
+    public void setLabel(String label) {
+        this.label = label;
     }
 }
