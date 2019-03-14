@@ -37,7 +37,7 @@ public class RdfTemplateConfigServlet extends ServletUtilBase {
             resp.addHeader("Access-Control-Allow-Origin", "*");
             RdfExportOptions options = RdfTemplateConfigManager.getRdfExportOptions();
             ObjectMapper jsonMapper = new ObjectMapper();
-            jsonMapper.writeValue(out, options);
+            jsonMapper.writerWithDefaultPrettyPrinter().writeValue(out, options);
         } catch (IOException e) {
             e.printStackTrace();
         }

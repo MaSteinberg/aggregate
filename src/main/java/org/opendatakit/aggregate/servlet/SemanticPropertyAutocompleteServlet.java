@@ -30,11 +30,16 @@ public class SemanticPropertyAutocompleteServlet extends ServletUtilBase {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        // Get parameter
+        // Get parameters
         String prop = getParameter(req, ServletConsts.SEMANTIC_PROPERTY);
         if (prop == null) {
             errorMissingKeyParam(resp);
             return;
+        }
+
+        Boolean prefixed = Boolean.parseBoolean(getParameter(req, ServletConsts.SEMANTIC_AUTOCOMP_PREFIXED));
+        if(prop == null){
+            prefixed = false;
         }
 
         //Get configuration of requested property
@@ -53,6 +58,12 @@ public class SemanticPropertyAutocompleteServlet extends ServletUtilBase {
             //Issue SPARQL query
             results = SparqlQueryManager.issueAutocompletionSparqlQuery(config.getEndpoint(),
                     config.getQuery());
+        }
+
+        if(prefixed){
+            for (SemanticAutocompleteElement e : results) {
+                e.setValue("_onto_" + e.getValue());
+            }
         }
 
         try {

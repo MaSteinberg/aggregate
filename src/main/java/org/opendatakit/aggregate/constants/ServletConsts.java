@@ -70,6 +70,12 @@ public final class ServletConsts {
   public static final String SEMANTIC_PROPERTY = "semanticProperty";
 
   /**
+   * The name of the property that flags whether the results of the
+   * semantic autocompletion servlet should be prefixed
+   */
+  public static final String SEMANTIC_AUTOCOMP_PREFIXED = "prefixed";
+
+  /**
    * For OdkTables:
    * The argument for a tableId.
    */
