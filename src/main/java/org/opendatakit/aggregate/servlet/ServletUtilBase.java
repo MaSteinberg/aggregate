@@ -121,6 +121,20 @@ public class ServletUtilBase extends CommonServletBase {
     resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ErrorConsts.INCOMPLETE_DATA);
   }
 
+  /**
+   * Generate error response for arbitrary internal server error
+   *
+   * @param resp
+   *          The HTTP response to be sent to client
+   * @param msg
+   *          The message to be attached to the error
+   * @throws IOException
+   *           caused by problems writing error information to response
+   */
+  protected void errorInternalServerError(HttpServletResponse resp, String msg) throws IOException {
+    resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, msg);
+  }
+
   // GWT required fields...
   private static final String AGGREGATEUI_STYLE_RESOURCE = "AggregateUI.css";
   private static final String BUTTON_STYLE_RESOURCE = "stylesheets/button.css";
