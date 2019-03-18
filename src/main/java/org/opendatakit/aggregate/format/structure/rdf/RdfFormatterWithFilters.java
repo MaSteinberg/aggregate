@@ -52,6 +52,7 @@ import java.util.stream.IntStream;
 import static org.opendatakit.aggregate.datamodel.FormElementModel.ElementType.*;
 
 public class RdfFormatterWithFilters implements SubmissionFormatter {
+    public static final String ONTOLOGY_REF_PREFIX = "_onto_";
     private final Logger logger = LoggerFactory.getLogger(RdfFormatterWithFilters.class);
 
     private ElementFormatter elemFormatter;
@@ -182,7 +183,6 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
         }
 
         //Namespaces
-        //We have to guarantee prefix-Uniqueness or the resulting RDF file won't be valid
         List<RdfNamespace> namespaces = new ArrayList<>();
         NamespacesModel namespacesModel = new NamespacesModel(this.baseURI, namespaces);
         namespacesMustache.execute(output, namespacesModel );

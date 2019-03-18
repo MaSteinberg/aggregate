@@ -8,6 +8,7 @@ import org.opendatakit.aggregate.client.form.SemanticAutocompleteElement;
 import org.opendatakit.aggregate.client.form.SemanticPropertyConfiguration;
 import org.opendatakit.aggregate.constants.ServletConsts;
 import org.opendatakit.aggregate.constants.common.UIConsts;
+import org.opendatakit.aggregate.format.structure.rdf.RdfFormatterWithFilters;
 import org.opendatakit.aggregate.server.RdfTemplateConfigManager;
 import org.opendatakit.common.utils.SparqlQueryManager;
 import org.opendatakit.common.web.constants.HtmlConsts;
@@ -76,7 +77,7 @@ public class SemanticPropertyAutocompleteServlet extends ServletUtilBase {
 
             if(prefixed){
                 for (SemanticAutocompleteElement e : results) {
-                    e.setValue("_onto_" + e.getValue());
+                    e.setValue(RdfFormatterWithFilters.ONTOLOGY_REF_PREFIX + e.getValue());
                 }
             }
         }

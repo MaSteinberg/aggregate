@@ -14,7 +14,7 @@ public class ModelBuilder {
     public TopLevelModel buildTopLevelModel(IForm form, String toplevelIdentifier){
         //Extract the necessary information from the IForm
         //The getters are inconsistent in whether or not they can return null so
-        //I'll make sure we have empty Strings instead off null
+        //I'll make sure we have empty Strings instead of null
         String formId = (form.getFormId() == null) ? "" : form.getFormId();
         String name = (form.getViewableName() == null) ? "": form.getViewableName();
         String description = (form.getDescription() == null) ? "" : form.getDescription();

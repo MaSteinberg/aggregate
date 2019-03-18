@@ -1,6 +1,7 @@
 package org.opendatakit.aggregate.format.structure.rdf.models;
 
 import org.apache.commons.lang3.StringUtils;
+import org.opendatakit.aggregate.format.structure.rdf.RdfFormatterWithFilters;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,9 +21,9 @@ public abstract class AbstractCellModel {
         this.semantics = new HashMap<>();
         for(Map.Entry<String, String> entry : semanticsValueMap.entrySet()){
             SemanticsModel property;
-            if(entry.getValue().startsWith("_onto_")){
-                //Remove _onto_ prefix and replace "__" with ":" since ":" is not allowed in single-choice-questions
-                String val = StringUtils.removeStart(entry.getValue(), "_onto_").replaceFirst("__", ":");
+            if(entry.getValue().startsWith(RdfFormatterWithFilters.ONTOLOGY_REF_PREFIX)){
+                //Remove prefix and replace "__" with ":" since ":" is not allowed in single-choice-questions
+                String val = StringUtils.removeStart(entry.getValue(), RdfFormatterWithFilters.ONTOLOGY_REF_PREFIX);
                 property = new SemanticsModel(val, false);
             } else{
                 property = new SemanticsModel(entry.getValue(), true);
