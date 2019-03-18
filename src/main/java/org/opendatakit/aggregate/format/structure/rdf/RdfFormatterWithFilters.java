@@ -53,6 +53,7 @@ import static org.opendatakit.aggregate.datamodel.FormElementModel.ElementType.*
 
 public class RdfFormatterWithFilters implements SubmissionFormatter {
     public static final String ONTOLOGY_REF_PREFIX = "_onto_";
+    public static final String COLUMN_REF_PREFIX = "_col_";
     private final Logger logger = LoggerFactory.getLogger(RdfFormatterWithFilters.class);
 
     private ElementFormatter elemFormatter;
@@ -311,8 +312,8 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
                     //We need a copy (shallow suffices here) of the semantics to adapt the values for the given row
                     Map<String, String> semanticsForGivenRow = new HashMap<>(columnSemantics);
                     for(Map.Entry<String, String> entry : semanticsForGivenRow.entrySet()){
-                        if(entry.getValue().startsWith("_col_")){
-                            String referenceColumn = StringUtils.removeStart(entry.getValue(), "_col_");
+                        if(entry.getValue().startsWith(RdfFormatterWithFilters.COLUMN_REF_PREFIX)){
+                            String referenceColumn = StringUtils.removeStart(entry.getValue(), RdfFormatterWithFilters.COLUMN_REF_PREFIX);
                             //Find index of the referenced column (using the unfiltered FormElementModels here)
                             int index = IntStream.range(0, columnFormElementModelsUnfiltered.size())
                                     .filter(i -> columnFormElementModelsUnfiltered.get(i).getElementName().equals(referenceColumn))
