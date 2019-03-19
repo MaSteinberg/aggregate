@@ -22,13 +22,26 @@ public abstract class AbstractCellModel {
         for(Map.Entry<String, String> entry : semanticsValueMap.entrySet()){
             SemanticsModel property;
             if(entry.getValue().startsWith(RdfFormatterWithFilters.ONTOLOGY_REF_PREFIX)){
-                //Remove prefix and replace "__" with ":" since ":" is not allowed in single-choice-questions
-                String val = StringUtils.removeStart(entry.getValue(), RdfFormatterWithFilters.ONTOLOGY_REF_PREFIX);
+                //Remove prefix & encode
+                String val = StringUtils.removeStart(turtleEncodeUri(entry.getValue()), RdfFormatterWithFilters.ONTOLOGY_REF_PREFIX);
                 property = new SemanticsModel(val, false);
             } else{
-                property = new SemanticsModel(entry.getValue(), true);
+                //Encode
+                property = new SemanticsModel(turtleEncodeLiteral(entry.getValue()), true);
             }
             this.semantics.put(entry.getKey(), property);
         }
+    }
+
+    protected String turtleEncodeUri(String uri){
+        if(uri == null)
+            return null;
+        return uri.replaceAll(">", "\\\\>");
+    }
+
+    protected String turtleEncodeLiteral(String literal){
+        if(literal == null)
+            return null;
+        return literal.replaceAll("\"", "\\\\\"");
     }
 }

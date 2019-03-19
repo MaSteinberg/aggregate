@@ -7,6 +7,6 @@ public class SingleValueCellModel extends AbstractCellModel{
 
     public SingleValueCellModel(ColumnModel columnModel, RowModel rowModel, String cellValue, String cellEntityIdentifier, Map<String, String> semantics) {
         super(columnModel, rowModel, cellEntityIdentifier, semantics);
-        this.cellValue = cellValue;
+        this.cellValue = turtleEncodeLiteral(cellValue);
     }
 }

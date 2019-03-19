@@ -8,8 +8,8 @@ public class DateTimeCellModel extends AbstractCellModel {
 
     public DateTimeCellModel(ColumnModel columnModel, RowModel rowModel, String date, String time, String cellEntityIdentifier, Map<String, String> semantics) {
         super(columnModel, rowModel, cellEntityIdentifier, semantics);
-        this.date = date;
-        this.time = time;
+        this.date = turtleEncodeLiteral(date);
+        this.time = turtleEncodeLiteral(time);
     }
 
     public DateTimeCellModel(ColumnModel columnModel, RowModel rowModel, String cellEntityIdentifier, Map<String, String> semantics) {

@@ -2,15 +2,15 @@
 :measuredValue_{{rowModel.rowId}}_{{columnModel.columnHeader}} rdf:type geo:Point .
 {{!Define latitude, longitude and altitude}}
 {{#location.latitude}}
-:measuredValue_{{rowModel.rowId}}_{{columnModel.columnHeader}} geo:lat "{{location.latitude}}" .
+:measuredValue_{{rowModel.rowId}}_{{columnModel.columnHeader}} geo:lat "{{{location.latitude}}}" .
 {{/location.latitude}}
 {{#location.longitude}}
-:measuredValue_{{rowModel.rowId}}_{{columnModel.columnHeader}} geo:long "{{location.longitude}}" .
+:measuredValue_{{rowModel.rowId}}_{{columnModel.columnHeader}} geo:long "{{{location.longitude}}}" .
 {{/location.longitude}}
 {{#location.altitude}}
-:measuredValue_{{rowModel.rowId}}_{{columnModel.columnHeader}} geo:alt "{{location.altitude}}" .
+:measuredValue_{{rowModel.rowId}}_{{columnModel.columnHeader}} geo:alt "{{{location.altitude}}}" .
 {{/location.altitude}}
 {{!Define accuracy using oboe-core:hasPrecision}}
 {{#location.accuracy}}
-{{cellEntityIdentifier}} oboe-core:hasPrecision "{{location.accuracy}}"
+{{cellEntityIdentifier}} oboe-core:hasPrecision "{{{location.accuracy}}}"
 {{/location.accuracy}}

@@ -71,7 +71,7 @@ public class ModelBuilder {
         if(cellValue == null)
             return new MultiValueCellModel(columnModel, rowModel, cellEntityIdentifier, semantics);
         String values[] = cellValue.split(" ");
-        return new MultiValueCellModel(columnModel, rowModel, Arrays.asList(values), cellEntityIdentifier, semantics);
+        return new MultiValueCellModel(columnModel, rowModel, new ArrayList<>(Arrays.asList(values)), cellEntityIdentifier, semantics);
     }
 
     private AbstractCellModel buildDateCellModel(ColumnModel columnModel, RowModel rowModel, String cellValue, String cellEntityIdentifier, Map<String, String> semantics) {
