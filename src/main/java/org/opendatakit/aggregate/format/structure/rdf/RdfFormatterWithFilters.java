@@ -170,7 +170,9 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
                 for (FormElementModel col : this.columnFormElementModelsFiltered) {
                     //"instanceID" is a special case - it's automatically generated and thus semantic information
                     //can't be entered by the form author
-                    if(!col.getElementName().equals("instanceID")){
+                    //Repeats also don't have semantic information attached so we can ignore these
+                    if(!col.getElementName().equals("instanceID") &&
+                       !col.getElementType().equals(FormElementModel.ElementType.REPEAT)){
                         Map<String, String> semanticsForColumn = semantics.get(col.getElementName());
                         if (    semanticsForColumn == null ||
                                 !(semanticsForColumn.containsKey(requiredProperty)) ||
