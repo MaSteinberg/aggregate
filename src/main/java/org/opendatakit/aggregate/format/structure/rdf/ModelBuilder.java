@@ -26,11 +26,11 @@ public class ModelBuilder {
         return new TopLevelModel(toplevelIdentifier, formId, name, description, creationDate, creationUser, lastUpdate, version);
     }
 
-    public ColumnModel buildColumnModel(TopLevelModel topLevelModel, String columnHeader, FormElementModel.ElementType elementType, String columnIdentifier){
+    public ColumnModel buildColumnModel(TopLevelModel topLevelModel, String columnHeader, String columnIdentifier){
         return new ColumnModel(topLevelModel, columnHeader, columnIdentifier);
     }
 
-    public RowModel buildRowModel(TopLevelModel topLevelModel, List<String> formattedValues, List<FormElementModel> headers, String rowId, String rowIdentifier, boolean requireGuid){
+    public RowModel buildRowModel(TopLevelModel topLevelModel, String rowId, String rowIdentifier){
         return new RowModel(topLevelModel, rowId, rowIdentifier);
     }
 

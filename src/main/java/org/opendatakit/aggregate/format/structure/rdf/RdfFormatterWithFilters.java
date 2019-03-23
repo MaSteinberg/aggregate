@@ -231,7 +231,7 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
                 }
 
                 //For each column create the ColumnModel and fill the template
-                ColumnModel columnModel = modelBuilder.buildColumnModel(toplevelModel, colName, elementType, columnEntityIdentifier);
+                ColumnModel columnModel = modelBuilder.buildColumnModel(toplevelModel, colName, columnEntityIdentifier);
                 columnModels.add(columnModel);
                 columnMustache.execute(output, columnModel);
             }
@@ -286,7 +286,7 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
             }
 
             //For each row create the RowModel and fill the template
-            RowModel rowModel = modelBuilder.buildRowModel(toplevelModel, formattedValuesFiltered, columnFormElementModelsFiltered, rowId, rowEntityIdentifier, this.requireRowUUIDs);
+            RowModel rowModel = modelBuilder.buildRowModel(toplevelModel, rowId, rowEntityIdentifier);
             rowMustache.execute(output, rowModel);
 
             //Cells
