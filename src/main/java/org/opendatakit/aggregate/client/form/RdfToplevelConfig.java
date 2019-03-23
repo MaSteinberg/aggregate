@@ -3,6 +3,9 @@ package org.opendatakit.aggregate.client.form;
 import java.util.List;
 import java.util.Map;
 
+/*
+Class used for deserialization of the rdfExportTemplateConfig.yml
+ */
 public class RdfToplevelConfig {
     private Map<String, SemanticPropertyConfiguration> availableProperties;
     private List<String> templates;

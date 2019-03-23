@@ -205,6 +205,10 @@ public class FormServiceImpl extends RemoteServiceServlet implements
     }
   }
 
+  /**
+   * Used by the frontend to grab the RDF Export configuration.
+   * @see org.opendatakit.aggregate.client.popups.RdfOptionsPopup#RdfOptionsPopup
+   */
   @Override
   public RdfExportOptions getRdfExportSettings() {
     return RdfTemplateConfigManager.getRdfExportOptions();

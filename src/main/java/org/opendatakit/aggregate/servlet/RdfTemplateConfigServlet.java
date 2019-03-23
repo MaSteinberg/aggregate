@@ -17,6 +17,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+/*
+REST-Servlet to make the RDF Export configuration available to ODK Build
+ */
 public class RdfTemplateConfigServlet extends ServletUtilBase {
     /**
      * Serial number for serialization

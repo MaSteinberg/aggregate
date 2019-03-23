@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/*
+Class used to communicate the full RDF Export configuration to both the frontend and the REST-API used by ODK Build
+ */
 public class RdfExportOptions implements Serializable {
     private static final long serialVersionUID = 3805983057947175416L;
 

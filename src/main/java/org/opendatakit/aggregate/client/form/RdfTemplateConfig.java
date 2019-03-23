@@ -2,6 +2,9 @@ package org.opendatakit.aggregate.client.form;
 
 import java.io.Serializable;
 
+/*
+Class used for the deserialization of a single template config.yml
+ */
 public class RdfTemplateConfig implements Serializable {
     private static final long serialVersionUID = 3805298395471795416L;
 
