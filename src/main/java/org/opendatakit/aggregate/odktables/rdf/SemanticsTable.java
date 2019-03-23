@@ -152,4 +152,9 @@ public class SemanticsTable extends CommonFieldsBase {
         }
         return out;
     }
+
+    public void delete(CallingContext cc) throws ODKDatastoreException {
+        Datastore ds = cc.getDatastore();
+        ds.deleteEntity(this.getEntityKey(), cc.getCurrentUser());
+    }
 }
