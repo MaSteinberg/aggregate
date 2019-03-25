@@ -1,11 +1,29 @@
 # RDF Template Development
 
+## TOC
+- [RDF Template Development](#rdf-template-development)
+  - [TOC](#toc)
+  - [Introduction](#introduction)
+  - [Registration and configuration](#registration-and-configuration)
+  - [Necessary files](#necessary-files)
+    - [namespaces.ttl.mustache](#namespacesttlmustache)
+    - [toplevel.ttl.mustache](#toplevelttlmustache)
+    - [row.ttl.mustache](#rowttlmustache)
+    - [column.ttl.mustache](#columnttlmustache)
+    - [cell.ttl.mustache](#cellttlmustache)
+    - [elementTypeCells](#elementtypecells)
+      - [booleanCell.ttl.mustache, decimalCell.ttl.mustache, integerCell.ttl.mustache, select1Cell.ttl.mustache, stringCell.ttl.mustache](#booleancellttlmustache-decimalcellttlmustache-integercellttlmustache-select1cellttlmustache-stringcellttlmustache)
+      - [multipleChoiceCell.ttl.mustache](#multiplechoicecellttlmustache)
+      - [dateCell.ttl.mustache, timeCell.ttl.mustache, dateTimeCell.ttl.mustache](#datecellttlmustache-timecellttlmustache-datetimecellttlmustache)
+      - [geolocationCell.ttl.mustache](#geolocationcellttlmustache)
+      - [geotraceCell.ttl.mustache, geoshapeCell.ttl.mustache](#geotracecellttlmustache-geoshapecellttlmustache)
+
 ## Introduction
 This guide documents the steps necessary to set up a new RDF template group for the RDF export.
 This setup includes the registration and configuration of the template group and the construction of all necessary template files.
 It also described hints and best practices to ensure that the resulting file complies with the [RDF/Turtle syntax](https://www.w3.org/TR/turtle/).
 
-### Registration and configuration
+## Registration and configuration
 RDF template groups are registered in the *rdfExportTemplateConfig.yml*-file located in `<your-project-root>/src/main/resources/rdfExport`.
 The file is written in [YAML](https://yaml.org/spec/1.2/spec.html)-Syntax.
 Please keep in mind that in many cases this syntax is indentation-sensitive and is using spaces for indentation.
@@ -43,7 +61,7 @@ templates:
 
 
 
-### Necessary files
+## Necessary files
 There are multiple directories and files that have to be added to the project in order to get your new template group up and running.
 The files are used as input for the [Mustache.java](https://github.com/spullara/mustache.java)-library.
 Therefore they have to comply with the syntax that is expected by the library.
@@ -85,7 +103,7 @@ The following sections explain the purpose of the files you have to build and th
 
 **Terminology**: In the following sections, the object which contains the data that is accessible in the different template-files will be called **model** (in technical terms, this is the Java-object that is passed to the Mustache-renderer).
 
-#### namespaces.ttl.mustache
+### namespaces.ttl.mustache
 This file is responsible for the namespace and prefix definitions.
 The Model for this template provides access to the following fields:
 + *base* - **String** - Base URI of the resulting RDF file
@@ -110,7 +128,7 @@ All namespaces that are used in your templates should be added manually below th
 **Do not rely on the form-designer to add the namespaces that you need!**
 The form-designer is only responsible for adding **additional** namespaces for semantic information that he provides during form design.
 
-#### toplevel.ttl.mustache
+### toplevel.ttl.mustache
 This file is responsible for defining any RDF statements on the top level of the exportable dataset.
 The template is rendered exactly once for a given export process.
 The model provides access to metadata about the form and the dataset.
@@ -128,7 +146,7 @@ This template file would usually contain triples that define one or more resourc
 The fields exposed by the model can then be attached to these resources.
 Alternatively the template file may be left empty if there is no need for such top level resources.
 
-#### row.ttl.mustache
+### row.ttl.mustache
 This file is responsible for defining RDF statements on the row level of the exportable dataset.
 The template is rendered exactly once for each submission included in the export.
 The model provides access to metadata about the current row.
@@ -141,7 +159,7 @@ The following fields are exposed:
 This template file would usually contain triples that define one or more resources per row that the other template files can reference.
 Alternatively the template file may be left empty if there is no need for such row level resources.
 
-#### column.ttl.mustache
+### column.ttl.mustache
 This file is responsible for defining RDF statements on the column level of the exportable dataset.
 The template is render exactly once for each column (i.e. field collected by the survey) included in the export.
 The model provides access to metadata about the current column.
@@ -154,7 +172,7 @@ The following fields are exposed:
 This template file would usually contain triples that define one or more resources per column that the other template files can reference.
 Alternatively the template file may be left empty if there is no need for such column level resources.
 
-#### cell.ttl.mustache
+### cell.ttl.mustache
 This file is the first template that is rendered for each of the data elements of the exportable dataset.
 It is rendered exactly once for each cell (i.e. data element), **regardless of the datatype**.
 Thus the model provides access to metadata of the cell that is independent from the datatype.
@@ -187,17 +205,17 @@ The following fields are exposed:
   ```
   As always, feel free to check out the existing templates if anything seems unclear.
 
-#### elementTypeCells
+### elementTypeCells
 The *elementTypeCells*-folder contains files for all different data types that can be collected by the survey.
 The recommendation for these files is to attach the value(s) of the cell to the RDF-resources you defined in the other template files, using predicates and XSD-Datatypes in a way that is appropriate for the cell's datatype.
 The different files have different models, described in the following sections.
 Please note that all of these models extend the basic cell model used in *cell.ttl.mustache*, so all fields available in the basic model are also available in the datatype-specific files.
 
-##### booleanCell.ttl.mustache, decimalCell.ttl.mustache, integerCell.ttl.mustache, select1Cell.ttl.mustache, stringCell.ttl.mustache
+#### booleanCell.ttl.mustache, decimalCell.ttl.mustache, integerCell.ttl.mustache, select1Cell.ttl.mustache, stringCell.ttl.mustache
 The models in these files expose the following fields:
 + *cellValue* - **String** - the collected value of the cell.
 
-##### multipleChoiceCell.ttl.mustache
+#### multipleChoiceCell.ttl.mustache
 The model in this file exposes the following fields:
 + *cellValues* - **List\<String>** - List of the selected values.
 
@@ -208,14 +226,14 @@ You can iterate through the list using a snippet like the following:
 {{/cellValues}}
 ```
 
-##### dateCell.ttl.mustache, timeCell.ttl.mustache, dateTimeCell.ttl.mustache
+#### dateCell.ttl.mustache, timeCell.ttl.mustache, dateTimeCell.ttl.mustache
 The models in these files expose the following fields:
 + *date* - **String** - Date that was collected.
 + *time* - **String** - Time that was collected.
 
 While both fields are available in all three files, please note that *time* might not contain a meaningful or even valid date in *dateCell.ttl.mustache* and accordingly for *date* in *timeCell.ttl.mustache*.
 
-##### geolocationCell.ttl.mustache
+#### geolocationCell.ttl.mustache
 The model in this file exposes the following fields:
 + *location* - **Location** - The location that was collected. This object in turn exposes the fields:
   + *latitude* - **String** - The latitude of the collected location.
@@ -223,7 +241,7 @@ The model in this file exposes the following fields:
   + *altitude* - **String** - The altitude of the collected location.
   + *accuracy* - **String** - The accuracy of the collected location.
 
-##### geotraceCell.ttl.mustache, geoshapeCell.ttl.mustache
+#### geotraceCell.ttl.mustache, geoshapeCell.ttl.mustache
 The models in these files expose the following fields:
 + *locationList* - **List\<GeotraceElement>** - List of the collected locations. Each element exposes the fields:
   + *pathElementIndex* - **Integer** - Ordinal number of this location
