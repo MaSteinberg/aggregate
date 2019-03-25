@@ -9,6 +9,7 @@
     - [Endpoint](#endpoint)
     - [Query](#query)
   - [Necessary files](#necessary-files)
+    - [config.yml](#configyml)
     - [namespaces.ttl.mustache](#namespacesttlmustache)
     - [toplevel.ttl.mustache](#toplevelttlmustache)
     - [row.ttl.mustache](#rowttlmustache)
@@ -98,6 +99,8 @@ templates:
 ## Necessary files
 There are multiple directories and files that have to be added to the project in order to get your new template group up and running.
 The first directory that has to be created under `<your-project-root>/src/main/resources/rdfExport/mustache_templates` is simply a directory named after your new template group - for above *rdfExportTemplateConfig.yml*-file that would mean a directory called `oboe`.
+
+### config.yml
 The first file that should be created in this new directory is the config.yml file.
 This file describes the configuration of your new template group.
 It contains a *displayName* property that defines under which name the template group should be presented to people who use the RDF export.
