@@ -186,9 +186,7 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
         }
 
         //Namespaces
-        List<RdfNamespace> namespaces = new ArrayList<>();
-        NamespacesModel namespacesModel = new NamespacesModel(this.baseURI, namespaces);
-        namespacesMustache.execute(output, namespacesModel );
+        namespacesMustache.execute(output, this.baseURI );
 
         //Toplevel
         //Generate toplevel identifier via template
