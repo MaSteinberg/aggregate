@@ -1,0 +1,8 @@
+displayName: QUDT Ontology
+templateProperties:
+  optionalProperties:
+  - Creator
+  - TimeOfCreation
+  requiredProperties:
+  - QudtQuantityKind
+  - QudtUnit

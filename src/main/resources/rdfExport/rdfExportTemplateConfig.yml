@@ -2,6 +2,9 @@ availableProperties:
   Creator:
     Endpoint:
     Query:
+  TimeOfCreation:
+    Endpoint:
+    Query:
   Unit:
     Endpoint: http://192.168.0.8:7200/repositories/om
     Query: |-
@@ -34,5 +37,34 @@ availableProperties:
               ?uri rdfs:label ?displayName
           }
       }
+  QudtQuantityKind:
+    Endpoint: http://192.168.0.8:7200/repositories/qudt
+    Query: |-
+      PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+      PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+      PREFIX qudt-schema: <http://qudt.org/schema/qudt#>
+      SELECT DISTINCT ?uri ?displayName WHERE {
+      	?uri rdf:type qudt-schema:QuantityKind .
+          OPTIONAL{
+          	?uri rdfs:label ?displayName .
+              FILTER (lang(?displayName) = 'en' || lang(?displayName) = '')
+          }
+      }
+      ORDER BY ?displayName
+  QudtUnit:
+    Endpoint: http://192.168.0.8:7200/repositories/qudt
+    Query: |-
+      PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+      PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+      PREFIX qudt-schema: <http://qudt.org/schema/qudt#>
+      SELECT DISTINCT ?uri ?displayName WHERE {
+      	?uri rdf:type qudt-schema:Unit .
+          OPTIONAL{
+          	?uri rdfs:label ?displayName .
+              FILTER (lang(?displayName) = 'en' || lang(?displayName) = '')
+          }
+      }
+      ORDER BY ?displayName
 templates:
   - oboe
+  - qudt
