@@ -1,0 +1,74 @@
+#Row {{rowModel.rowId}}, Column {{columnModel.columnHeader}}
+{{!Cell describes a QuantityValue}}
+{{cellEntityIdentifier}} rdf:type qudt:QuantityValue .
+{{!QuantityValue is attached to the Quantity}}
+{{columnModel.columnEntityIdentifier}} qudt:quantityValue {{cellEntityIdentifier}} .
+
+{{!Use semantic information}}
+{{!Creator - optional}}
+{{#semantics.Creator}}
+    {{!Given a literal value}}
+    {{#semantics.Creator.isLiteral}}
+        {{cellEntityIdentifier}} dcterms:creator :creator_{{columnModel.columnHeader}}_{{rowModel.rowId}} .
+        :creator_{{columnModel.columnHeader}}_{{rowModel.rowId}} rdf:type foaf:Person .
+        :creator_{{columnModel.columnHeader}}_{{rowModel.rowId}} foaf:name "{{{semantics.Creator.value}}}" .
+    {{/semantics.Creator.isLiteral}}
+    {{!Given an RDF resource}}
+    {{^semantics.Creator.isLiteral}}
+        {{cellEntityIdentifier}} dcterms:creator <{{{semantics.Creator.value}}}> .
+    {{/semantics.Creator.isLiteral}}
+{{/semantics.Creator}}
+
+{{!TimeOfCreation - optional}}
+{{#semantics.TimeOfCreation}}
+    {{!Given a literal value}}
+    {{#semantics.TimeOfCreation.isLiteral}}
+        {{cellEntityIdentifier}} dcterms:created "{{{semantics.TimeOfCreation.value}}}"
+    {{/semantics.TimeOfCreation.isLiteral}}
+    {{!Given an RDF resource we don't do anything, dcterms:created has range of rdfs:Literal}}
+{{/semantics.TimeOfCreation}}
+
+{{!QudtQuantityKind - required}}
+{{!Given a literal we create a new QuantityKind}}
+{{#semantics.QudtQuantityKind.isLiteral}}
+    :QuantityKind_{{{semantics.QudtQuantityKind.value}}} rdf:type qudt:QuantityKind .
+    :QuantityKind_{{{semantics.QudtQuantityKind.value}}} rdfs:label "{{{semantics.QudtQuantityKind.value}}}" .
+    :QuantityKind_{{{semantics.QudtQuantityKind.value}}} qudt:id "{{{semantics.QudtQuantityKind.value}}}" .
+    {{cellEntityIdentifier}} qudt:hasQuantityKind :QuantityKind_{{{semantics.QudtQuantityKind.value}}} .
+    {{!Attach the quantityKind to the unit}}
+    {{#semantics.QudtUnit.isLiteral}}
+        :QuantityKind_{{{semantics.QudtQuantityKind.value}}} qudt:applicableUnit :Unit_{{{semantics.QudtUnit.value}}} .
+        :Unit_{{{semantics.QudtUnit.value}}} qudt:hasQuantityKind :QuantityKind_{{{semantics.QudtQuantityKind.value}}} .
+    {{/semantics.QudtUnit.isLiteral}}
+    {{^semantics.QudtUnit.isLiteral}}
+        :QuantityKind_{{{semantics.QudtQuantityKind.value}}} qudt:applicableUnit <{{{semantics.QudtUnit.value}}}> .
+        <{{{semantics.QudtUnit.value}}}> qudt:hasQuantityKind :QuantityKind_{{{semantics.QudtQuantityKind.value}}} .
+    {{/semantics.QudtUnit.isLiteral}}
+{{/semantics.QudtQuantityKind.isLiteral}}
+{{!Given an RDF resource}}
+{{^semantics.QudtQuantityKind.isLiteral}}
+    {{cellEntityIdentifier}} qudt:hasQuantityKind <{{{semantics.QudtQuantityKind.value}}}> .
+{{/semantics.QudtQuantityKind.isLiteral}}
+
+{{!QudtUnit - required}}
+{{!Given a literal value}}
+{{#semantics.QudtUnit.isLiteral}}
+    :Unit_{{{semantics.QudtUnit.value}}} rdf:type qudt:Unit .
+    :Unit_{{{semantics.QudtUnit.value}}} rdfs:label "{{{semantics.QudtUnit.value}}}" .
+    :Unit_{{{semantics.QudtUnit.value}}} qudt:id "{{{semantics.QudtUnit.value}}}" .
+    {{cellEntityIdentifier}} qudt:unit :Unit_{{{semantics.QudtUnit.value}}} .
+    {{!Attach the unit to the quantitykind}}
+    {{#semantics.QudtQuantityKind.isLiteral}}
+        :Unit_{{{semantics.QudtUnit.value}}} qudt:hasQuantityKind :QuantityKind_{{{semantics.QudtQuantityKind.value}}} .
+        :QuantityKind_{{{semantics.QudtQuantityKind.value}}} qudt:applicableUnit :Unit_{{{semantics.QudtUnit.value}}} .
+    {{/semantics.QudtQuantityKind.isLiteral}}
+    {{^semantics.QudtQuantityKind.isLiteral}}
+        :Unit_{{{semantics.QudtUnit.value}}} qudt:hasQuantityKind <{{{semantics.QudtQuantityKind.value}}}> .
+        <{{{semantics.QudtQuantityKind.value}}}> qudt:applicableUnit :Unit_{{{semantics.QudtUnit.value}}} .
+    {{/semantics.QudtQuantityKind.isLiteral}}
+{{/semantics.QudtUnit.isLiteral}}
+{{!Given an RDF resource}}
+{{^semantics.QudtUnit.isLiteral}}
+    {{cellEntityIdentifier}} qudt:unit <{{{semantics.QudtUnit.value}}}> .
+{{/semantics.QudtUnit.isLiteral}}
+

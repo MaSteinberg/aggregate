@@ -1,0 +1,10 @@
+{{toplevelEntityIdentifier}} rdf:type dcmitype:Dataset .
+
+{{!New property definitions to attach non-numeric values to qudt:QuantityValue}}
+:hasValue rdf:type owl:DatatypeProperty .
+:hasValue rdfs:domain qudt:QuantityValue .
+:hasLiteralValue rdf:type owl:DataProperty .
+:hasLiteralValue rdfs:domain qudt:QuantityValue .
+:hasLiteralValue rdfs:range rdfs:Literal .
+:hasLiteralValue rdfs:subPropertyOf :hasValue .
+qudt:numericValue rdfs:subPropertyOf :hasLiteralValue .
