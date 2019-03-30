@@ -22,8 +22,9 @@ public abstract class AbstractCellModel {
         for(Map.Entry<String, String> entry : semanticsValueMap.entrySet()){
             SemanticsModel property;
             if(entry.getValue().startsWith(RdfFormatterWithFilters.ONTOLOGY_REF_PREFIX)){
-                //Remove prefix & encode
-                String val = StringUtils.removeStart(turtleEncodeUri(entry.getValue()), RdfFormatterWithFilters.ONTOLOGY_REF_PREFIX);
+                //Remove prefix & encoding, then encode to turtle
+                String val = turtleEncodeUri(decodeFromBuild(
+                        StringUtils.removeStart(entry.getValue(), RdfFormatterWithFilters.ONTOLOGY_REF_PREFIX)));
                 property = new SemanticsModel(val, false);
             } else{
                 //Encode
@@ -31,6 +32,14 @@ public abstract class AbstractCellModel {
             }
             this.semantics.put(entry.getKey(), property);
         }
+    }
+
+    protected String decodeFromBuild(String encoded){
+        if(encoded == null)
+            return null;
+        return encoded.replaceAll("__", ":")
+                .replaceAll("--", "/")
+                .replaceAll("_-_", "#");
     }
 
     protected String turtleEncodeUri(String uri){
