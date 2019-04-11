@@ -206,11 +206,11 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
         toplevelModel = modelBuilder.buildTopLevelModel(this.form, toplevelEntityIdentifier);
         toplevelMustache.execute(output, toplevelModel);
 
-        //Columns
+        //Columns ~= Questions of the form
+        boolean firstColumn = true;
         output.append("#Each column describes one observation\n");
         for(int col = 0; col < columnFormElementModelsFiltered.size(); col++){
             String colName = columnFormElementModelsFiltered.get(col).getElementName();
-            FormElementModel.ElementType elementType = columnFormElementModelsFiltered.get(col).getElementType();
             //InstanceID is a special case - it's not to be considered a field for the RDF export
             if(colName.equals("instanceID")){
                 //Adding a null-value to the list of column models makes indexing easier in the cells-section
@@ -229,9 +229,11 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
                 }
 
                 //For each column create the ColumnModel and fill the template
-                ColumnModel columnModel = modelBuilder.buildColumnModel(toplevelModel, colName, columnEntityIdentifier);
+                ColumnModel columnModel = modelBuilder.buildColumnModel(toplevelModel, colName, columnEntityIdentifier,
+                        firstColumn, col == (columnFormElementModelsFiltered.size()-1));
                 columnModels.add(columnModel);
                 columnMustache.execute(output, columnModel);
+                firstColumn = false;
             }
         }
     }

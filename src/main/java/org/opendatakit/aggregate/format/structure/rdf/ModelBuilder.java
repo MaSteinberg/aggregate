@@ -26,8 +26,8 @@ public class ModelBuilder {
         return new TopLevelModel(toplevelIdentifier, formId, name, description, creationDate, creationUser, lastUpdate, version);
     }
 
-    public ColumnModel buildColumnModel(TopLevelModel topLevelModel, String columnHeader, String columnIdentifier){
-        return new ColumnModel(topLevelModel, columnHeader, columnIdentifier);
+    public ColumnModel buildColumnModel(TopLevelModel topLevelModel, String columnHeader, String columnIdentifier, boolean isFirstColumn, boolean isLastColumn){
+        return new ColumnModel(topLevelModel, columnHeader, columnIdentifier, isFirstColumn, isLastColumn);
     }
 
     public RowModel buildRowModel(TopLevelModel topLevelModel, String rowId, String rowIdentifier){
