@@ -84,7 +84,6 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
     private Map<FormElementModel.ElementType, Mustache> elementTypeToCellMustacheMap;
 
     private boolean firstRow = true;
-    private Map<String, Boolean> firstCellsPerColumnFlags = new HashMap<>();
     private ModelBuilder modelBuilder = new ModelBuilder();
     private TopLevelModel toplevelModel;
     private List<ColumnModel> columnModels = new ArrayList<>();
@@ -112,11 +111,6 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
         GenerateHeaderInfo headerGeneratorUnfiltered = new GenerateHeaderInfo(noFilter, summary, form);
         headerGeneratorUnfiltered.processForHeaderInfo(form.getTopLevelGroupElement());
         columnFormElementModelsUnfiltered = headerGeneratorUnfiltered.getIncludedElements();
-
-        //Set "firstCell" flags for all columns to true
-        for (FormElementModel col : columnFormElementModelsFiltered) {
-            firstCellsPerColumnFlags.put(col.getElementName(), true);
-        }
 
         //Initialize Mustache & compile the templates
         String templateGroupRoot = "rdfExport/mustache_templates/" + this.templateGroup;
@@ -301,7 +295,6 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
 
             //Cells
             int columnNumber = 0;
-            boolean isFirstCellOfRow = true;
             Iterator<String> cellIt = formattedValuesFiltered.iterator();
             while(cellIt.hasNext()){
                 String cellValue = cellIt.next();
@@ -341,19 +334,12 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
                     }
 
                     FormElementModel.ElementType elementType = columnFormElementModelsFiltered.get(columnNumber).getElementType();
-                    //Determine the flags for the current cell
-                    CellFlags flags = new CellFlags(
-                            firstCellsPerColumnFlags.get(columnName), //isFirstCellOfColumn
-                            isFirstCellOfRow, //isFirstCellOfRow
-                            cellIt.hasNext() //isLastCellOfRow
-                    );
                     AbstractCellModel cellModel = modelBuilder.buildCellModel(
                             columnModels.get(columnNumber),
                             rowModel,
                             cellValue,
                             cellEntityIdentifier,
                             elementType,
-                            flags,
                             semanticsForGivenRow
                     );
                     //Use the generic cell-template
@@ -367,10 +353,6 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
                         cellMustache = elementTypeToCellMustacheMap.get(STRING);
                     }
                     cellMustache.execute(output, cellModel);
-
-                    //Set flags for next cell
-                    isFirstCellOfRow = false;
-                    firstCellsPerColumnFlags.put(columnName, false);
                 }
                 columnNumber++;
             }

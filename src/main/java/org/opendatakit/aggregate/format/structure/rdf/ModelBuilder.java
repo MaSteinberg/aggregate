@@ -50,18 +50,16 @@ public class ModelBuilder {
         public String cellValue;
         public String cellEntityIdentifier;
         public FormElementModel.ElementType elementType;
-        public CellFlags cellFlags;
         public Map<String, String> semantics;
 
         public CellModelBuilder(ColumnModel columnModel, RowModel rowModel, String cellValue,
                                 String cellEntityIdentifier, FormElementModel.ElementType elementType,
-                                CellFlags cellFlags, Map<String, String> semantics) {
+                                Map<String, String> semantics) {
             this.columnModel = columnModel;
             this.rowModel = rowModel;
             this.cellValue = cellValue;
             this.cellEntityIdentifier = cellEntityIdentifier;
             this.elementType = elementType;
-            this.cellFlags = cellFlags;
             this.semantics = semantics;
         }
 
@@ -71,7 +69,6 @@ public class ModelBuilder {
                 this.rowModel, 
                 this.cellValue, 
                 this.cellEntityIdentifier,
-                this.cellFlags,
                 this.semantics
             );
         }
@@ -83,7 +80,6 @@ public class ModelBuilder {
                     this.columnModel, 
                     this.rowModel, 
                     this.cellEntityIdentifier,
-                    this.cellFlags,
                     this.semantics
                 );
             }
@@ -93,7 +89,6 @@ public class ModelBuilder {
                 this.rowModel, 
                 new ArrayList<>(Arrays.asList(values)), 
                 this.cellEntityIdentifier,
-                this.cellFlags,
                 this.semantics
             );
         }
@@ -104,7 +99,6 @@ public class ModelBuilder {
                     this.columnModel,
                     this.rowModel, 
                     this.cellEntityIdentifier,
-                    this.cellFlags,
                     this.semantics
                 );
             }
@@ -115,7 +109,6 @@ public class ModelBuilder {
                 split[0], 
                 null, 
                 this.cellEntityIdentifier,
-                this.cellFlags,
                 this.semantics
             );
         }
@@ -126,7 +119,6 @@ public class ModelBuilder {
                     this.columnModel, 
                     this.rowModel, 
                     this.cellEntityIdentifier,
-                    this.cellFlags,
                     this.semantics
                 );
             }
@@ -137,7 +129,6 @@ public class ModelBuilder {
                 null, 
                 split[1], 
                 this.cellEntityIdentifier,
-                this.cellFlags,
                 this.semantics
             );
         }
@@ -148,7 +139,6 @@ public class ModelBuilder {
                     this.columnModel, 
                     this.rowModel, 
                     this.cellEntityIdentifier,
-                    this.cellFlags,
                     this.semantics
                 );
             }
@@ -159,7 +149,6 @@ public class ModelBuilder {
                 split[0], 
                 split[1], 
                 this.cellEntityIdentifier,
-                this.cellFlags,
                 this.semantics
             );
         }
@@ -170,7 +159,6 @@ public class ModelBuilder {
                     this.columnModel, 
                     this.rowModel, 
                     this.cellEntityIdentifier,
-                    this.cellFlags,
                     this.semantics
                 );
             }
@@ -183,7 +171,6 @@ public class ModelBuilder {
                 split[2], 
                 split[3], 
                 this.cellEntityIdentifier,
-                this.cellFlags,
                 this.semantics
             );
         }
@@ -194,7 +181,6 @@ public class ModelBuilder {
                     this.columnModel, 
                     this.rowModel, 
                     this.cellEntityIdentifier,
-                    this.cellFlags,
                     this.semantics);
             }
             String locationStrings[] = cellValue.split(";");
@@ -215,7 +201,6 @@ public class ModelBuilder {
                 this.rowModel, 
                 pathElements, 
                 this.cellEntityIdentifier,
-                this.cellFlags,
                 this.semantics
             );
         }
@@ -227,7 +212,6 @@ public class ModelBuilder {
                     this.columnModel, 
                     this.rowModel, 
                     this.cellEntityIdentifier,
-                    this.cellFlags,
                     this.semantics
                 );
             }
@@ -249,7 +233,6 @@ public class ModelBuilder {
                 this.rowModel, 
                 pathElements, 
                 this.cellEntityIdentifier,
-                this.cellFlags,
                 this.semantics
             );
         }
@@ -257,14 +240,13 @@ public class ModelBuilder {
 
     public AbstractCellModel buildCellModel(ColumnModel columnModel, RowModel rowModel, String cellValue,
                                             String cellEntityIdentifier, FormElementModel.ElementType elementType,
-                                            CellFlags cellFlags, Map<String, String> semantics){
+                                            Map<String, String> semantics){
         CellModelBuilder builder = new CellModelBuilder(
                 columnModel,
                 rowModel,
                 cellValue,
                 cellEntityIdentifier,
                 elementType,
-                cellFlags,
                 semantics
         );
 

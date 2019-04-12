@@ -8,8 +8,8 @@ public class GeotraceCellModel extends AbstractCellModel {
 
     public GeotraceCellModel(ColumnModel columnModel, RowModel rowModel,
                              List<GeotraceElement> locationList,
-                             String cellEntityIdentifier, CellFlags cellFlags, Map<String, String> semantics) {
-        super(columnModel, rowModel, cellEntityIdentifier, cellFlags, semantics);
+                             String cellEntityIdentifier, Map<String, String> semantics) {
+        super(columnModel, rowModel, cellEntityIdentifier, semantics);
         for (GeotraceElement e: locationList) {
             e.location.accuracy = turtleEncodeLiteral(e.location.accuracy);
             e.location.latitude = turtleEncodeLiteral(e.location.latitude);
@@ -20,8 +20,8 @@ public class GeotraceCellModel extends AbstractCellModel {
     }
 
     public GeotraceCellModel(ColumnModel columnModel, RowModel rowModel,
-                             String cellEntityIdentifier, CellFlags cellFlags, Map<String, String> semantics) {
-        super(columnModel, rowModel, cellEntityIdentifier, cellFlags, semantics);
+                             String cellEntityIdentifier, Map<String, String> semantics) {
+        super(columnModel, rowModel, cellEntityIdentifier, semantics);
         this.locationList = null;
     }
 }
