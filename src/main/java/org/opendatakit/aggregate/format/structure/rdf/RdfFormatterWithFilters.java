@@ -210,7 +210,6 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
 
         //Columns ~= Questions of the form
         boolean firstColumn = true;
-        output.append("#Each column describes one observation\n");
         for(int col = 0; col < columnFormElementModelsFiltered.size(); col++){
             String colName = columnFormElementModelsFiltered.get(col).getElementName();
 
