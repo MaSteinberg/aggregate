@@ -40,8 +40,8 @@ public class ModelBuilder {
         return new ColumnModel(topLevelModel, columnHeader, columnIdentifier, isFirstColumn, isLastColumn);
     }
 
-    public RowModel buildRowModel(TopLevelModel topLevelModel, String rowId, String rowIdentifier, boolean firstRow){
-        return new RowModel(topLevelModel, rowId, rowIdentifier, firstRow);
+    public RowModel buildRowModel(TopLevelModel topLevelModel, String rowId, String rowIdentifier, boolean isFirstRow){
+        return new RowModel(topLevelModel, rowId, rowIdentifier, isFirstRow);
     }
 
     private class CellModelBuilder {
