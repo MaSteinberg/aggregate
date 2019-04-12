@@ -49,16 +49,18 @@ public class ModelBuilder {
         public String cellValue;
         public String cellEntityIdentifier;
         public FormElementModel.ElementType elementType;
+        public CellFlags cellFlags;
         public Map<String, String> semantics;
 
         public CellModelBuilder(ColumnModel columnModel, RowModel rowModel, String cellValue,
                                 String cellEntityIdentifier, FormElementModel.ElementType elementType,
-                                Map<String, String> semantics) {
+                                CellFlags cellFlags, Map<String, String> semantics) {
             this.columnModel = columnModel;
             this.rowModel = rowModel;
             this.cellValue = cellValue;
             this.cellEntityIdentifier = cellEntityIdentifier;
             this.elementType = elementType;
+            this.cellFlags = cellFlags;
             this.semantics = semantics;
         }
 
@@ -67,7 +69,8 @@ public class ModelBuilder {
                 this.columnModel, 
                 this.rowModel, 
                 this.cellValue, 
-                this.cellEntityIdentifier, 
+                this.cellEntityIdentifier,
+                this.cellFlags,
                 this.semantics
             );
         }
@@ -78,7 +81,8 @@ public class ModelBuilder {
                 return new MultiValueCellModel(
                     this.columnModel, 
                     this.rowModel, 
-                    this.cellEntityIdentifier, 
+                    this.cellEntityIdentifier,
+                    this.cellFlags,
                     this.semantics
                 );
             }
@@ -87,7 +91,8 @@ public class ModelBuilder {
                 this.columnModel, 
                 this.rowModel, 
                 new ArrayList<>(Arrays.asList(values)), 
-                this.cellEntityIdentifier, 
+                this.cellEntityIdentifier,
+                this.cellFlags,
                 this.semantics
             );
         }
@@ -97,7 +102,8 @@ public class ModelBuilder {
                 return new DateTimeCellModel(
                     this.columnModel,
                     this.rowModel, 
-                    this.cellEntityIdentifier, 
+                    this.cellEntityIdentifier,
+                    this.cellFlags,
                     this.semantics
                 );
             }
@@ -107,7 +113,8 @@ public class ModelBuilder {
                 this.rowModel, 
                 split[0], 
                 null, 
-                this.cellEntityIdentifier, 
+                this.cellEntityIdentifier,
+                this.cellFlags,
                 this.semantics
             );
         }
@@ -118,6 +125,7 @@ public class ModelBuilder {
                     this.columnModel, 
                     this.rowModel, 
                     this.cellEntityIdentifier,
+                    this.cellFlags,
                     this.semantics
                 );
             }
@@ -127,7 +135,8 @@ public class ModelBuilder {
                 this.rowModel, 
                 null, 
                 split[1], 
-                this.cellEntityIdentifier, 
+                this.cellEntityIdentifier,
+                this.cellFlags,
                 this.semantics
             );
         }
@@ -137,7 +146,8 @@ public class ModelBuilder {
                 return new DateTimeCellModel(
                     this.columnModel, 
                     this.rowModel, 
-                    this.cellEntityIdentifier, 
+                    this.cellEntityIdentifier,
+                    this.cellFlags,
                     this.semantics
                 );
             }
@@ -147,7 +157,8 @@ public class ModelBuilder {
                 this.rowModel, 
                 split[0], 
                 split[1], 
-                this.cellEntityIdentifier, 
+                this.cellEntityIdentifier,
+                this.cellFlags,
                 this.semantics
             );
         }
@@ -157,7 +168,8 @@ public class ModelBuilder {
                 return new GeolocationCellModel(
                     this.columnModel, 
                     this.rowModel, 
-                    this.cellEntityIdentifier, 
+                    this.cellEntityIdentifier,
+                    this.cellFlags,
                     this.semantics
                 );
             }
@@ -169,7 +181,8 @@ public class ModelBuilder {
                 split[1], 
                 split[2], 
                 split[3], 
-                this.cellEntityIdentifier, 
+                this.cellEntityIdentifier,
+                this.cellFlags,
                 this.semantics
             );
         }
@@ -179,7 +192,8 @@ public class ModelBuilder {
                 return new GeotraceCellModel(
                     this.columnModel, 
                     this.rowModel, 
-                    this.cellEntityIdentifier, 
+                    this.cellEntityIdentifier,
+                    this.cellFlags,
                     this.semantics);
             }
             String locationStrings[] = cellValue.split(";");
@@ -199,7 +213,8 @@ public class ModelBuilder {
                 this.columnModel, 
                 this.rowModel, 
                 pathElements, 
-                this.cellEntityIdentifier, 
+                this.cellEntityIdentifier,
+                this.cellFlags,
                 this.semantics
             );
         }
@@ -210,7 +225,8 @@ public class ModelBuilder {
                 return new GeotraceCellModel(
                     this.columnModel, 
                     this.rowModel, 
-                    this.cellEntityIdentifier, 
+                    this.cellEntityIdentifier,
+                    this.cellFlags,
                     this.semantics
                 );
             }
@@ -231,7 +247,8 @@ public class ModelBuilder {
                 this.columnModel, 
                 this.rowModel, 
                 pathElements, 
-                this.cellEntityIdentifier, 
+                this.cellEntityIdentifier,
+                this.cellFlags,
                 this.semantics
             );
         }
@@ -239,13 +256,14 @@ public class ModelBuilder {
 
     public AbstractCellModel buildCellModel(ColumnModel columnModel, RowModel rowModel, String cellValue,
                                             String cellEntityIdentifier, FormElementModel.ElementType elementType,
-                                            Map<String, String> semantics){
+                                            CellFlags cellFlags, Map<String, String> semantics){
         CellModelBuilder builder = new CellModelBuilder(
                 columnModel,
                 rowModel,
                 cellValue,
                 cellEntityIdentifier,
                 elementType,
+                cellFlags,
                 semantics
         );
 

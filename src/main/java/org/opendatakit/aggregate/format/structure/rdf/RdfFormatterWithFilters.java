@@ -83,9 +83,11 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
 
     private Map<FormElementModel.ElementType, Mustache> elementTypeToCellMustacheMap;
 
+    private Map<String, Boolean> firstCellsPerColumnFlags = new HashMap<>();
     private ModelBuilder modelBuilder = new ModelBuilder();
     private TopLevelModel toplevelModel;
     private List<ColumnModel> columnModels = new ArrayList<>();
+
 
     public RdfFormatterWithFilters(IForm xform, String webServerUrl, PrintWriter printWriter,
                                    FilterGroup filterGroup, String baseURI, Boolean requireRowUUID, String templateGroup) {
@@ -109,6 +111,11 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
         GenerateHeaderInfo headerGeneratorUnfiltered = new GenerateHeaderInfo(noFilter, summary, form);
         headerGeneratorUnfiltered.processForHeaderInfo(form.getTopLevelGroupElement());
         columnFormElementModelsUnfiltered = headerGeneratorUnfiltered.getIncludedElements();
+
+        //Set "firstCell" flags for all columns to true
+        for (FormElementModel col : columnFormElementModelsFiltered) {
+            firstCellsPerColumnFlags.put(col.getElementName(), true);
+        }
 
         //Initialize Mustache & compile the templates
         String templateGroupRoot = "rdfExport/mustache_templates/" + this.templateGroup;
@@ -211,6 +218,7 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
         output.append("#Each column describes one observation\n");
         for(int col = 0; col < columnFormElementModelsFiltered.size(); col++){
             String colName = columnFormElementModelsFiltered.get(col).getElementName();
+
             //InstanceID is a special case - it's not to be considered a field for the RDF export
             if(colName.equals("instanceID")){
                 //Adding a null-value to the list of column models makes indexing easier in the cells-section
@@ -291,7 +299,10 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
 
             //Cells
             int columnNumber = 0;
-            for(String cellValue : formattedValuesFiltered){
+            boolean isFirstCellOfRow = true;
+            Iterator<String> cellIt = formattedValuesFiltered.iterator();
+            while(cellIt.hasNext()){
+                String cellValue = cellIt.next();
                 String columnName = columnFormElementModelsFiltered.get(columnNumber).getElementName();
                 //InstanceID is a special case - it's not to be considered a field for the RDF export
                 if(!columnName.equals("instanceID")) {
@@ -319,14 +330,30 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
                             //Find index of the referenced column (using the unfiltered FormElementModels here)
                             int index = IntStream.range(0, columnFormElementModelsUnfiltered.size())
                                     .filter(i -> columnFormElementModelsUnfiltered.get(i).getElementName().equals(referenceColumn))
-                                    .findFirst().orElseThrow(() -> new ODKDatastoreException("Semantic information is referencing the non-existing column " + referenceColumn));
+                                    .findFirst().orElseThrow(
+                                            () -> new ODKDatastoreException("Semantic information is referencing the non-existing column " + referenceColumn)
+                                    );
                             String referenceValue = formattedValuesUnfiltered.get(index);
                             entry.setValue(referenceValue);
                         }
                     }
 
                     FormElementModel.ElementType elementType = columnFormElementModelsFiltered.get(columnNumber).getElementType();
-                    AbstractCellModel cellModel = modelBuilder.buildCellModel(columnModels.get(columnNumber), rowModel, cellValue, cellEntityIdentifier, elementType, semanticsForGivenRow);
+                    //Determine the flags for the current cell
+                    CellFlags flags = new CellFlags(
+                            firstCellsPerColumnFlags.get(columnName), //isFirstCellOfColumn
+                            isFirstCellOfRow, //isFirstCellOfRow
+                            cellIt.hasNext() //isLastCellOfRow
+                    );
+                    AbstractCellModel cellModel = modelBuilder.buildCellModel(
+                            columnModels.get(columnNumber),
+                            rowModel,
+                            cellValue,
+                            cellEntityIdentifier,
+                            elementType,
+                            flags,
+                            semanticsForGivenRow
+                    );
                     //Use the generic cell-template
                     genericCellMustache.execute(output, cellModel);
 
@@ -338,6 +365,10 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
                         cellMustache = elementTypeToCellMustacheMap.get(STRING);
                     }
                     cellMustache.execute(output, cellModel);
+
+                    //Set flags for next cell
+                    isFirstCellOfRow = false;
+                    firstCellsPerColumnFlags.put(columnName, false);
                 }
                 columnNumber++;
             }

@@ -8,8 +8,8 @@ public class MultiValueCellModel extends AbstractCellModel {
     public List<String> cellValues;
 
     public MultiValueCellModel(ColumnModel columnModel, RowModel rowModel, ArrayList<String> cellValues,
-                               String cellEntityIdentifier, Map<String, String> semantics) {
-        super(columnModel, rowModel, cellEntityIdentifier, semantics);
+                               String cellEntityIdentifier, CellFlags cellFlags, Map<String, String> semantics) {
+        super(columnModel, rowModel, cellEntityIdentifier, cellFlags, semantics);
         for (int i = 0; i < cellValues.size(); i++) {
             cellValues.set(i, turtleEncodeLiteral(cellValues.get(i)));
         }
@@ -17,8 +17,8 @@ public class MultiValueCellModel extends AbstractCellModel {
     }
 
     public MultiValueCellModel(ColumnModel columnModel, RowModel rowModel,
-                               String cellEntityIdentifier, Map<String, String> semantics) {
-        super(columnModel, rowModel, cellEntityIdentifier, semantics);
+                               String cellEntityIdentifier, CellFlags cellFlags, Map<String, String> semantics) {
+        super(columnModel, rowModel, cellEntityIdentifier, cellFlags, semantics);
         this.cellValues = null;
     }
 }

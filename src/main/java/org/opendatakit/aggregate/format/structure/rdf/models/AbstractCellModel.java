@@ -10,12 +10,15 @@ public abstract class AbstractCellModel {
     public ColumnModel columnModel;
     public RowModel rowModel;
     public String cellEntityIdentifier;
+    public CellFlags cellFlags;
     public Map<String, SemanticsModel> semantics;
 
-    AbstractCellModel(ColumnModel columnModel, RowModel rowModel, String cellEntityIdentifier, Map<String, String> semanticsValueMap) {
+    AbstractCellModel(ColumnModel columnModel, RowModel rowModel,
+                      String cellEntityIdentifier, CellFlags cellFlags, Map<String, String> semanticsValueMap) {
         this.columnModel = columnModel;
         this.rowModel = rowModel;
         this.cellEntityIdentifier = cellEntityIdentifier;
+        this.cellFlags = cellFlags;
         //The template has to distinguish between RDF-resources and literals so for each value we have to set a flag
         //containing that information
         this.semantics = new HashMap<>();

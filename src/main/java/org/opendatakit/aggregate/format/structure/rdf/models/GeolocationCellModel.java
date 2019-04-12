@@ -7,8 +7,8 @@ public class GeolocationCellModel extends AbstractCellModel {
 
     public GeolocationCellModel(ColumnModel columnModel, RowModel rowModel,
                                 String latitude, String longitude, String altitude, String accuracy,
-                                String cellEntityIdentifier, Map<String, String> semantics) {
-        super(columnModel, rowModel, cellEntityIdentifier, semantics);
+                                String cellEntityIdentifier, CellFlags cellFlags, Map<String, String> semantics) {
+        super(columnModel, rowModel, cellEntityIdentifier, cellFlags, semantics);
         this.location = new Location(turtleEncodeLiteral(latitude),
                                         turtleEncodeLiteral(longitude),
                                         turtleEncodeLiteral(altitude),
@@ -16,8 +16,8 @@ public class GeolocationCellModel extends AbstractCellModel {
     }
 
     public GeolocationCellModel(ColumnModel columnModel, RowModel rowModel,
-                                String cellEntityIdentifier, Map<String, String> semantics) {
-        super(columnModel, rowModel, cellEntityIdentifier, semantics);
+                                String cellEntityIdentifier, CellFlags cellFlags, Map<String, String> semantics) {
+        super(columnModel, rowModel, cellEntityIdentifier, cellFlags, semantics);
         this.location = null;
     }
 }
