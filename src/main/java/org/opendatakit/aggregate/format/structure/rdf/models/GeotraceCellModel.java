@@ -6,7 +6,9 @@ import java.util.Map;
 public class GeotraceCellModel extends AbstractCellModel {
     List<GeotraceElement> locationList;
 
-    public GeotraceCellModel(ColumnModel columnModel, RowModel rowModel, List<GeotraceElement> locationList, String cellEntityIdentifier, Map<String, String> semantics) {
+    public GeotraceCellModel(ColumnModel columnModel, RowModel rowModel,
+                             List<GeotraceElement> locationList,
+                             String cellEntityIdentifier, Map<String, String> semantics) {
         super(columnModel, rowModel, cellEntityIdentifier, semantics);
         for (GeotraceElement e: locationList) {
             e.location.accuracy = turtleEncodeLiteral(e.location.accuracy);
@@ -17,7 +19,8 @@ public class GeotraceCellModel extends AbstractCellModel {
         this.locationList = locationList;
     }
 
-    public GeotraceCellModel(ColumnModel columnModel, RowModel rowModel, String cellEntityIdentifier, Map<String, String> semantics) {
+    public GeotraceCellModel(ColumnModel columnModel, RowModel rowModel,
+                             String cellEntityIdentifier, Map<String, String> semantics) {
         super(columnModel, rowModel, cellEntityIdentifier, semantics);
         this.locationList = null;
     }
