@@ -131,7 +131,9 @@ public final class ServletConsts {
 
   public static final String JSON_FILENAME_APPEND = "_results.json";
 
-  public static final String RDF_FILENAME_APPEND = "_results.ttl";
+  public static final String RDF_FILENAME_APPEND = "_results";
+
+  public static final String RDF_FILENAME_TYPE_FALLBACK = ".ttl";
 
   public static final String RECORD_KEY = "record";
 
