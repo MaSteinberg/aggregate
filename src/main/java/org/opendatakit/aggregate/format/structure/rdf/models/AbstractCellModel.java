@@ -12,7 +12,8 @@ public abstract class AbstractCellModel {
     public String cellEntityIdentifier;
     public Map<String, SemanticsModel> semantics;
 
-    AbstractCellModel(ColumnModel columnModel, RowModel rowModel, String cellEntityIdentifier, Map<String, String> semanticsValueMap) {
+    AbstractCellModel(ColumnModel columnModel, RowModel rowModel,
+                      String cellEntityIdentifier, Map<String, String> semanticsValueMap) {
         this.columnModel = columnModel;
         this.rowModel = rowModel;
         this.cellEntityIdentifier = cellEntityIdentifier;
