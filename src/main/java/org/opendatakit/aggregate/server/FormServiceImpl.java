@@ -370,7 +370,7 @@ public class FormServiceImpl extends RemoteServiceServlet implements
       params.put(RdfGenerator.RDF_BASEURI_KEY, baseURI);
       params.put(RdfGenerator.RDF_REQUIREUUIDS_KEY, String.valueOf(requireRowUUIDs));
       params.put(RdfGenerator.RDF_TEMPLATE_KEY, templateGroup);
-      PersistentResults r = new PersistentResults(ExportType.RDF, form, filterGrp, params, cc);
+      PersistentResults r = new PersistentResults(ExportType.FLEX, form, filterGrp, params, cc);
       r.persist(cc);
 
       // create rdf task
