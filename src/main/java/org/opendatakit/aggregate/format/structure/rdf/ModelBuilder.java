@@ -23,7 +23,16 @@ public class ModelBuilder {
         String lastUpdate = (form.getLastUpdateDate() == null) ? "" : form.getLastUpdateDate().toString();
         String version = (form.getMajorMinorVersionString() == null) ? "" : form.getMajorMinorVersionString();
 
-        return new TopLevelModel(toplevelIdentifier, formId, name, description, creationDate, creationUser, lastUpdate, version);
+        return new TopLevelModel(
+                toplevelIdentifier,
+                formId,
+                name,
+                description,
+                creationDate,
+                creationUser,
+                lastUpdate,
+                version
+        );
     }
 
     public ColumnModel buildColumnModel(TopLevelModel topLevelModel, String columnHeader, String columnIdentifier){
@@ -41,6 +50,17 @@ public class ModelBuilder {
         public String cellEntityIdentifier;
         public FormElementModel.ElementType elementType;
         public Map<String, String> semantics;
+
+        public CellModelBuilder(ColumnModel columnModel, RowModel rowModel, String cellValue,
+                                String cellEntityIdentifier, FormElementModel.ElementType elementType,
+                                Map<String, String> semantics) {
+            this.columnModel = columnModel;
+            this.rowModel = rowModel;
+            this.cellValue = cellValue;
+            this.cellEntityIdentifier = cellEntityIdentifier;
+            this.elementType = elementType;
+            this.semantics = semantics;
+        }
 
         AbstractCellModel buildSingleValueCellModel() {
             return new SingleValueCellModel(
@@ -217,14 +237,17 @@ public class ModelBuilder {
         }
     }
 
-    public AbstractCellModel buildCellModel(ColumnModel columnModel, RowModel rowModel, String cellValue, String cellEntityIdentifier, FormElementModel.ElementType elementType, Map<String, String> semantics){
-        CellModelBuilder builder = new CellModelBuilder();
-        builder.columnModel = columnModel;
-        builder.rowModel = rowModel;
-        builder.cellValue = cellValue;
-        builder.cellEntityIdentifier = cellEntityIdentifier;
-        builder.elementType = elementType;
-        builder.semantics = semantics;
+    public AbstractCellModel buildCellModel(ColumnModel columnModel, RowModel rowModel, String cellValue,
+                                            String cellEntityIdentifier, FormElementModel.ElementType elementType,
+                                            Map<String, String> semantics){
+        CellModelBuilder builder = new CellModelBuilder(
+                columnModel,
+                rowModel,
+                cellValue,
+                cellEntityIdentifier,
+                elementType,
+                semantics
+        );
 
         switch(elementType){
             case DECIMAL:
