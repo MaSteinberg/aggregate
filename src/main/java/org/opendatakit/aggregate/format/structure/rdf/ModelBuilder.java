@@ -35,7 +35,8 @@ public class ModelBuilder {
         );
     }
 
-    public ColumnModel buildColumnModel(TopLevelModel topLevelModel, String columnHeader, String columnIdentifier, boolean isFirstColumn, boolean isLastColumn){
+    public ColumnModel buildColumnModel(TopLevelModel topLevelModel, String columnHeader, String columnIdentifier,
+                                        boolean isFirstColumn, boolean isLastColumn){
         return new ColumnModel(topLevelModel, columnHeader, columnIdentifier, isFirstColumn, isLastColumn);
     }
 
