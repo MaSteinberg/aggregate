@@ -188,7 +188,7 @@ public class ModelBuilder {
                 String locationString = locationStrings[i];
                 String split[] = locationString.split(" ", 4);
                 //If we have less than four elements in split it's because the last location's data was cut off due to the
-                //DB field length restriction - so it's an incomplete record and we just discard the last location(s)
+                //DB field length restriction - so it's an incomplete record and we just discard the last location
                 if (split.length >= 4){
                     pathElements.add(
                         new GeotraceElement(i + 1, new Location(split[0], split[1], split[2], split[3]))
@@ -220,7 +220,7 @@ public class ModelBuilder {
                 String locationString = locationStrings[i];
                 String split[] = locationString.split(" ", 4);
                 //If we have less than four elements in split it's because the last location's data was cut off due to the
-                //DB field length restriction - so it's an incomplete record and we just discard the last location(s)
+                //DB field length restriction - so it's an incomplete record and we just discard the last location
                 if (split.length >= 4){
                     pathElements.add(
                         new GeotraceElement(i + 1, new Location(split[0], split[1], split[2], split[3]))
