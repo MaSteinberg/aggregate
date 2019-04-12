@@ -83,6 +83,7 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
 
     private Map<FormElementModel.ElementType, Mustache> elementTypeToCellMustacheMap;
 
+    private boolean firstRow = true;
     private Map<String, Boolean> firstCellsPerColumnFlags = new HashMap<>();
     private ModelBuilder modelBuilder = new ModelBuilder();
     private TopLevelModel toplevelModel;
@@ -294,8 +295,9 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
             }
 
             //For each row create the RowModel and fill the template
-            RowModel rowModel = modelBuilder.buildRowModel(toplevelModel, rowId, rowEntityIdentifier);
+            RowModel rowModel = modelBuilder.buildRowModel(toplevelModel, rowId, rowEntityIdentifier, firstRow);
             rowMustache.execute(output, rowModel);
+            firstRow = false;
 
             //Cells
             int columnNumber = 0;
