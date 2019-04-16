@@ -22,6 +22,8 @@ import java.util.Map;
  *
  */
 public class SemanticsParser {
+    private static final String SEM_NODE_TAG_NAME = "sem:node";
+    private static final String FIELD_IDENTIFIER_NAME = "fieldName";
     private Logger logger = LoggerFactory.getLogger(SemanticsParser.class);
 
     public void parseSemantics(String xmlDocument, String formId, CallingContext cc) throws SAXException, ParserConfigurationException, IOException {
@@ -46,7 +48,7 @@ public class SemanticsParser {
         @Override
         public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
             //A <sem:node></sem:node> describes the semantics of a single data-field in a survey
-            if(qName.equals("sem:node")){
+            if(qName.equals(SEM_NODE_TAG_NAME)){
                 String fieldName = "";
                 Map<String, String> termValueMap = new HashMap<>();
                 //Loop through all attributes of the current XML-element
@@ -55,15 +57,16 @@ public class SemanticsParser {
                     String attributeName = attributes.getQName(i);
                     if(val != null && val.trim().length() > 0) {
                         //Store the value either as the fieldName or in a Map<AttributeName, Value>
-                        if (attributeName.equals("fieldName")) {
+                        if (attributeName.equals(FIELD_IDENTIFIER_NAME)) {
                             fieldName = val;
                         } else {
-                            termValueMap.put(attributeName, val);
+                            //Decode the URI
+                            termValueMap.put(attributeName, decodeFromBuild(val));
                         }
                     }
                 }
                 //We can't assert the DB-entities in the loop above as we need the fieldName but we can't guarantee
-                // the order of the XML-attributes
+                //the order of the XML-attributes
                 for(Map.Entry<String, String> entry : termValueMap.entrySet()){
                     try {
                         //Persist the semantics in the database
@@ -75,5 +78,13 @@ public class SemanticsParser {
                 }
             }
         }
+    }
+
+    private static String decodeFromBuild(String encoded){
+        if(encoded == null)
+            return null;
+        return encoded.replaceAll("__", ":")
+                .replaceAll("--", "/")
+                .replaceAll("_-_", "#");
     }
 }
