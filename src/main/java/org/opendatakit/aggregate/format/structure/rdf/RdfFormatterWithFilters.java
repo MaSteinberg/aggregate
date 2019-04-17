@@ -84,6 +84,7 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
     private Mustache columnMustache;
     private Mustache rowMustache;
     private Mustache genericCellMustache;
+    private Mustache terminationMustache;
 
     private Map<FormElementModel.ElementType, Mustache> elementTypeToCellMustacheMap;
 
@@ -130,6 +131,7 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
         this.columnMustache = mf.compile(templateGroupRoot + "/column.ttl.mustache");
         this.rowMustache = mf.compile(templateGroupRoot + "/row.ttl.mustache");
         this.genericCellMustache = mf.compile(templateGroupRoot + "/cell.ttl.mustache");
+        this.terminationMustache = mf.compile(templateGroupRoot + "/termination.ttl.mustache");
         //Assign and compile the cell templates
         elementTypeToCellMustacheMap = new HashMap();
         String cellTemplateRoot = templateGroupRoot + "/elementTypeCells/";
@@ -368,5 +370,21 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
 
     @Override
     public void afterProcessSubmissions(CallingContext cc) throws ODKDatastoreException {
+        //Execute termination template with the same Model as the Toplevel template
+        ByteArrayOutputStream identifierStream = new ByteArrayOutputStream();
+        PrintWriter identifierWriter;
+        String toplevelEntityIdentifier = "";
+        try {
+            identifierWriter = new PrintWriter(new OutputStreamWriter(identifierStream, HtmlConsts.UTF8_ENCODE));
+            toplevelIdentifierMustache.execute(identifierWriter, this.form.getFormId());
+            identifierWriter.close();
+            toplevelEntityIdentifier = identifierStream.toString();
+            identifierStream.reset();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        toplevelModel = modelBuilder.buildTopLevelModel(this.form, toplevelEntityIdentifier);
+        terminationMustache.execute(output, toplevelModel);
     }
 }
