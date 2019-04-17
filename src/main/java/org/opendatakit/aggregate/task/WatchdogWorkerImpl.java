@@ -360,7 +360,7 @@ public class WatchdogWorkerImpl {
           jsonGenerator.createJsonFileTask(form, persistentResult.getSubmissionKey(), attemptCount,
               cc);
           break;
-        case RDF:
+          case FLEX:
           rdfGenerator.createRdfTask(form, persistentResult, attemptCount, cc);
           break;
         default:

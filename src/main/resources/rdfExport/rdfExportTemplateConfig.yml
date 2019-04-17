@@ -36,3 +36,4 @@ availableProperties:
       }
 templates:
   - oboe
+  - csv

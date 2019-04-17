@@ -23,7 +23,7 @@ public enum ExportType implements Serializable {
     CSV("CSV file"),
     KML("KML file"),
     JSONFILE("JSON file"),
-    RDF("RDF file");
+    FLEX("Flexible Export");
     
     private String displayText;
     

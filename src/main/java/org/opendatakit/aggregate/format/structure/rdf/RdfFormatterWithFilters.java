@@ -23,6 +23,7 @@ import org.opendatakit.aggregate.client.filter.FilterGroup;
 import org.opendatakit.aggregate.client.form.RdfTemplateConfig;
 import org.opendatakit.aggregate.client.form.TemplateProperties;
 import org.opendatakit.aggregate.client.submission.SubmissionUISummary;
+import org.opendatakit.aggregate.constants.ServletConsts;
 import org.opendatakit.aggregate.constants.common.FormElementNamespace;
 import org.opendatakit.aggregate.constants.common.UIConsts;
 import org.opendatakit.aggregate.datamodel.FormElementModel;
@@ -55,6 +56,9 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
     public static final String ONTOLOGY_REF_PREFIX = "_onto_";
     public static final String COLUMN_REF_PREFIX = "_col_";
     private final Logger logger = LoggerFactory.getLogger(RdfFormatterWithFilters.class);
+
+    //Can be overwritten by the selected template
+    public String filetype = ServletConsts.RDF_FILENAME_TYPE_FALLBACK;
 
     private ElementFormatter elemFormatter;
     private List<FormElementModel> columnFormElementModelsFiltered;
@@ -186,9 +190,13 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
                 }
             }
         }
+        //Let the template config overwrite the default filetype
+        if(templateConfig.getFiletype() != null && !StringUtils.isBlank(templateConfig.getFiletype())){
+            this.filetype = templateConfig.getFiletype();
+        }
 
         //Namespaces
-        namespacesMustache.execute(output, this.baseURI );
+        namespacesMustache.execute(output, this.baseURI);
 
         //Toplevel
         //Generate toplevel identifier via template
@@ -210,7 +218,6 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
 
         //Columns ~= Questions of the form
         boolean firstColumn = true;
-        output.append("#Each column describes one observation\n");
         for(int col = 0; col < columnFormElementModelsFiltered.size(); col++){
             String colName = columnFormElementModelsFiltered.get(col).getElementName();
 
