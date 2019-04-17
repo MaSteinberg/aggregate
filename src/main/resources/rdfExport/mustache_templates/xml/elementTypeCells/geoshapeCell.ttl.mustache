@@ -1,0 +1,20 @@
+{{#columnModel.isFirstColumn}}
+<row>
+{{/columnModel.isFirstColumn}}
+<{{columnModel.columnHeader}}>
+    <collection>
+        {{#locationList}}
+        <collectionValue>
+            <location 
+                latitude="{{location.latitude}}" 
+                longitude="{{location.longitude}}" 
+                altitude="{{location.altitude}}"
+                accuracy="{{location.accuracy}}"
+            />
+        </collectionValue>
+        {{/locationList}}
+    </collection>
+</{{columnModel.columnHeader}}>
+{{#columnModel.isLastColumn}}
+</row>
+{{/columnModel.isLastColumn}}

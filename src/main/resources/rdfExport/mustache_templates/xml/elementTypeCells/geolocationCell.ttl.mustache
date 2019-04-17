@@ -1,0 +1,14 @@
+{{#columnModel.isFirstColumn}}
+<row>
+{{/columnModel.isFirstColumn}}
+<{{columnModel.columnHeader}}>
+    <location 
+        latitude="{{location.latitude}}" 
+        longitude="{{location.longitude}}" 
+        altitude="{{location.altitude}}"
+        accuracy="{{location.accuracy}}"
+    />
+</{{columnModel.columnHeader}}>
+{{#columnModel.isLastColumn}}
+</row>
+{{/columnModel.isLastColumn}}

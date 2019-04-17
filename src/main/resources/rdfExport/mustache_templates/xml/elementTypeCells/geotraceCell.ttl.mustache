@@ -1,0 +1,20 @@
+{{#columnModel.isFirstColumn}}
+<row>
+{{/columnModel.isFirstColumn}}
+<{{columnModel.columnHeader}}>
+    <enum>
+        {{#locationList}}
+        <enumValue index="{{pathElementIndex}}">
+            <location 
+                latitude="{{location.latitude}}" 
+                longitude="{{location.longitude}}" 
+                altitude="{{location.altitude}}"
+                accuracy="{{location.accuracy}}"
+            />
+        </enumValue>
+        {{/locationList}}
+    </enum>
+</{{columnModel.columnHeader}}>
+{{#columnModel.isLastColumn}}
+</row>
+{{/columnModel.isLastColumn}}
