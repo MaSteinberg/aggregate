@@ -125,26 +125,26 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
         this.rowIdentifierMustache = mf.compile("rdfExport/mustache_templates/common/rowIdentifier.mustache");
         this.cellIdentifierMustache = mf.compile("rdfExport/mustache_templates/common/cellIdentifier.mustache");
         //Turtle templates
-        this.namespacesMustache = mf.compile(templateGroupRoot + "/namespaces.ttl.mustache");
-        this.toplevelMustache = mf.compile(templateGroupRoot + "/toplevel.ttl.mustache");
-        this.columnMustache = mf.compile(templateGroupRoot + "/column.ttl.mustache");
-        this.rowMustache = mf.compile(templateGroupRoot + "/row.ttl.mustache");
-        this.genericCellMustache = mf.compile(templateGroupRoot + "/cell.ttl.mustache");
+        this.namespacesMustache = mf.compile(templateGroupRoot + "/namespaces.mustache");
+        this.toplevelMustache = mf.compile(templateGroupRoot + "/toplevel.mustache");
+        this.columnMustache = mf.compile(templateGroupRoot + "/column.mustache");
+        this.rowMustache = mf.compile(templateGroupRoot + "/row.mustache");
+        this.genericCellMustache = mf.compile(templateGroupRoot + "/cell.mustache");
         //Assign and compile the cell templates
         elementTypeToCellMustacheMap = new HashMap();
         String cellTemplateRoot = templateGroupRoot + "/elementTypeCells/";
-        elementTypeToCellMustacheMap.put(DECIMAL, mf.compile(cellTemplateRoot + "decimalCell.ttl.mustache"));
-        elementTypeToCellMustacheMap.put(INTEGER, mf.compile(cellTemplateRoot + "integerCell.ttl.mustache"));
-        elementTypeToCellMustacheMap.put(STRING, mf.compile(cellTemplateRoot + "stringCell.ttl.mustache"));
-        elementTypeToCellMustacheMap.put(SELECT1, mf.compile(cellTemplateRoot + "select1Cell.ttl.mustache"));
-        elementTypeToCellMustacheMap.put(BOOLEAN, mf.compile(cellTemplateRoot + "booleanCell.ttl.mustache"));
-        elementTypeToCellMustacheMap.put(JRDATE, mf.compile(cellTemplateRoot + "dateCell.ttl.mustache"));
-        elementTypeToCellMustacheMap.put(JRTIME, mf.compile(cellTemplateRoot + "timeCell.ttl.mustache"));
-        elementTypeToCellMustacheMap.put(JRDATETIME, mf.compile(cellTemplateRoot + "dateTimeCell.ttl.mustache"));
-        elementTypeToCellMustacheMap.put(GEOPOINT, mf.compile(cellTemplateRoot + "geolocationCell.ttl.mustache"));
-        elementTypeToCellMustacheMap.put(GEOTRACE, mf.compile(cellTemplateRoot + "geotraceCell.ttl.mustache"));
-        elementTypeToCellMustacheMap.put(GEOSHAPE, mf.compile(cellTemplateRoot + "geoshapeCell.ttl.mustache"));
-        elementTypeToCellMustacheMap.put(SELECTN, mf.compile(cellTemplateRoot + "multipleChoiceCell.ttl.mustache"));
+        elementTypeToCellMustacheMap.put(DECIMAL, mf.compile(cellTemplateRoot + "decimalCell.mustache"));
+        elementTypeToCellMustacheMap.put(INTEGER, mf.compile(cellTemplateRoot + "integerCell.mustache"));
+        elementTypeToCellMustacheMap.put(STRING, mf.compile(cellTemplateRoot + "stringCell.mustache"));
+        elementTypeToCellMustacheMap.put(SELECT1, mf.compile(cellTemplateRoot + "select1Cell.mustache"));
+        elementTypeToCellMustacheMap.put(BOOLEAN, mf.compile(cellTemplateRoot + "booleanCell.mustache"));
+        elementTypeToCellMustacheMap.put(JRDATE, mf.compile(cellTemplateRoot + "dateCell.mustache"));
+        elementTypeToCellMustacheMap.put(JRTIME, mf.compile(cellTemplateRoot + "timeCell.mustache"));
+        elementTypeToCellMustacheMap.put(JRDATETIME, mf.compile(cellTemplateRoot + "dateTimeCell.mustache"));
+        elementTypeToCellMustacheMap.put(GEOPOINT, mf.compile(cellTemplateRoot + "geolocationCell.mustache"));
+        elementTypeToCellMustacheMap.put(GEOTRACE, mf.compile(cellTemplateRoot + "geotraceCell.mustache"));
+        elementTypeToCellMustacheMap.put(GEOSHAPE, mf.compile(cellTemplateRoot + "geoshapeCell.mustache"));
+        elementTypeToCellMustacheMap.put(SELECTN, mf.compile(cellTemplateRoot + "multipleChoiceCell.mustache"));
     }
 
     @Override
