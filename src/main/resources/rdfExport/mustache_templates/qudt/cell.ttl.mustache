@@ -1,0 +1,38 @@
+#Row {{rowModel.rowId}}, Column {{columnModel.columnHeader}}
+
+:quantity_{{rowModel.rowId}}_{{columnModel.columnHeader}} rdf:type qudt:Quantity .
+:quantityValue_{{rowModel.rowId}}_{{columnModel.columnHeader}} rdf:type qudt:QuantityValue .
+:quantity_{{rowModel.rowId}}_{{columnModel.columnHeader}} qudt:quantityValue :quantityValue_{{rowModel.rowId}}_{{columnModel.columnHeader}} .  
+
+{{!Use semantic information}}
+{{!QudtQuantityKind - required}}
+{{^semantics.QudtQuantityKind.isLiteral}}
+       :quantityValue_{{rowModel.rowId}}_{{columnModel.columnHeader}} qudt:hasQuantityKind <{{{semantics.QudtQuantityKind.value}}}> .
+{{/semantics.QudtQuantityKind.isLiteral}}
+
+{{!Use semantic information}}
+{{!QudtUnit - required}}
+{{^semantics.QudtUnit.isLiteral}}
+       :quantityValue_{{rowModel.rowId}}_{{columnModel.columnHeader}} qudt:unit <{{{semantics.QudtUnit.value}}}> .
+{{/semantics.QudtUnit.isLiteral}}
+
+{{!Use semantic information}}
+{{!Creator - optional}}
+{{#semantics.Creator}}
+{{!Given a literal value}}
+    {{#semantics.Creator.isLiteral}}
+        :quantity_{{rowModel.rowId}}_{{columnModel.columnHeader}} dcterms:creator :creator_{{columnModel.columnHeader}}_{{rowModel.rowId}} .
+        :creator_{{columnModel.columnHeader}}_{{rowModel.rowId}} rdf:type foaf:Person .
+        :creator_{{columnModel.columnHeader}}_{{rowModel.rowId}} foaf:name "{{{semantics.Creator.value}}}" .
+    {{/semantics.Creator.isLiteral}}
+    {{!Given an RDF resource}}
+    {{^semantics.Creator.isLiteral}}
+        :quantity_{{rowModel.rowId}}_{{columnModel.columnHeader}} dcterms:creator <{{{semantics.Creator.value}}}> .
+    {{/semantics.Creator.isLiteral}}
+{{/semantics.Creator}}
+
+{{!TimeOfCreation - optional}}
+{{!Given a literal value}}
+{{#semantics.TimeOfCreation.isLiteral}}
+        :quantity_{{rowModel.rowId}}_{{columnModel.columnHeader}} dcterms:created "{{{semantics.TimeOfCreation.value}}}" .
+{{/semantics.TimeOfCreation.isLiteral}}

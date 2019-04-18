@@ -1,0 +1,6 @@
+{{!Relate the actual cell-values to the MeasuredValue}}
+:quantityValue_{{rowModel.rowId}}_{{columnModel.columnHeader}} :hasValue (
+    {{#cellValues}}
+    "{{{.}}}"^^xsd:string
+    {{/cellValues}}
+) .
