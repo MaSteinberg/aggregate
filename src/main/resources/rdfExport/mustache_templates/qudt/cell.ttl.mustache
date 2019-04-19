@@ -1,0 +1,62 @@
+#Row {{rowModel.rowId}}, Column {{columnModel.columnHeader}}
+{{!Construct an oboe-core:Measurement for the cell}}
+{{cellEntityIdentifier}} rdf:type qudt:Quantity ;
+                        qudt:hasQuantityKind
+{{#semantics.QudtQuantityKind.isLiteral}}
+    [
+        a qudt:QuantityKind .
+        rdfs:label "{{{semantics.QudtQuantityKind.value}}}" . 
+    ] .
+{{/semantics.QudtQuantityKind.isLiteral}}
+{{!Given an RDF resource}}
+{{^semantics.QudtQuantityKind.isLiteral}}
+    <{{{semantics.QudtQuantityKind.value}}}> .
+{{/semantics.QudtQuantityKind.isLiteral}}
+
+{{!Relate the Measurement to the Observation}}
+{{columnModel.columnEntityIdentifier}} dcterms:hasPart {{cellEntityIdentifier}} .
+{{rowModel.rowEntityIdentifier}} dcterms:hasPart {{cellEntityIdentifier}} .
+{{!Construct an oboe-core:MeasuredValue for the cell}}
+:measuredValue_{{rowModel.rowId}}_{{columnModel.columnHeader}} rdf:type qudt:QuantityValue .
+{{!Relate the Measurement to the MeasuredValue}}
+{{cellEntityIdentifier}} qudt:quantityValue :measuredValue_{{rowModel.rowId}}_{{columnModel.columnHeader}} .
+
+{{!Use semantic information}}
+{{!Creator - optional}}
+{{#semantics.Creator}}
+{{!Given a literal value}}
+    {{#semantics.Creator.isLiteral}}
+        {{cellEntityIdentifier}} dcterms:creator :creator_{{columnModel.columnHeader}}_{{rowModel.rowId}} .
+        :creator_{{columnModel.columnHeader}}_{{rowModel.rowId}} rdf:type foaf:Person .
+        :creator_{{columnModel.columnHeader}}_{{rowModel.rowId}} foaf:name "{{{semantics.Creator.value}}}" .
+    {{/semantics.Creator.isLiteral}}
+    {{!Given an RDF resource}}
+    {{^semantics.Creator.isLiteral}}
+        {{cellEntityIdentifier}} dcterms:creator <{{{semantics.Creator.value}}}> .
+    {{/semantics.Creator.isLiteral}}
+{{/semantics.Creator}}
+
+{{#semantics.TimeOfCreation}}
+{{!Given a literal value}}
+    {{#semantics.TimeOfCreation.isLiteral}}
+        {{cellEntityIdentifier}} dcterms:created "{{{semantics.TimeOfCreation.value}}}"^^xsd:dateTime .
+    {{/semantics.TimeOfCreation.isLiteral}}
+    {{!Given an RDF resource}}
+    {{^semantics.TimeOfCreation.isLiteral}}
+        {{cellEntityIdentifier}} :created <{{{semantics.TimeOfCreation.value}}}> .
+    {{/semantics.TimeOfCreation.isLiteral}}
+{{/semantics.TimeOfCreation}}
+
+{{!QudtUnit - required}}
+{{!Given a literal value}}
+{{#semantics.QudtUnit.isLiteral}}
+    :measuredValue_{{rowModel.rowId}}_{{columnModel.columnHeader}} qudt:unit [
+        rdfs:label "{{{semantics.QudtUnit.value}}}" .
+        a qudt:Unit .
+    ] .
+{{/semantics.QudtUnit.isLiteral}}
+{{!Given an RDF resource}}
+{{^semantics.QudtUnit.isLiteral}}
+    :measuredValue_{{rowModel.rowId}}_{{columnModel.columnHeader}} qudt:unit <{{{semantics.QudtUnit.value}}}> .
+{{/semantics.QudtUnit.isLiteral}}
+
