@@ -61,7 +61,7 @@ public class SemanticsParser {
                             fieldName = val;
                         } else {
                             //Decode the URI
-                            termValueMap.put(attributeName, decodeFromBuild(val));
+                            termValueMap.put(attributeName, val);
                         }
                     }
                 }
@@ -78,13 +78,5 @@ public class SemanticsParser {
                 }
             }
         }
-    }
-
-    private static String decodeFromBuild(String encoded){
-        if(encoded == null)
-            return null;
-        return encoded.replaceAll("__", ":")
-                .replaceAll("--", "/")
-                .replaceAll("_-_", "#");
     }
 }
