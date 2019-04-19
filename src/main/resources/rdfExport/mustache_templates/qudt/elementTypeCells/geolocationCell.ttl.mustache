@@ -1,18 +1,18 @@
 {{!Define the MeasuredValue to be a Point}}
 :measuredValue_{{rowModel.rowId}}_{{columnModel.columnHeader}} :hasValue [
-    rdf:type geo:Point .
+    rdf:type geo:Point ;
     {{!Define latitude, longitude and altitude}}
     {{#location.latitude}}
-    geo:lat "{{{location.latitude}}}" .
+    geo:lat "{{{location.latitude}}}" ;
     {{/location.latitude}}
     {{#location.longitude}}
-    geo:long "{{{location.longitude}}}" .
+    geo:long "{{{location.longitude}}}" ;
     {{/location.longitude}}
     {{#location.altitude}}
-    geo:alt "{{{location.altitude}}}" .
+    geo:alt "{{{location.altitude}}}" ;
     {{/location.altitude}}
     {{!Define accuracy using oboe-core:hasPrecision}}
     {{#location.accuracy}}
-    {{cellEntityIdentifier}} :hasPrecision "{{{location.accuracy}}}" .
+    :hasPrecision "{{{location.accuracy}}}"
     {{/location.accuracy}}
 ] .

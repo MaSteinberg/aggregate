@@ -4,8 +4,8 @@
                         qudt:hasQuantityKind
 {{#semantics.QudtQuantityKind.isLiteral}}
     [
-        a qudt:QuantityKind .
-        rdfs:label "{{{semantics.QudtQuantityKind.value}}}" . 
+        a qudt:QuantityKind ;
+        rdfs:label "{{{semantics.QudtQuantityKind.value}}}"
     ] .
 {{/semantics.QudtQuantityKind.isLiteral}}
 {{!Given an RDF resource}}
@@ -51,8 +51,8 @@
 {{!Given a literal value}}
 {{#semantics.QudtUnit.isLiteral}}
     :measuredValue_{{rowModel.rowId}}_{{columnModel.columnHeader}} qudt:unit [
-        rdfs:label "{{{semantics.QudtUnit.value}}}" .
-        a qudt:Unit .
+        rdfs:label "{{{semantics.QudtUnit.value}}}" ;
+        a qudt:Unit
     ] .
 {{/semantics.QudtUnit.isLiteral}}
 {{!Given an RDF resource}}
