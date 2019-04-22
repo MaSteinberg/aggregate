@@ -25,8 +25,9 @@ public abstract class AbstractCellModel {
             if(entry.getValue().startsWith(RdfFormatterWithFilters.ONTOLOGY_REF_PREFIX)){
                 //Remove prefix & encoding, then encode to turtle
                 String val = turtleEncodeUri(
-                        StringUtils.removeStart(entry.getValue(),
-                        RdfFormatterWithFilters.ONTOLOGY_REF_PREFIX)
+                        decodeFromBuild(
+                            StringUtils.removeStart(entry.getValue(), RdfFormatterWithFilters.ONTOLOGY_REF_PREFIX)
+                        )
                 );
                 property = new SemanticsModel(val, false);
             } else{
@@ -47,5 +48,13 @@ public abstract class AbstractCellModel {
         if(literal == null)
             return null;
         return literal.replaceAll("\"", "\\\\\"");
+    }
+
+    protected String decodeFromBuild(String encoded){
+        if(encoded == null)
+            return null;
+        return encoded.replaceAll("__", ":")
+                .replaceAll("--", "/")
+                .replaceAll("_-_", "#");
     }
 }
