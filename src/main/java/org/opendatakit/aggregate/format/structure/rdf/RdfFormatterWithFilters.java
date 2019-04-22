@@ -318,20 +318,23 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
                     //with the respective value of the column
                     Map<String, String> columnSemantics = semantics.get(columnName);
                     //We need a copy (shallow suffices here) of the semantics to adapt the values for the given row
+                    Map<String, String> semanticsForGivenRow;
                     if(columnSemantics != null){
-                        Map<String, String> semanticsForGivenRow = new HashMap<>(columnSemantics);
-                        for(Map.Entry<String, String> entry : semanticsForGivenRow.entrySet()){
-                            if(entry.getValue().startsWith(RdfFormatterWithFilters.COLUMN_REF_PREFIX)){
-                                String referenceColumn = StringUtils.removeStart(entry.getValue(), RdfFormatterWithFilters.COLUMN_REF_PREFIX);
-                                //Find index of the referenced column (using the unfiltered FormElementModels here)
-                                int index = IntStream.range(0, columnFormElementModelsUnfiltered.size())
-                                        .filter(i -> columnFormElementModelsUnfiltered.get(i).getElementName().equals(referenceColumn))
-                                        .findFirst().orElseThrow(
-                                                () -> new ODKDatastoreException("Semantic information is referencing the non-existing column " + referenceColumn)
-                                        );
-                                String referenceValue = formattedValuesUnfiltered.get(index);
-                                entry.setValue(referenceValue);
-                            }
+                      semanticsForGivenRow = new HashMap<>(columnSemantics);
+                    } else{
+                        semanticsForGivenRow = new HashMap<>();
+                    }
+                    for(Map.Entry<String, String> entry : semanticsForGivenRow.entrySet()){
+                        if(entry.getValue().startsWith(RdfFormatterWithFilters.COLUMN_REF_PREFIX)){
+                            String referenceColumn = StringUtils.removeStart(entry.getValue(), RdfFormatterWithFilters.COLUMN_REF_PREFIX);
+                            //Find index of the referenced column (using the unfiltered FormElementModels here)
+                            int index = IntStream.range(0, columnFormElementModelsUnfiltered.size())
+                                    .filter(i -> columnFormElementModelsUnfiltered.get(i).getElementName().equals(referenceColumn))
+                                    .findFirst().orElseThrow(
+                                            () -> new ODKDatastoreException("Semantic information is referencing the non-existing column " + referenceColumn)
+                                    );
+                            String referenceValue = formattedValuesUnfiltered.get(index);
+                            entry.setValue(referenceValue);
                         }
                     }
                     
