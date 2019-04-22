@@ -12,7 +12,8 @@ public abstract class AbstractCellModel {
     public String cellEntityIdentifier;
     public Map<String, SemanticsModel> semantics;
 
-    AbstractCellModel(ColumnModel columnModel, RowModel rowModel, String cellEntityIdentifier, Map<String, String> semanticsValueMap) {
+    AbstractCellModel(ColumnModel columnModel, RowModel rowModel,
+                      String cellEntityIdentifier, Map<String, String> semanticsValueMap) {
         this.columnModel = columnModel;
         this.rowModel = rowModel;
         this.cellEntityIdentifier = cellEntityIdentifier;
@@ -22,8 +23,12 @@ public abstract class AbstractCellModel {
         for(Map.Entry<String, String> entry : semanticsValueMap.entrySet()){
             SemanticsModel property;
             if(entry.getValue().startsWith(RdfFormatterWithFilters.ONTOLOGY_REF_PREFIX)){
-                //Remove prefix & encode
-                String val = StringUtils.removeStart(turtleEncodeUri(entry.getValue()), RdfFormatterWithFilters.ONTOLOGY_REF_PREFIX);
+                //Remove prefix & encoding, then encode to turtle
+                String val = turtleEncodeUri(
+                        decodeFromBuild(
+                            StringUtils.removeStart(entry.getValue(), RdfFormatterWithFilters.ONTOLOGY_REF_PREFIX)
+                        )
+                );
                 property = new SemanticsModel(val, false);
             } else{
                 //Encode
@@ -43,5 +48,13 @@ public abstract class AbstractCellModel {
         if(literal == null)
             return null;
         return literal.replaceAll("\"", "\\\\\"");
+    }
+
+    protected String decodeFromBuild(String encoded){
+        if(encoded == null)
+            return null;
+        return encoded.replaceAll("__", ":")
+                .replaceAll("--", "/")
+                .replaceAll("_-_", "#");
     }
 }

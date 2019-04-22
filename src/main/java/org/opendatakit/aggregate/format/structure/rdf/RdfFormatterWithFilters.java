@@ -83,9 +83,11 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
 
     private Map<FormElementModel.ElementType, Mustache> elementTypeToCellMustacheMap;
 
+    private boolean firstRow = true;
     private ModelBuilder modelBuilder = new ModelBuilder();
     private TopLevelModel toplevelModel;
     private List<ColumnModel> columnModels = new ArrayList<>();
+
 
     public RdfFormatterWithFilters(IForm xform, String webServerUrl, PrintWriter printWriter,
                                    FilterGroup filterGroup, String baseURI, Boolean requireRowUUID, String templateGroup) {
@@ -206,11 +208,12 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
         toplevelModel = modelBuilder.buildTopLevelModel(this.form, toplevelEntityIdentifier);
         toplevelMustache.execute(output, toplevelModel);
 
-        //Columns
+        //Columns ~= Questions of the form
+        boolean firstColumn = true;
         output.append("#Each column describes one observation\n");
         for(int col = 0; col < columnFormElementModelsFiltered.size(); col++){
             String colName = columnFormElementModelsFiltered.get(col).getElementName();
-            FormElementModel.ElementType elementType = columnFormElementModelsFiltered.get(col).getElementType();
+
             //InstanceID is a special case - it's not to be considered a field for the RDF export
             if(colName.equals("instanceID")){
                 //Adding a null-value to the list of column models makes indexing easier in the cells-section
@@ -229,9 +232,11 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
                 }
 
                 //For each column create the ColumnModel and fill the template
-                ColumnModel columnModel = modelBuilder.buildColumnModel(toplevelModel, colName, columnEntityIdentifier);
+                ColumnModel columnModel = modelBuilder.buildColumnModel(toplevelModel, colName, columnEntityIdentifier,
+                        firstColumn, col == (columnFormElementModelsFiltered.size()-1));
                 columnModels.add(columnModel);
                 columnMustache.execute(output, columnModel);
+                firstColumn = false;
             }
         }
     }
@@ -284,12 +289,15 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
             }
 
             //For each row create the RowModel and fill the template
-            RowModel rowModel = modelBuilder.buildRowModel(toplevelModel, rowId, rowEntityIdentifier);
+            RowModel rowModel = modelBuilder.buildRowModel(toplevelModel, rowId, rowEntityIdentifier, firstRow);
             rowMustache.execute(output, rowModel);
+            firstRow = false;
 
             //Cells
             int columnNumber = 0;
-            for(String cellValue : formattedValuesFiltered){
+            Iterator<String> cellIt = formattedValuesFiltered.iterator();
+            while(cellIt.hasNext()){
+                String cellValue = cellIt.next();
                 String columnName = columnFormElementModelsFiltered.get(columnNumber).getElementName();
                 //InstanceID is a special case - it's not to be considered a field for the RDF export
                 if(!columnName.equals("instanceID")) {
@@ -310,21 +318,35 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
                     //with the respective value of the column
                     Map<String, String> columnSemantics = semantics.get(columnName);
                     //We need a copy (shallow suffices here) of the semantics to adapt the values for the given row
-                    Map<String, String> semanticsForGivenRow = new HashMap<>(columnSemantics);
+                    Map<String, String> semanticsForGivenRow;
+                    if(columnSemantics != null){
+                      semanticsForGivenRow = new HashMap<>(columnSemantics);
+                    } else{
+                        semanticsForGivenRow = new HashMap<>();
+                    }
                     for(Map.Entry<String, String> entry : semanticsForGivenRow.entrySet()){
                         if(entry.getValue().startsWith(RdfFormatterWithFilters.COLUMN_REF_PREFIX)){
                             String referenceColumn = StringUtils.removeStart(entry.getValue(), RdfFormatterWithFilters.COLUMN_REF_PREFIX);
                             //Find index of the referenced column (using the unfiltered FormElementModels here)
                             int index = IntStream.range(0, columnFormElementModelsUnfiltered.size())
                                     .filter(i -> columnFormElementModelsUnfiltered.get(i).getElementName().equals(referenceColumn))
-                                    .findFirst().orElseThrow(() -> new ODKDatastoreException("Semantic information is referencing the non-existing column " + referenceColumn));
+                                    .findFirst().orElseThrow(
+                                            () -> new ODKDatastoreException("Semantic information is referencing the non-existing column " + referenceColumn)
+                                    );
                             String referenceValue = formattedValuesUnfiltered.get(index);
                             entry.setValue(referenceValue);
                         }
                     }
-
+                    
                     FormElementModel.ElementType elementType = columnFormElementModelsFiltered.get(columnNumber).getElementType();
-                    AbstractCellModel cellModel = modelBuilder.buildCellModel(columnModels.get(columnNumber), rowModel, cellValue, cellEntityIdentifier, elementType, semanticsForGivenRow);
+                    AbstractCellModel cellModel = modelBuilder.buildCellModel(
+                            columnModels.get(columnNumber),
+                            rowModel,
+                            cellValue,
+                            cellEntityIdentifier,
+                            elementType,
+                            semanticsForGivenRow
+                    );
                     //Use the generic cell-template
                     genericCellMustache.execute(output, cellModel);
 
