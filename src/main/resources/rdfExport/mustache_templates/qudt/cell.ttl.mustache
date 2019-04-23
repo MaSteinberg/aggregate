@@ -1,0 +1,35 @@
+#Row {{rowModel.rowId}}, Column {{columnModel.columnHeader}}
+{{!Construct an qudt:Quantity for the cell}}
+{{cellEntityIdentifier}} rdf:type qudt:Quantity.
+{{!Relate the Measurement to the Observation}}
+{{columnModel.columnEntityIdentifier}}  <http://purl.org/dc/terms/hasPart> {{cellEntityIdentifier}} .
+{{!Construct an oboe-core:MeasuredValue for the cell}}
+:measuredValue_{{rowModel.rowId}}_{{columnModel.columnHeader}} rdf:type qudt:QuantityValue.
+{{!Relate the Measurement to the MeasuredValue}}
+{{cellEntityIdentifier}} qudt:quantityValue :measuredValue_{{rowModel.rowId}}_{{columnModel.columnHeader}} .
+
+{{!Use semantic information}}
+{{!Creator - optional}}
+{{#semantics.Creator}}
+{{!Given a literal value}}
+    {{#semantics.Creator.isLiteral}}
+        {{cellEntityIdentifier}} dcterms:creator :creator_{{columnModel.columnHeader}}_{{rowModel.rowId}} .
+        :creator_{{columnModel.columnHeader}}_{{rowModel.rowId}} rdf:type foaf:Person .
+        :creator_{{columnModel.columnHeader}}_{{rowModel.rowId}} foaf:name "{{{semantics.Creator.value}}}" .
+    {{/semantics.Creator.isLiteral}}
+    {{!Given an RDF resource}}
+    {{^semantics.Creator.isLiteral}}
+        {{cellEntityIdentifier}} dcterms:creator <{{{semantics.Creator.value}}}> .
+    {{/semantics.Creator.isLiteral}}
+{{/semantics.Creator}}
+
+{{!Characteristic - required}}
+{{!Given a literal value}}
+{{#semantics.QudtQuantityKind.isLiteral}}
+    {{cellEntityIdentifier}} qudt:hasQuantityKind "{{{semantics.QudtQuantityKind.value}}}" .
+{{/semantics.QudtQuantityKind.isLiteral}}
+{{!Given an RDF resource}}
+{{^semantics.QudtQuantityKind.isLiteral}}
+    {{cellEntityIdentifier}} qudt:hasQuantityKind <{{{semantics.QudtQuantityKind.value}}}> .
+{{/semantics.QudtQuantityKind.isLiteral}}
+
