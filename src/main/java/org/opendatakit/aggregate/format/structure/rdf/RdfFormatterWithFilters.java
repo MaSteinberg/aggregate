@@ -132,7 +132,7 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
         elementTypeToCellMustacheMap.put(DECIMAL, mf.compile(cellTemplateRoot + "decimalCell.ttl.mustache"));
         elementTypeToCellMustacheMap.put(INTEGER, mf.compile(cellTemplateRoot + "integerCell.ttl.mustache"));
         elementTypeToCellMustacheMap.put(STRING, mf.compile(cellTemplateRoot + "stringCell.ttl.mustache"));
-        elementTypeToCellMustacheMap.put(SELECT1, mf.compile(cellTemplateRoot + "select1Cell.ttl.mustache"));
+        elementTypeToCellMustacheMap.put(SELECT1, mf.compile(cellTemplateRoot + "singleChoiceCell.ttl.mustache"));
         elementTypeToCellMustacheMap.put(BOOLEAN, mf.compile(cellTemplateRoot + "booleanCell.ttl.mustache"));
         elementTypeToCellMustacheMap.put(JRDATE, mf.compile(cellTemplateRoot + "dateCell.ttl.mustache"));
         elementTypeToCellMustacheMap.put(JRTIME, mf.compile(cellTemplateRoot + "timeCell.ttl.mustache"));
