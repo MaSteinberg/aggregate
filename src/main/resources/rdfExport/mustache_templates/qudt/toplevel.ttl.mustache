@@ -1,0 +1,14 @@
+{{toplevelEntityIdentifier}} rdf:type dcterms:Dataset .
+{{toplevelEntityIdentifier}} dcterms:creator "{{formCreationUser}}"^^xsd:string .
+{{toplevelEntityIdentifier}} dcterms:created "{{formCreationDate}}"^^xsd:dateTime .
+{{toplevelEntityIdentifier}} dcterms:modified "{{lastUpdate}}"^^xsd:dateTime .
+{{toplevelEntityIdentifier}} dcterms:identifier "{{formId}}"^^xsd:string .
+{{#formDescription}}
+    {{toplevelEntityIdentifier}} dcterms:description "{{formDescription}}"^^xsd:string .
+{{/formDescription}}
+{{#formName}}
+    {{toplevelEntityIdentifier}} dcterms:titel "{{formName}}"^^xsd:string .
+{{/formName}}
+{{#formVersion}}
+    {{toplevelEntityIdentifier}} dcterms:hasVersion "{{formVersion}}"^^xsd:string .
+{{/formVersion}}

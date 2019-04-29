@@ -1,0 +1,31 @@
+{{cellEntityIdentifier}} rdf:type qudt:QuantityValue .
+{{cellEntityIdentifier}} dcterms:isPartOf {{rowModel.rowEntityIdentifier}} .
+{{cellEntityIdentifier}} dcterms:isPartOf {{columnModel.columnEntityIdentifier}} .
+
+{{!Use semantic information}}
+{{!Creator - optional}}
+{{#semantics.Creator}}
+{{!Given a literal value}}
+    {{#semantics.Creator.isLiteral}}
+        {{cellEntityIdentifier}} dcterms:creator :creator_{{columnModel.columnHeader}}_{{rowModel.rowId}} .
+        :creator_{{columnModel.columnHeader}}_{{rowModel.rowId}} rdf:type foaf:Person .
+        :creator_{{columnModel.columnHeader}}_{{rowModel.rowId}} foaf:name "{{{semantics.Creator.value}}}" .
+    {{/semantics.Creator.isLiteral}}
+    {{!Given an RDF resource}}
+    {{^semantics.Creator.isLiteral}}
+        {{cellEntityIdentifier}} dcterms:creator <{{{semantics.Creator.value}}}> .
+    {{/semantics.Creator.isLiteral}}
+{{/semantics.Creator}}
+
+{{!Characteristic - required}}
+{{!Given an RDF resource}}
+{{^semantics.QudtQuantityKind.isLiteral}}
+    {{cellEntityIdentifier}} qudt:hasQuantityKind <{{{semantics.QudtQuantityKind.value}}}> .
+{{/semantics.QudtQuantityKind.isLiteral}}
+
+{{!Unit - required}}
+{{!Given an RDF resource}}
+{{^semantics.QudtUnit.isLiteral}}
+    {{cellEntityIdentifier}} qudt:unit <{{{semantics.QudtUnit.value}}}> .
+{{/semantics.QudtUnit.isLiteral}}
+

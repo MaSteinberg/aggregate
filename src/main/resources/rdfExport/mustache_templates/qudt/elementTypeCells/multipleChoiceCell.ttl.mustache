@@ -1,0 +1,6 @@
+{{!Relate the actual cell-values to the MeasuredValue}}
+    {{cellEntityIdentifier}} :hasValue (
+    {{#cellValues}}
+    "{{{.}}}"^^xsd:string
+    {{/cellValues}}
+) .

@@ -1,0 +1,17 @@
+{{!Define the MeasuredValue to be a Point}}
+{{cellEntityIdentifier}} :hasValue [
+
+    {{#location.latitude}}
+        geo:lat "{{{location.latitude}}}" ;
+    {{/location.latitude}}
+
+    {{#location.longitude}}
+        geo:long "{{{location.longitude}}}" ;
+    {{/location.longitude}}
+
+    {{#location.altitude}}
+        geo:alt "{{{location.altitude}}}" ;
+    {{/location.altitude}}
+    
+    rdf:type geo:Point .
+] .
