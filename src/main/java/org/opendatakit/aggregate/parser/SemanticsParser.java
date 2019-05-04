@@ -22,7 +22,8 @@ import java.util.Map;
  *
  */
 public class SemanticsParser {
-    private static final String SEM_NODE_TAG_NAME = "sem:node";
+    private static final String SEM_NAMESPACE = "http://annotation";
+    private static final String SEM_NODE_TAG_NAME = "node";
     private static final String FIELD_IDENTIFIER_NAME = "fieldName";
     private Logger logger = LoggerFactory.getLogger(SemanticsParser.class);
 
@@ -48,7 +49,7 @@ public class SemanticsParser {
         @Override
         public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
             //A <sem:node></sem:node> describes the semantics of a single data-field in a survey
-            if(qName.equals(SEM_NODE_TAG_NAME)){
+            if(uri.equals(SEM_NAMESPACE) && localName.equals(SEM_NODE_TAG_NAME)){
                 String fieldName = "";
                 Map<String, String> termValueMap = new HashMap<>();
                 //Loop through all attributes of the current XML-element
