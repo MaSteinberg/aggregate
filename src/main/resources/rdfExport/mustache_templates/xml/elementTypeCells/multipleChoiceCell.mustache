@@ -1,0 +1,13 @@
+{{#columnModel.isFirstColumn}}
+<row>
+{{/columnModel.isFirstColumn}}
+<{{columnModel.columnHeader}}>
+    <collection>
+        {{#cellValues}}
+        <collectionValue>{{.}}</collectionValue>
+        {{/cellValues}}
+    </collection>
+</{{columnModel.columnHeader}}>
+{{#columnModel.isLastColumn}}
+</row>
+{{/columnModel.isLastColumn}}

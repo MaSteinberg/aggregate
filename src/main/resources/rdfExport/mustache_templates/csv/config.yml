@@ -1,0 +1,5 @@
+displayName: Comma Separated Values
+filetype: .csv
+templateProperties:
+  optionalProperties:
+  requiredProperties:

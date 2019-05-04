@@ -9,6 +9,7 @@ public class RdfTemplateConfig implements Serializable {
     private static final long serialVersionUID = 3805298395471795416L;
 
     private String displayName;
+    private String filetype;
     private TemplateProperties templateProperties;
 
     public String getDisplayName() {
@@ -17,6 +18,14 @@ public class RdfTemplateConfig implements Serializable {
 
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
+    }
+
+    public String getFiletype() {
+        return filetype;
+    }
+
+    public void setFiletype(String filetype) {
+        this.filetype = filetype;
     }
 
     public TemplateProperties getTemplateProperties() {

@@ -88,7 +88,7 @@ public class RdfWorkerImpl {
 
             // create RDF
             QueryBase query;
-            SubmissionFormatter formatter;
+            RdfFormatterWithFilters formatter;
             FilterGroup filterGroup;
 
             // figure out the filterGroup...
@@ -126,8 +126,15 @@ public class RdfWorkerImpl {
             r = new PersistentResults(persistentResultsKey, cc);
             if (attemptCount.equals(r.getAttemptCount())) {
                 logger.info("saving rdf into PersistentResults table for " + form.getFormId());
-                r.setResultFile(outputFile, HtmlConsts.RESP_TYPE_RDF,
-                        form.getViewableFormNameSuitableAsFileName() + ServletConsts.RDF_FILENAME_APPEND, false, cc);
+                String filename = form.getViewableFormNameSuitableAsFileName()
+                        + ServletConsts.RDF_FILENAME_APPEND
+                        + formatter.filetype;
+                String contentType = "";
+                if(formatter.filetype.equals(ServletConsts.RDF_FILENAME_TYPE_FALLBACK)){
+                    //Turtle content type
+                    contentType = HtmlConsts.RESP_TYPE_TURTLE;
+                }
+                r.setResultFile(outputFile, contentType, filename, false, cc);
                 r.setStatus(ExportStatus.AVAILABLE);
                 r.setCompletionDate(new Date());
                 if(subFilterGroup != null) {

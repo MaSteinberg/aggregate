@@ -23,6 +23,7 @@ import org.opendatakit.aggregate.client.filter.FilterGroup;
 import org.opendatakit.aggregate.client.form.RdfTemplateConfig;
 import org.opendatakit.aggregate.client.form.TemplateProperties;
 import org.opendatakit.aggregate.client.submission.SubmissionUISummary;
+import org.opendatakit.aggregate.constants.ServletConsts;
 import org.opendatakit.aggregate.constants.common.FormElementNamespace;
 import org.opendatakit.aggregate.constants.common.UIConsts;
 import org.opendatakit.aggregate.datamodel.FormElementModel;
@@ -56,6 +57,9 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
     public static final String COLUMN_REF_PREFIX = "_col_";
     private final Logger logger = LoggerFactory.getLogger(RdfFormatterWithFilters.class);
 
+    //Can be overwritten by the selected template
+    public String filetype = ServletConsts.RDF_FILENAME_TYPE_FALLBACK;
+
     private ElementFormatter elemFormatter;
     private List<FormElementModel> columnFormElementModelsFiltered;
     private List<FormElementModel> columnFormElementModelsUnfiltered;
@@ -80,6 +84,7 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
     private Mustache columnMustache;
     private Mustache rowMustache;
     private Mustache genericCellMustache;
+    private Mustache terminationMustache;
 
     private Map<FormElementModel.ElementType, Mustache> elementTypeToCellMustacheMap;
 
@@ -121,26 +126,27 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
         this.rowIdentifierMustache = mf.compile("rdfExport/mustache_templates/common/rowIdentifier.mustache");
         this.cellIdentifierMustache = mf.compile("rdfExport/mustache_templates/common/cellIdentifier.mustache");
         //Turtle templates
-        this.namespacesMustache = mf.compile(templateGroupRoot + "/namespaces.ttl.mustache");
-        this.toplevelMustache = mf.compile(templateGroupRoot + "/toplevel.ttl.mustache");
-        this.columnMustache = mf.compile(templateGroupRoot + "/column.ttl.mustache");
-        this.rowMustache = mf.compile(templateGroupRoot + "/row.ttl.mustache");
-        this.genericCellMustache = mf.compile(templateGroupRoot + "/cell.ttl.mustache");
+        this.namespacesMustache = mf.compile(templateGroupRoot + "/namespaces.mustache");
+        this.toplevelMustache = mf.compile(templateGroupRoot + "/toplevel.mustache");
+        this.columnMustache = mf.compile(templateGroupRoot + "/column.mustache");
+        this.rowMustache = mf.compile(templateGroupRoot + "/row.mustache");
+        this.genericCellMustache = mf.compile(templateGroupRoot + "/cell.mustache");
+        this.terminationMustache = mf.compile(templateGroupRoot + "/termination.mustache");
         //Assign and compile the cell templates
         elementTypeToCellMustacheMap = new HashMap();
         String cellTemplateRoot = templateGroupRoot + "/elementTypeCells/";
-        elementTypeToCellMustacheMap.put(DECIMAL, mf.compile(cellTemplateRoot + "decimalCell.ttl.mustache"));
-        elementTypeToCellMustacheMap.put(INTEGER, mf.compile(cellTemplateRoot + "integerCell.ttl.mustache"));
-        elementTypeToCellMustacheMap.put(STRING, mf.compile(cellTemplateRoot + "stringCell.ttl.mustache"));
-        elementTypeToCellMustacheMap.put(SELECT1, mf.compile(cellTemplateRoot + "singleChoiceCell.ttl.mustache"));
-        elementTypeToCellMustacheMap.put(BOOLEAN, mf.compile(cellTemplateRoot + "booleanCell.ttl.mustache"));
-        elementTypeToCellMustacheMap.put(JRDATE, mf.compile(cellTemplateRoot + "dateCell.ttl.mustache"));
-        elementTypeToCellMustacheMap.put(JRTIME, mf.compile(cellTemplateRoot + "timeCell.ttl.mustache"));
-        elementTypeToCellMustacheMap.put(JRDATETIME, mf.compile(cellTemplateRoot + "dateTimeCell.ttl.mustache"));
-        elementTypeToCellMustacheMap.put(GEOPOINT, mf.compile(cellTemplateRoot + "geolocationCell.ttl.mustache"));
-        elementTypeToCellMustacheMap.put(GEOTRACE, mf.compile(cellTemplateRoot + "geotraceCell.ttl.mustache"));
-        elementTypeToCellMustacheMap.put(GEOSHAPE, mf.compile(cellTemplateRoot + "geoshapeCell.ttl.mustache"));
-        elementTypeToCellMustacheMap.put(SELECTN, mf.compile(cellTemplateRoot + "multipleChoiceCell.ttl.mustache"));
+        elementTypeToCellMustacheMap.put(DECIMAL, mf.compile(cellTemplateRoot + "decimalCell.mustache"));
+        elementTypeToCellMustacheMap.put(INTEGER, mf.compile(cellTemplateRoot + "integerCell.mustache"));
+        elementTypeToCellMustacheMap.put(STRING, mf.compile(cellTemplateRoot + "stringCell.mustache"));
+        elementTypeToCellMustacheMap.put(SELECT1, mf.compile(cellTemplateRoot + "singleChoiceCell.mustache"));
+        elementTypeToCellMustacheMap.put(BOOLEAN, mf.compile(cellTemplateRoot + "booleanCell.mustache"));
+        elementTypeToCellMustacheMap.put(JRDATE, mf.compile(cellTemplateRoot + "dateCell.mustache"));
+        elementTypeToCellMustacheMap.put(JRTIME, mf.compile(cellTemplateRoot + "timeCell.mustache"));
+        elementTypeToCellMustacheMap.put(JRDATETIME, mf.compile(cellTemplateRoot + "dateTimeCell.mustache"));
+        elementTypeToCellMustacheMap.put(GEOPOINT, mf.compile(cellTemplateRoot + "geolocationCell.mustache"));
+        elementTypeToCellMustacheMap.put(GEOTRACE, mf.compile(cellTemplateRoot + "geotraceCell.mustache"));
+        elementTypeToCellMustacheMap.put(GEOSHAPE, mf.compile(cellTemplateRoot + "geoshapeCell.mustache"));
+        elementTypeToCellMustacheMap.put(SELECTN, mf.compile(cellTemplateRoot + "multipleChoiceCell.mustache"));
     }
 
     @Override
@@ -160,8 +166,16 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
             semantics.put(fieldName, tmp);
         }
 
+        //Grab the template config
+        RdfTemplateConfig templateConfig = RdfTemplateConfigManager.getRdfTemplateConfig(this.templateGroup);
+        
+        //Let the template config overwrite the default filetype
+        if(templateConfig.getFiletype() != null && !StringUtils.isBlank(templateConfig.getFiletype())){
+            this.filetype = templateConfig.getFiletype();
+        }
+
         //Namespaces
-        namespacesMustache.execute(output, this.baseURI );
+        namespacesMustache.execute(output, this.baseURI);
 
         //Toplevel
         //Generate toplevel identifier via template
@@ -183,7 +197,6 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
 
         //Columns ~= Questions of the form
         boolean firstColumn = true;
-        output.append("#Each column describes one observation\n");
         for(int col = 0; col < columnFormElementModelsFiltered.size(); col++){
             String colName = columnFormElementModelsFiltered.get(col).getElementName();
 
@@ -339,5 +352,21 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
 
     @Override
     public void afterProcessSubmissions(CallingContext cc) throws ODKDatastoreException {
+        //Execute termination template with the same Model as the Toplevel template
+        ByteArrayOutputStream identifierStream = new ByteArrayOutputStream();
+        PrintWriter identifierWriter;
+        String toplevelEntityIdentifier = "";
+        try {
+            identifierWriter = new PrintWriter(new OutputStreamWriter(identifierStream, HtmlConsts.UTF8_ENCODE));
+            toplevelIdentifierMustache.execute(identifierWriter, this.form.getFormId());
+            identifierWriter.close();
+            toplevelEntityIdentifier = identifierStream.toString();
+            identifierStream.reset();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        toplevelModel = modelBuilder.buildTopLevelModel(this.form, toplevelEntityIdentifier);
+        terminationMustache.execute(output, toplevelModel);
     }
 }

@@ -1,0 +1,10 @@
+{{#columnModel.isFirstColumn}}
+<row>
+{{/columnModel.isFirstColumn}}
+<{{columnModel.columnHeader}}>
+    <date>{{date}}</date>
+    <time>{{time}}</time>
+</{{columnModel.columnHeader}}>
+{{#columnModel.isLastColumn}}
+</row>
+{{/columnModel.isLastColumn}}
