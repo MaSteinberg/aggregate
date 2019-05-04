@@ -12,5 +12,5 @@
 {{/location.altitude}}
 {{!Define accuracy using oboe-core:hasPrecision}}
 {{#location.accuracy}}
-{{cellEntityIdentifier}} oboe-core:hasPrecision "{{{location.accuracy}}}" .
+:meas_{{cellEntityIdentifier}} oboe-core:hasPrecision "{{{location.accuracy}}}" .
 {{/location.accuracy}}
