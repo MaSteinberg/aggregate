@@ -160,33 +160,6 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
             semantics.put(fieldName, tmp);
         }
 
-        //Grab the template config
-        RdfTemplateConfig templateConfig = RdfTemplateConfigManager.getRdfTemplateConfig(this.templateGroup);
-        List<String> requiredProperties = null;
-        if(templateConfig.getTemplateProperties() != null){
-            requiredProperties = templateConfig.getTemplateProperties().getRequiredProperties();
-        }
-        //Check if we have all required information (fail-fast)
-        if(requiredProperties != null) {
-            for(String requiredProperty : requiredProperties) {
-                for (FormElementModel col : this.columnFormElementModelsFiltered) {
-                    //"instanceID" is a special case - it's automatically generated and thus semantic information
-                    //can't be entered by the form author
-                    //Repeats also don't have semantic information attached so we can ignore these
-                    if(!col.getElementName().equals("instanceID") &&
-                       !col.getElementType().equals(FormElementModel.ElementType.REPEAT)){
-                        Map<String, String> semanticsForColumn = semantics.get(col.getElementName());
-                        if (    semanticsForColumn == null ||
-                                !(semanticsForColumn.containsKey(requiredProperty)) ||
-                                semanticsForColumn.get(requiredProperty) == null ||
-                                semanticsForColumn.get(requiredProperty).trim().length() == 0){
-                            throw new ODKDatastoreException("Missing required semantic information for field " + col.getElementName());
-                        }
-                    }
-                }
-            }
-        }
-
         //Namespaces
         namespacesMustache.execute(output, this.baseURI );
 

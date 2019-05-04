@@ -28,7 +28,7 @@ public interface FormServiceAsync {
 
   void getPossibleKmlSettings(String formId, AsyncCallback<KmlOptionsSummary> callback);
 
-  void getRdfExportSettings(AsyncCallback<RdfExportOptions> callback);
+  void getRdfExportSettings(String formId, FilterGroup filterGroup, AsyncCallback<RdfExportOptions> callback);
 
   void getGpsCoordnates(String formId, AsyncCallback<GeopointElementList> callback);
 

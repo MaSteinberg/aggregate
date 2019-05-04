@@ -73,8 +73,12 @@ public class RdfOptionsPopup extends AbstractPopupBase {
         layout.setWidget(2, 0, new HTML("<h3>Require row UUIDs</h3>"));
         layout.setWidget(2,1, this.requireRowUUIDsInput);
 
+        //Placeholders for template list
+        layout.setWidget(3, 0, new HTML("<h3>Template</h3>"));
+        layout.setWidget(3,1, new HTML("Loading..."));
+
         //Asynchronous call to get the list of available templates
-        SecureGWT.getFormService().getRdfExportSettings(new RdfOptionsPopup.RdfSettingsCallback());
+        SecureGWT.getFormService().getRdfExportSettings(formId, selectedFilterGroup, new RdfOptionsPopup.RdfSettingsCallback());
     }
 
     /*
@@ -126,17 +130,22 @@ public class RdfOptionsPopup extends AbstractPopupBase {
 
         @Override
         public void onSuccess(RdfExportOptions result) {
-            //Display the registered templates in a dropdown-list
-            layout.setWidget(3, 0, new HTML("<h3>Template</h3>"));
+            //Display the available templates in a dropdown-list
             templateGroupDropdown = new ListBox();
-            for(String templateId : result.getRegisteredTemplateIds()){
-                templateGroupDropdown.addItem(result.getTemplateDisplayName(templateId), templateId);
-            }
-            templateGroupDropdown.setVisibleItemCount(1);
-            layout.setWidget(3, 1, templateGroupDropdown);
+            if(result.getRegisteredTemplateIds().size() == 0){
+                //No templates available (e.g. no semantic annotations for this dataset)
+                layout.setWidget(3, 1, new HTML("No templates available for this dataset"));
+            } else{
+                //Fill & insert dropdown list
+                for(String templateId : result.getRegisteredTemplateIds()){
+                    templateGroupDropdown.addItem(result.getTemplateDisplayName(templateId), templateId);
+                }
+                templateGroupDropdown.setVisibleItemCount(1);
+                layout.setWidget(3, 1, templateGroupDropdown);
 
-            //Enable the export button now that the template-list is available
-            exportButton.setEnabled(true);
+                //Enable the export button now that the template-list is available
+                exportButton.setEnabled(true);
+            }
         }
     }
 }
