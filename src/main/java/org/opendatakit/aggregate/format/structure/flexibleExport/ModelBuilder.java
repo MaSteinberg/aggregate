@@ -1,8 +1,8 @@
-package org.opendatakit.aggregate.format.structure.rdf;
+package org.opendatakit.aggregate.format.structure.flexibleExport;
 
 import org.opendatakit.aggregate.datamodel.FormElementModel;
 import org.opendatakit.aggregate.form.IForm;
-import org.opendatakit.aggregate.format.structure.rdf.models.*;
+import org.opendatakit.aggregate.format.structure.flexibleExport.models.*;
 
 import java.util.*;
 

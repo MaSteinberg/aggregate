@@ -1,4 +1,4 @@
-package org.opendatakit.aggregate.format.structure.rdf.models;
+package org.opendatakit.aggregate.format.structure.flexibleExport.models;
 
 import java.util.Map;
 

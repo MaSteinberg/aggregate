@@ -7,8 +7,8 @@ import org.opendatakit.aggregate.form.FormFactory;
 import org.opendatakit.aggregate.form.IForm;
 import org.opendatakit.aggregate.servlet.ServletUtilBase;
 import org.opendatakit.aggregate.submission.SubmissionKey;
-import org.opendatakit.aggregate.task.RdfGenerator;
-import org.opendatakit.aggregate.task.RdfWorkerImpl;
+import org.opendatakit.aggregate.task.TemplateExportGenerator;
+import org.opendatakit.aggregate.task.TemplateExportWorkerImpl;
 import org.opendatakit.common.persistence.exception.ODKDatastoreException;
 import org.opendatakit.common.persistence.exception.ODKOverQuotaException;
 import org.opendatakit.common.web.CallingContext;
@@ -24,13 +24,13 @@ import java.io.IOException;
  * @author msteinberg1@web.de
  *
  */
-public class RdfGeneratorTaskServlet extends ServletUtilBase {
+public class TemplateExportGeneratorTaskServlet extends ServletUtilBase {
     /**
      * Serial number for serialization
      */
     private static final long serialVersionUID = 5552217246831515463L;
 
-    private static final Logger logger = LoggerFactory.getLogger(RdfGeneratorTaskServlet.class);
+    private static final Logger logger = LoggerFactory.getLogger(TemplateExportGeneratorTaskServlet.class);
 
     /**
      * URI from base
@@ -81,9 +81,9 @@ public class RdfGeneratorTaskServlet extends ServletUtilBase {
         }
 
         //Get user-selected export parameters
-        String baseURI = getParameter(req, RdfGenerator.RDF_BASEURI_KEY);
-        Boolean requireRowUUIDs = Boolean.parseBoolean(getParameter(req, RdfGenerator.RDF_REQUIREUUIDS_KEY));
-        String templateGroup = getParameter(req, RdfGenerator.RDF_TEMPLATE_KEY);
+        String baseURI = getParameter(req, TemplateExportGenerator.RDF_BASEURI_KEY);
+        Boolean requireRowUUIDs = Boolean.parseBoolean(getParameter(req, TemplateExportGenerator.RDF_REQUIREUUIDS_KEY));
+        String templateGroup = getParameter(req, TemplateExportGenerator.RDF_TEMPLATE_KEY);
 
         IForm form = null;
         try {
@@ -111,7 +111,7 @@ public class RdfGeneratorTaskServlet extends ServletUtilBase {
             return; // ill-formed definition
         }
 
-        RdfWorkerImpl impl = new RdfWorkerImpl(form, persistentResultsKey, attemptCount, baseURI, requireRowUUIDs, templateGroup, cc);
+        TemplateExportWorkerImpl impl = new TemplateExportWorkerImpl(form, persistentResultsKey, attemptCount, baseURI, requireRowUUIDs, templateGroup, cc);
 
         impl.generateRdf();
     }

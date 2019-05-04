@@ -1,7 +1,7 @@
-package org.opendatakit.aggregate.format.structure.rdf.models;
+package org.opendatakit.aggregate.format.structure.flexibleExport.models;
 
 import org.apache.commons.lang3.StringUtils;
-import org.opendatakit.aggregate.format.structure.rdf.RdfFormatterWithFilters;
+import org.opendatakit.aggregate.format.structure.flexibleExport.TemplateFormatterWithFilters;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,11 +22,11 @@ public abstract class AbstractCellModel {
         this.semantics = new HashMap<>();
         for(Map.Entry<String, String> entry : semanticsValueMap.entrySet()){
             SemanticsModel property;
-            if(entry.getValue().startsWith(RdfFormatterWithFilters.ONTOLOGY_REF_PREFIX)){
+            if(entry.getValue().startsWith(TemplateFormatterWithFilters.ONTOLOGY_REF_PREFIX)){
                 //Remove prefix & encoding, then encode to turtle
                 String val = turtleEncodeUri(
                         decodeFromBuild(
-                            StringUtils.removeStart(entry.getValue(), RdfFormatterWithFilters.ONTOLOGY_REF_PREFIX)
+                            StringUtils.removeStart(entry.getValue(), TemplateFormatterWithFilters.ONTOLOGY_REF_PREFIX)
                         )
                 );
                 property = new SemanticsModel(val, false);

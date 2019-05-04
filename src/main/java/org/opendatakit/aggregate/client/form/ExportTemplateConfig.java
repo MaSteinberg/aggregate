@@ -5,7 +5,7 @@ import java.io.Serializable;
 /*
 Class used for the deserialization of a single template config.yml
  */
-public class RdfTemplateConfig implements Serializable {
+public class ExportTemplateConfig implements Serializable {
     private static final long serialVersionUID = 3805298395471795416L;
 
     private String displayName;

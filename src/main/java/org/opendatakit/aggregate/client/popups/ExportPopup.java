@@ -150,7 +150,7 @@ public final class ExportPopup extends AbstractPopupBase {
         popup.setPopupPositionAndShow(popup.getPositionCallBack());
         hide();
       } else if (type == ExportType.FLEX){
-        RdfOptionsPopup popup = new RdfOptionsPopup(formId, filterGroup);
+        TemplateExportOptionsPopup popup = new TemplateExportOptionsPopup(formId, filterGroup);
         popup.setPopupPositionAndShow(popup.getPositionCallBack());
         hide();
       }

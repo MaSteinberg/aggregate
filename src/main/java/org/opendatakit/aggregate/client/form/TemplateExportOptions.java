@@ -10,16 +10,16 @@ import java.util.Set;
 /*
 Class used to communicate the full RDF Export configuration to both the frontend and the REST-API used by ODK Build
  */
-public class RdfExportOptions implements Serializable {
+public class TemplateExportOptions implements Serializable {
     private static final long serialVersionUID = 3805983057947175416L;
 
     private Map<String, SemanticPropertyConfiguration> availableProperties;
-    private Map<String, RdfTemplateConfig> templates;
+    private Map<String, ExportTemplateConfig> templates;
 
     //Necessary so that GWT can properly (de-)serialize the object
-    private RdfExportOptions() {}
+    private TemplateExportOptions() {}
 
-    public RdfExportOptions(Map<String, SemanticPropertyConfiguration> availableProperties, Map<String, RdfTemplateConfig> templates) {
+    public TemplateExportOptions(Map<String, SemanticPropertyConfiguration> availableProperties, Map<String, ExportTemplateConfig> templates) {
         this.availableProperties = availableProperties;
         this.templates = templates;
     }
@@ -32,7 +32,7 @@ public class RdfExportOptions implements Serializable {
         this.availableProperties = availableProperties;
     }
 
-    public Map<String, RdfTemplateConfig> getTemplates() {
+    public Map<String, ExportTemplateConfig> getTemplates() {
         return templates;
     }
 
@@ -44,7 +44,7 @@ public class RdfExportOptions implements Serializable {
     @JsonIgnore
     public List<String> getRegisteredTemplatesDisplayNames(){
         List<String> res = new ArrayList<>();
-        for(RdfTemplateConfig config : templates.values()){
+        for(ExportTemplateConfig config : templates.values()){
             res.add(config.getDisplayName());
         }
         return res;

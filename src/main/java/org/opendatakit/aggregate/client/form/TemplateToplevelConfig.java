@@ -4,9 +4,9 @@ import java.util.List;
 import java.util.Map;
 
 /*
-Class used for deserialization of the rdfExportTemplateConfig.yml
+Class used for deserialization of the TemplateExportConfig.yml
  */
-public class RdfToplevelConfig {
+public class TemplateToplevelConfig {
     private Map<String, SemanticPropertyConfiguration> availableProperties;
     private List<String> templates;
 

@@ -18,9 +18,8 @@ package org.opendatakit.aggregate.task.gae;
 import org.opendatakit.aggregate.constants.ServletConsts;
 import org.opendatakit.aggregate.form.IForm;
 import org.opendatakit.aggregate.form.PersistentResults;
-import org.opendatakit.aggregate.submission.SubmissionKey;
-import org.opendatakit.aggregate.task.RdfGenerator;
-import org.opendatakit.aggregate.task.gae.servlet.RdfGeneratorTaskServlet;
+import org.opendatakit.aggregate.task.TemplateExportGenerator;
+import org.opendatakit.aggregate.task.gae.servlet.TemplateExportGeneratorTaskServlet;
 import org.opendatakit.common.persistence.PersistConsts;
 import org.opendatakit.common.persistence.exception.ODKDatastoreException;
 import org.opendatakit.common.web.CallingContext;
@@ -36,20 +35,20 @@ import java.util.Map;
  * @author mitchellsundt@gmail.com
  *
  */
-public class RdfGeneratorImpl implements RdfGenerator {
+public class TemplateExportGeneratorImpl implements TemplateExportGenerator {
 
     @Override
     public void createRdfTask(IForm form, PersistentResults persistentResults, long attemptCount,
                               CallingContext cc) throws ODKDatastoreException {
         Map<String, String> params = persistentResults.getRequestParameters();
-        TaskOptionsBuilder b = new TaskOptionsBuilder(RdfGeneratorTaskServlet.ADDR);
+        TaskOptionsBuilder b = new TaskOptionsBuilder(TemplateExportGeneratorTaskServlet.ADDR);
         b.countdownMillis(PersistConsts.MAX_SETTLE_MILLISECONDS);
         b.param(ServletConsts.FORM_ID, form.getFormId());
         b.param(ServletConsts.PERSISTENT_RESULTS_KEY, persistentResults.getSubmissionKey().toString());
         b.param(ServletConsts.ATTEMPT_COUNT, Long.toString(attemptCount));
-        b.param(RdfGenerator.RDF_BASEURI_KEY, params.get(RdfGenerator.RDF_BASEURI_KEY));
-        b.param(RdfGenerator.RDF_REQUIREUUIDS_KEY, params.get(RdfGenerator.RDF_REQUIREUUIDS_KEY));
-        b.param(RdfGenerator.RDF_TEMPLATE_KEY, params.get(RdfGenerator.RDF_TEMPLATE_KEY));
+        b.param(TemplateExportGenerator.RDF_BASEURI_KEY, params.get(TemplateExportGenerator.RDF_BASEURI_KEY));
+        b.param(TemplateExportGenerator.RDF_REQUIREUUIDS_KEY, params.get(TemplateExportGenerator.RDF_REQUIREUUIDS_KEY));
+        b.param(TemplateExportGenerator.RDF_TEMPLATE_KEY, params.get(TemplateExportGenerator.RDF_TEMPLATE_KEY));
         b.enqueue();
     }
 }

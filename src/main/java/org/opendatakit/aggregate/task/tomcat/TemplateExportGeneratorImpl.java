@@ -19,8 +19,8 @@ import org.opendatakit.aggregate.constants.BeanDefs;
 import org.opendatakit.aggregate.form.IForm;
 import org.opendatakit.aggregate.form.PersistentResults;
 import org.opendatakit.aggregate.submission.SubmissionKey;
-import org.opendatakit.aggregate.task.RdfGenerator;
-import org.opendatakit.aggregate.task.RdfWorkerImpl;
+import org.opendatakit.aggregate.task.TemplateExportGenerator;
+import org.opendatakit.aggregate.task.TemplateExportWorkerImpl;
 import org.opendatakit.common.persistence.exception.ODKDatastoreException;
 import org.opendatakit.common.web.CallingContext;
 
@@ -34,14 +34,14 @@ import java.util.Map;
  * @author msteinberg1@web.de
  *
  */
-public class RdfGeneratorImpl implements RdfGenerator {
+public class TemplateExportGeneratorImpl implements TemplateExportGenerator {
 
-    static class RdfRunner implements Runnable {
-        final RdfWorkerImpl impl;
+    static class TemplateRunner implements Runnable {
+        final TemplateExportWorkerImpl impl;
 
-        public RdfRunner( IForm form, SubmissionKey persistentResultsKey, long attemptCount,
-                          String baseURI, Boolean requireRowUUIDs, String templateGroup, CallingContext cc) {
-            impl = new RdfWorkerImpl(form, persistentResultsKey, attemptCount, baseURI, requireRowUUIDs, templateGroup, cc );
+        public TemplateRunner(IForm form, SubmissionKey persistentResultsKey, long attemptCount,
+                              String baseURI, Boolean requireRowUUIDs, String templateGroup, CallingContext cc) {
+            impl = new TemplateExportWorkerImpl(form, persistentResultsKey, attemptCount, baseURI, requireRowUUIDs, templateGroup, cc );
         }
 
         @Override
@@ -56,13 +56,13 @@ public class RdfGeneratorImpl implements RdfGenerator {
             throws ODKDatastoreException {
         //Grab parameters
         Map<String, String> params = persistentResults.getRequestParameters();
-        String baseURI = params.get(RdfGenerator.RDF_BASEURI_KEY);
-        Boolean requireUUIDs = Boolean.parseBoolean(params.get(RdfGenerator.RDF_REQUIREUUIDS_KEY));
-        String templateGroup = params.get(RdfGenerator.RDF_TEMPLATE_KEY);
+        String baseURI = params.get(TemplateExportGenerator.RDF_BASEURI_KEY);
+        Boolean requireUUIDs = Boolean.parseBoolean(params.get(TemplateExportGenerator.RDF_REQUIREUUIDS_KEY));
+        String templateGroup = params.get(TemplateExportGenerator.RDF_TEMPLATE_KEY);
 
         WatchdogImpl wd = (WatchdogImpl) cc.getBean(BeanDefs.WATCHDOG);
         // use watchdog's calling context in runner...
-        RdfRunner runner = new RdfRunner(form, persistentResults.getSubmissionKey(), attemptCount,
+        TemplateRunner runner = new TemplateRunner(form, persistentResults.getSubmissionKey(), attemptCount,
                 baseURI, requireUUIDs, templateGroup, wd.getCallingContext() );
         AggregrateThreadExecutor exec = AggregrateThreadExecutor.getAggregateThreadExecutor();
         exec.execute(runner);

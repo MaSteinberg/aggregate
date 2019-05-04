@@ -9,14 +9,14 @@ import com.google.gwt.user.client.ui.*;
 import org.opendatakit.aggregate.client.AggregateUI;
 import org.opendatakit.aggregate.client.SecureGWT;
 import org.opendatakit.aggregate.client.filter.FilterGroup;
-import org.opendatakit.aggregate.client.form.RdfExportOptions;
+import org.opendatakit.aggregate.client.form.TemplateExportOptions;
 import org.opendatakit.aggregate.client.widgets.AggregateButton;
 import org.opendatakit.aggregate.client.widgets.ClosePopupButton;
 import org.opendatakit.aggregate.constants.common.SubTabs;
 
 import static org.opendatakit.aggregate.client.security.SecurityUtils.secureRequest;
 
-public class RdfOptionsPopup extends AbstractPopupBase {
+public class TemplateExportOptionsPopup extends AbstractPopupBase {
     private static final String EXPORT_ERROR_MSG = "One of the RDF options was invalid. Did you forget to enter a base-URI?";
 
     private static final String CREATE_BUTTON_TXT = "<img src=\"images/green_right_arrow.png\" /> Export";
@@ -34,7 +34,7 @@ public class RdfOptionsPopup extends AbstractPopupBase {
     private ListBox templateGroupDropdown;
 
 
-    public RdfOptionsPopup(String formId, FilterGroup selectedFilterGroup){
+    public TemplateExportOptionsPopup(String formId, FilterGroup selectedFilterGroup){
         super();
         this.formId = formId;
         this.selectedFilterGroup = selectedFilterGroup;
@@ -78,7 +78,7 @@ public class RdfOptionsPopup extends AbstractPopupBase {
         layout.setWidget(3,1, new HTML("Loading..."));
 
         //Asynchronous call to get the list of available templates
-        SecureGWT.getFormService().getRdfExportSettings(formId, selectedFilterGroup, new RdfOptionsPopup.RdfSettingsCallback());
+        SecureGWT.getFormService().getRdfExportSettings(formId, selectedFilterGroup, new TemplateSettingsCallback());
     }
 
     /*
@@ -121,15 +121,15 @@ public class RdfOptionsPopup extends AbstractPopupBase {
         }
     }
 
-    //Callbacks for the RdfExportOptions-request
-    private class RdfSettingsCallback implements AsyncCallback<RdfExportOptions> {
+    //Callbacks for the TemplateExportOptions-request
+    private class TemplateSettingsCallback implements AsyncCallback<TemplateExportOptions> {
         @Override
         public void onFailure(Throwable caught) {
             AggregateUI.getUI().reportError(caught);
         }
 
         @Override
-        public void onSuccess(RdfExportOptions result) {
+        public void onSuccess(TemplateExportOptions result) {
             //Display the available templates in a dropdown-list
             templateGroupDropdown = new ListBox();
             if(result.getRegisteredTemplateIds().size() == 0){

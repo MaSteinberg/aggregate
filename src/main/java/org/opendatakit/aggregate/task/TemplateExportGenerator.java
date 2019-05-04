@@ -27,7 +27,7 @@ import org.opendatakit.common.web.CallingContext;
  * @author msteinberg1@web.de
  *
  */
-public interface RdfGenerator {
+public interface TemplateExportGenerator {
     public static final String RDF_BASEURI_KEY = "RDFBASEURI";
     public static final String RDF_REQUIREUUIDS_KEY = "RDFUUIDS";
     public static final String RDF_TEMPLATE_KEY = "RDFTEMPLATEGROUP";

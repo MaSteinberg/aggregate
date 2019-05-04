@@ -1,26 +1,20 @@
 package org.opendatakit.aggregate.servlet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import org.apache.tools.ant.taskdefs.Javadoc;
-import org.opendatakit.aggregate.client.form.RdfExportOptions;
+import org.opendatakit.aggregate.client.form.TemplateExportOptions;
 import org.opendatakit.aggregate.constants.common.UIConsts;
-import org.opendatakit.aggregate.server.FormServiceImpl;
-import org.opendatakit.aggregate.server.RdfTemplateConfigManager;
+import org.opendatakit.aggregate.server.ExportTemplateConfigManager;
 import org.opendatakit.common.web.constants.HtmlConsts;
-import org.springframework.util.ResourceUtils;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 
 /*
 REST-Servlet to make the RDF Export configuration available to ODK Build
  */
-public class RdfTemplateConfigServlet extends ServletUtilBase {
+public class ExportTemplateConfigServlet extends ServletUtilBase {
     /**
      * Serial number for serialization
      */
@@ -38,7 +32,7 @@ public class RdfTemplateConfigServlet extends ServletUtilBase {
             resp.setContentType(HtmlConsts.RESP_TYPE_JSON);
             resp.setCharacterEncoding(HtmlConsts.UTF8_ENCODE);
             resp.addHeader("Access-Control-Allow-Origin", "*");
-            RdfExportOptions options = RdfTemplateConfigManager.getRdfExportOptions();
+            TemplateExportOptions options = ExportTemplateConfigManager.getRdfExportOptions();
             ObjectMapper jsonMapper = new ObjectMapper();
             jsonMapper.writerWithDefaultPrettyPrinter().writeValue(out, options);
         } catch (IOException e) {

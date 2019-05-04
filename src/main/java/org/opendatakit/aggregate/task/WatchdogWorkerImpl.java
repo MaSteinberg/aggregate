@@ -136,7 +136,7 @@ public class WatchdogWorkerImpl {
           .getBean(BeanDefs.UPLOAD_TASK_BEAN);
       CsvGenerator csvGenerator = (CsvGenerator) cc.getBean(BeanDefs.CSV_BEAN);
       KmlGenerator kmlGenerator = (KmlGenerator) cc.getBean(BeanDefs.KML_BEAN);
-      RdfGenerator rdfGenerator = (RdfGenerator) cc.getBean(BeanDefs.RDF_BEAN);
+      TemplateExportGenerator templateExportGenerator = (TemplateExportGenerator) cc.getBean(BeanDefs.RDF_BEAN);
       WorksheetCreator worksheetCreator = (WorksheetCreator) cc.getBean(BeanDefs.WORKSHEET_BEAN);
       FormDelete formDelete = (FormDelete) cc.getBean(BeanDefs.FORM_DELETE_BEAN);
       PurgeOlderSubmissions purgeSubmissions = (PurgeOlderSubmissions) cc
@@ -146,7 +146,7 @@ public class WatchdogWorkerImpl {
       // NOTE: do not short-circuit these check actions...
       foundActiveTasks = foundActiveTasks | checkFormServiceCursors(uploadSubmissions, cc);
       foundActiveTasks = foundActiveTasks
-          | checkPersistentResults(csvGenerator, kmlGenerator, jsonGenerator, rdfGenerator, cc);
+          | checkPersistentResults(csvGenerator, kmlGenerator, jsonGenerator, templateExportGenerator, cc);
       foundActiveTasks = foundActiveTasks
           | checkMiscTasks(worksheetCreator, formDelete, purgeSubmissions, cc);
       activeTasks = foundActiveTasks;
@@ -331,7 +331,7 @@ public class WatchdogWorkerImpl {
   }
 
   private boolean checkPersistentResults(CsvGenerator csvGenerator, KmlGenerator kmlGenerator,
-      JsonFileGenerator jsonGenerator, RdfGenerator rdfGenerator, CallingContext cc) throws ODKDatastoreException,
+                                         JsonFileGenerator jsonGenerator, TemplateExportGenerator templateExportGenerator, CallingContext cc) throws ODKDatastoreException,
       ODKFormNotFoundException {
     try {
       logger.info("Checking all persistent results");
@@ -361,7 +361,7 @@ public class WatchdogWorkerImpl {
               cc);
           break;
           case FLEX:
-          rdfGenerator.createRdfTask(form, persistentResult, attemptCount, cc);
+          templateExportGenerator.createRdfTask(form, persistentResult, attemptCount, cc);
           break;
         default:
           this.logger.equals("No generator defined for Persisted Result Type: "

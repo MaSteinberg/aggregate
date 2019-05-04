@@ -1,4 +1,4 @@
-package org.opendatakit.aggregate.odktables.rdf;
+package org.opendatakit.aggregate.odktables.flexibleExport;
 
 import org.opendatakit.common.persistence.*;
 import org.opendatakit.common.persistence.exception.ODKDatastoreException;

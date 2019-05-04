@@ -48,7 +48,7 @@ public interface FormService extends RemoteService {
   @XsrfProtect
   Boolean createRdfFileFromFilter(FilterGroup group, String baseURI, Boolean requireRowUUIDs, String templateGroup) throws AccessDeniedException, RequestFailureException, DatastoreFailureException;
 
-  RdfExportOptions getRdfExportSettings(String formId, FilterGroup filterGroup) throws AccessDeniedException, RequestFailureException, DatastoreFailureException;
+  TemplateExportOptions getRdfExportSettings(String formId, FilterGroup filterGroup) throws AccessDeniedException, RequestFailureException, DatastoreFailureException;
 
   KmlOptionsSummary getPossibleKmlSettings(String formId) throws AccessDeniedException, RequestFailureException, DatastoreFailureException;
 

@@ -1,7 +1,7 @@
 package org.opendatakit.aggregate.parser;
 
 import org.apache.commons.io.IOUtils;
-import org.opendatakit.aggregate.odktables.rdf.SemanticsTable;
+import org.opendatakit.aggregate.odktables.flexibleExport.SemanticsTable;
 import org.opendatakit.common.persistence.exception.ODKDatastoreException;
 import org.opendatakit.common.web.CallingContext;
 import org.slf4j.Logger;

@@ -1,8 +1,4 @@
-package org.opendatakit.aggregate.format.structure.rdf.models;
-
-import org.opendatakit.aggregate.form.IForm;
-
-import java.util.Date;
+package org.opendatakit.aggregate.format.structure.flexibleExport.models;
 
 public class RowModel {
     public TopLevelModel topLevelModel;

@@ -3,13 +3,12 @@ package org.opendatakit.aggregate.servlet;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.rdf4j.RDF4JException;
-import org.eclipse.rdf4j.query.QueryEvaluationException;
 import org.opendatakit.aggregate.client.form.SemanticAutocompleteElement;
 import org.opendatakit.aggregate.client.form.SemanticPropertyConfiguration;
 import org.opendatakit.aggregate.constants.ServletConsts;
 import org.opendatakit.aggregate.constants.common.UIConsts;
-import org.opendatakit.aggregate.format.structure.rdf.RdfFormatterWithFilters;
-import org.opendatakit.aggregate.server.RdfTemplateConfigManager;
+import org.opendatakit.aggregate.format.structure.flexibleExport.TemplateFormatterWithFilters;
+import org.opendatakit.aggregate.server.ExportTemplateConfigManager;
 import org.opendatakit.common.utils.SparqlQueryManager;
 import org.opendatakit.common.web.constants.HtmlConsts;
 
@@ -51,7 +50,7 @@ public class SemanticPropertyAutocompleteServlet extends ServletUtilBase {
         }
 
         //Get configuration of requested property
-        SemanticPropertyConfiguration config = RdfTemplateConfigManager.getPropertyConfig(prop);
+        SemanticPropertyConfiguration config = ExportTemplateConfigManager.getPropertyConfig(prop);
 
         List<SemanticAutocompleteElement> results = null;
         if(config == null || (StringUtils.isBlank(config.getEndpoint()) ^ StringUtils.isBlank(config.getQuery()))){
@@ -77,7 +76,7 @@ public class SemanticPropertyAutocompleteServlet extends ServletUtilBase {
 
             if(prefixed){
                 for (SemanticAutocompleteElement e : results) {
-                    e.setValue(RdfFormatterWithFilters.ONTOLOGY_REF_PREFIX + e.getValue());
+                    e.setValue(TemplateFormatterWithFilters.ONTOLOGY_REF_PREFIX + e.getValue());
                 }
             }
         }

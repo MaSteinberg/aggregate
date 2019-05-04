@@ -73,7 +73,7 @@ public class WatchdogImpl implements Watchdog, SmartLifecycle, InitializingBean,
   CsvGenerator csvGenerator = null;
   KmlGenerator kmlGenerator = null;
   JsonFileGenerator jsonFileGenerator = null;
-  RdfGenerator rdfGenerator = null;
+  TemplateExportGenerator templateExportGenerator = null;
   PurgeOlderSubmissions purgeSubmissions = null;
   FormDelete formDelete = null;
   WorksheetCreator worksheetCreator = null;
@@ -166,7 +166,7 @@ public class WatchdogImpl implements Watchdog, SmartLifecycle, InitializingBean,
       } else if ( BeanDefs.JSON_FILE_BEAN.equals(beanName) ) {
         return jsonFileGenerator;
       } else if ( BeanDefs.RDF_BEAN.equals(beanName) ) {
-        return rdfGenerator;
+        return templateExportGenerator;
       } else if (BeanDefs.DATASTORE_BEAN.equals(beanName)) {
         return datastore;
       } else if (BeanDefs.FORM_DELETE_BEAN.equals(beanName)) {
@@ -403,12 +403,12 @@ public class WatchdogImpl implements Watchdog, SmartLifecycle, InitializingBean,
     this.jsonFileGenerator = jsonFileGenerator;
   }
 
-  public RdfGenerator getRdfGenerator() {
-    return rdfGenerator;
+  public TemplateExportGenerator getTemplateExportGenerator() {
+    return templateExportGenerator;
   }
 
-  public void setRdfGenerator(RdfGenerator rdfGenerator) {
-    this.rdfGenerator = rdfGenerator;
+  public void setTemplateExportGenerator(TemplateExportGenerator templateExportGenerator) {
+    this.templateExportGenerator = templateExportGenerator;
   }
 
   public FormDelete getFormDelete() {

@@ -22,8 +22,7 @@ import org.opendatakit.aggregate.constants.common.UIConsts;
 import org.opendatakit.aggregate.filter.SubmissionFilterGroup;
 import org.opendatakit.aggregate.form.IForm;
 import org.opendatakit.aggregate.form.PersistentResults;
-import org.opendatakit.aggregate.format.SubmissionFormatter;
-import org.opendatakit.aggregate.format.structure.rdf.RdfFormatterWithFilters;
+import org.opendatakit.aggregate.format.structure.flexibleExport.TemplateFormatterWithFilters;
 import org.opendatakit.aggregate.query.submission.QueryBase;
 import org.opendatakit.aggregate.query.submission.QueryByUIFilterGroup;
 import org.opendatakit.aggregate.submission.Submission;
@@ -45,8 +44,8 @@ import java.util.List;
  * @author msteinberg1@web.de
  *
  */
-public class RdfWorkerImpl {
-    private final Logger logger = LoggerFactory.getLogger(RdfWorkerImpl.class);
+public class TemplateExportWorkerImpl {
+    private final Logger logger = LoggerFactory.getLogger(TemplateExportWorkerImpl.class);
     private final IForm form;
     private final SubmissionKey persistentResultsKey;
     private final Long attemptCount;
@@ -57,9 +56,9 @@ public class RdfWorkerImpl {
 
     private final CallingContext cc;
 
-    public RdfWorkerImpl(IForm form, SubmissionKey persistentResultsKey, Long attemptCount,
-                         String baseURI, Boolean requireRowUUIDs, String templateGroup,
-                         CallingContext cc) {
+    public TemplateExportWorkerImpl(IForm form, SubmissionKey persistentResultsKey, Long attemptCount,
+                                    String baseURI, Boolean requireRowUUIDs, String templateGroup,
+                                    CallingContext cc) {
         this.form = form;
         this.persistentResultsKey = persistentResultsKey;
         this.attemptCount = attemptCount;
@@ -88,7 +87,7 @@ public class RdfWorkerImpl {
 
             // create RDF
             QueryBase query;
-            RdfFormatterWithFilters formatter;
+            TemplateFormatterWithFilters formatter;
             FilterGroup filterGroup;
 
             // figure out the filterGroup...
@@ -101,7 +100,7 @@ public class RdfWorkerImpl {
             filterGroup.setQueryFetchLimit(ServletConsts.EXPORT_CURSOR_CHUNK_SIZE);
 
             query = new QueryByUIFilterGroup(form, filterGroup, QueryByUIFilterGroup.CompletionFlag.ONLY_COMPLETE_SUBMISSIONS, cc);
-            formatter = new RdfFormatterWithFilters(form, cc.getServerURL(), pw, filterGroup, this.baseURI, this.requireRowUUIDs, this.templateGroup);
+            formatter = new TemplateFormatterWithFilters(form, cc.getServerURL(), pw, filterGroup, this.baseURI, this.requireRowUUIDs, this.templateGroup);
 
             logger.info("after setup of RDF file generation for " + form.getFormId());
             formatter.beforeProcessSubmissions(cc);

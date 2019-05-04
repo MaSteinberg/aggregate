@@ -323,7 +323,7 @@
 
     <servlet>
         <servlet-name>rdfTemplateConfig</servlet-name>
-        <servlet-class>org.opendatakit.aggregate.servlet.RdfTemplateConfigServlet</servlet-class>
+        <servlet-class>org.opendatakit.aggregate.servlet.ExportTemplateConfigServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>rdfTemplateConfig</servlet-name>
@@ -474,7 +474,7 @@
 
     <servlet>
         <servlet-name>rdfGeneratorTask</servlet-name>
-        <servlet-class>org.opendatakit.aggregate.task.gae.servlet.RdfGeneratorTaskServlet</servlet-class>
+        <servlet-class>org.opendatakit.aggregate.task.gae.servlet.TemplateExportGeneratorTaskServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>rdfGeneratorTask</servlet-name>

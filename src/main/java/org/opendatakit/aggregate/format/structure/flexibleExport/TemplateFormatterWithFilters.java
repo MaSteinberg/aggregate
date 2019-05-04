@@ -13,15 +13,14 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.opendatakit.aggregate.format.structure.rdf;
+package org.opendatakit.aggregate.format.structure.flexibleExport;
 
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.opendatakit.aggregate.client.filter.FilterGroup;
-import org.opendatakit.aggregate.client.form.RdfTemplateConfig;
-import org.opendatakit.aggregate.client.form.TemplateProperties;
+import org.opendatakit.aggregate.client.form.ExportTemplateConfig;
 import org.opendatakit.aggregate.client.submission.SubmissionUISummary;
 import org.opendatakit.aggregate.constants.ServletConsts;
 import org.opendatakit.aggregate.constants.common.FormElementNamespace;
@@ -32,10 +31,10 @@ import org.opendatakit.aggregate.format.Row;
 import org.opendatakit.aggregate.format.SubmissionFormatter;
 import org.opendatakit.aggregate.format.element.BasicElementFormatter;
 import org.opendatakit.aggregate.format.element.ElementFormatter;
-import org.opendatakit.aggregate.format.structure.rdf.models.*;
-import org.opendatakit.aggregate.odktables.rdf.SemanticsTable;
+import org.opendatakit.aggregate.format.structure.flexibleExport.models.*;
+import org.opendatakit.aggregate.odktables.flexibleExport.SemanticsTable;
 import org.opendatakit.aggregate.server.GenerateHeaderInfo;
-import org.opendatakit.aggregate.server.RdfTemplateConfigManager;
+import org.opendatakit.aggregate.server.ExportTemplateConfigManager;
 import org.opendatakit.aggregate.submission.Submission;
 import org.opendatakit.common.persistence.exception.ODKDatastoreException;
 import org.opendatakit.common.web.CallingContext;
@@ -52,10 +51,10 @@ import java.util.stream.IntStream;
 
 import static org.opendatakit.aggregate.datamodel.FormElementModel.ElementType.*;
 
-public class RdfFormatterWithFilters implements SubmissionFormatter {
+public class TemplateFormatterWithFilters implements SubmissionFormatter {
     public static final String ONTOLOGY_REF_PREFIX = "_onto_";
     public static final String COLUMN_REF_PREFIX = "_col_";
-    private final Logger logger = LoggerFactory.getLogger(RdfFormatterWithFilters.class);
+    private final Logger logger = LoggerFactory.getLogger(TemplateFormatterWithFilters.class);
 
     //Can be overwritten by the selected template
     public String filetype = ServletConsts.RDF_FILENAME_TYPE_FALLBACK;
@@ -94,8 +93,8 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
     private List<ColumnModel> columnModels = new ArrayList<>();
 
 
-    public RdfFormatterWithFilters(IForm xform, String webServerUrl, PrintWriter printWriter,
-                                   FilterGroup filterGroup, String baseURI, Boolean requireRowUUID, String templateGroup) {
+    public TemplateFormatterWithFilters(IForm xform, String webServerUrl, PrintWriter printWriter,
+                                        FilterGroup filterGroup, String baseURI, Boolean requireRowUUID, String templateGroup) {
         form = xform;
         output = printWriter;
 
@@ -167,7 +166,7 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
         }
 
         //Grab the template config
-        RdfTemplateConfig templateConfig = RdfTemplateConfigManager.getRdfTemplateConfig(this.templateGroup);
+        ExportTemplateConfig templateConfig = ExportTemplateConfigManager.getRdfTemplateConfig(this.templateGroup);
         
         //Let the template config overwrite the default filetype
         if(templateConfig.getFiletype() != null && !StringUtils.isBlank(templateConfig.getFiletype())){
@@ -311,8 +310,8 @@ public class RdfFormatterWithFilters implements SubmissionFormatter {
                         semanticsForGivenRow = new HashMap<>();
                     }
                     for(Map.Entry<String, String> entry : semanticsForGivenRow.entrySet()){
-                        if(entry.getValue().startsWith(RdfFormatterWithFilters.COLUMN_REF_PREFIX)){
-                            String referenceColumn = StringUtils.removeStart(entry.getValue(), RdfFormatterWithFilters.COLUMN_REF_PREFIX);
+                        if(entry.getValue().startsWith(TemplateFormatterWithFilters.COLUMN_REF_PREFIX)){
+                            String referenceColumn = StringUtils.removeStart(entry.getValue(), TemplateFormatterWithFilters.COLUMN_REF_PREFIX);
                             //Find index of the referenced column (using the unfiltered FormElementModels here)
                             int index = IntStream.range(0, columnFormElementModelsUnfiltered.size())
                                     .filter(i -> columnFormElementModelsUnfiltered.get(i).getElementName().equals(referenceColumn))

@@ -16,22 +16,17 @@
 
 package org.opendatakit.aggregate.server;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
-import java.io.*;
-import java.net.URL;
 import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.io.FileUtils;
 import org.opendatakit.aggregate.ContextFactory;
 import org.opendatakit.aggregate.client.exception.FormNotAvailableException;
 import org.opendatakit.aggregate.client.exception.RequestFailureException;
 import org.opendatakit.aggregate.client.filter.FilterGroup;
 import org.opendatakit.aggregate.client.form.*;
+import org.opendatakit.aggregate.client.popups.TemplateExportOptionsPopup;
 import org.opendatakit.aggregate.client.submission.SubmissionUISummary;
 import org.opendatakit.aggregate.constants.BeanDefs;
 import org.opendatakit.aggregate.constants.ErrorConsts;
@@ -47,10 +42,10 @@ import org.opendatakit.aggregate.form.IForm;
 import org.opendatakit.aggregate.form.MiscTasks;
 import org.opendatakit.aggregate.form.PersistentResults;
 import org.opendatakit.aggregate.form.PersistentResults.ResultFileInfo;
-import org.opendatakit.aggregate.odktables.rdf.SemanticsTable;
+import org.opendatakit.aggregate.odktables.flexibleExport.SemanticsTable;
 import org.opendatakit.aggregate.task.CsvGenerator;
 import org.opendatakit.aggregate.task.JsonFileGenerator;
-import org.opendatakit.aggregate.task.RdfGenerator;
+import org.opendatakit.aggregate.task.TemplateExportGenerator;
 import org.opendatakit.aggregate.task.KmlGenerator;
 import org.opendatakit.common.persistence.client.exception.DatastoreFailureException;
 import org.opendatakit.common.persistence.exception.ODKDatastoreException;
@@ -60,7 +55,6 @@ import org.opendatakit.common.security.client.exception.AccessDeniedException;
 import org.opendatakit.common.web.CallingContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.ResourceUtils;
 
 public class FormServiceImpl extends RemoteServiceServlet implements
     org.opendatakit.aggregate.client.form.FormService {
@@ -211,10 +205,10 @@ public class FormServiceImpl extends RemoteServiceServlet implements
   /**
    * Used by the frontend to grab the RDF Export configuration.
    * Only returns the templates for which all required annotations are available
-   * @see org.opendatakit.aggregate.client.popups.RdfOptionsPopup#RdfOptionsPopup
+   * @see TemplateExportOptionsPopup#TemplateExportOptionsPopup
    */
   @Override
-  public RdfExportOptions getRdfExportSettings(String formId, FilterGroup filterGroup) throws AccessDeniedException, RequestFailureException, DatastoreFailureException {
+  public TemplateExportOptions getRdfExportSettings(String formId, FilterGroup filterGroup) throws AccessDeniedException, RequestFailureException, DatastoreFailureException {
     //Grab all form details & included columns to check for required annotations
     HttpServletRequest req = this.getThreadLocalRequest();
     CallingContext cc = ContextFactory.getCallingContext(this, req);
@@ -252,10 +246,10 @@ public class FormServiceImpl extends RemoteServiceServlet implements
     }
 
     //Find all registered template groups
-    RdfExportOptions options = RdfTemplateConfigManager.getRdfExportOptions();
-    Map<String, RdfTemplateConfig> templates = options.getTemplates();
+    TemplateExportOptions options = ExportTemplateConfigManager.getRdfExportOptions();
+    Map<String, ExportTemplateConfig> templates = options.getTemplates();
     //Iterate all registered template groups
-    for(Map.Entry<String, RdfTemplateConfig> entry: templates.entrySet()){
+    for(Map.Entry<String, ExportTemplateConfig> entry: templates.entrySet()){
       List<String> requiredProperties;
       if(entry.getValue().getTemplateProperties() != null){
         requiredProperties = entry.getValue().getTemplateProperties().getRequiredProperties();
@@ -438,16 +432,16 @@ public class FormServiceImpl extends RemoteServiceServlet implements
 
       //Build parameter map
       Map<String, String> params = new HashMap<>();
-      params.put(RdfGenerator.RDF_BASEURI_KEY, baseURI);
-      params.put(RdfGenerator.RDF_REQUIREUUIDS_KEY, String.valueOf(requireRowUUIDs));
-      params.put(RdfGenerator.RDF_TEMPLATE_KEY, templateGroup);
+      params.put(TemplateExportGenerator.RDF_BASEURI_KEY, baseURI);
+      params.put(TemplateExportGenerator.RDF_REQUIREUUIDS_KEY, String.valueOf(requireRowUUIDs));
+      params.put(TemplateExportGenerator.RDF_TEMPLATE_KEY, templateGroup);
       PersistentResults r = new PersistentResults(ExportType.FLEX, form, filterGrp, params, cc);
       r.persist(cc);
 
       // create rdf task
       CallingContext ccDaemon = ContextFactory.getCallingContext(this, req);
       ccDaemon.setAsDaemon(true);
-      RdfGenerator generator = (RdfGenerator) cc.getBean(BeanDefs.RDF_BEAN);
+      TemplateExportGenerator generator = (TemplateExportGenerator) cc.getBean(BeanDefs.RDF_BEAN);
       generator.createRdfTask(form, r, 1L, ccDaemon);
       return true;
 
