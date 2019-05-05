@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ExportTemplateConfigManager {
-    private static final String configRoot = "rdfExport";
+    private static final String configRoot = "templateExport";
     private static final String templateDirectory = "mustache_templates";
     private static final String rootConfigFilename = "TemplateExportConfig.yml";
     private static final String templateConfigFilename = "config.yml";

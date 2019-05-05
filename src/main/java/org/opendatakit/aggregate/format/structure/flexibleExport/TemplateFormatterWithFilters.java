@@ -54,6 +54,7 @@ import static org.opendatakit.aggregate.datamodel.FormElementModel.ElementType.*
 public class TemplateFormatterWithFilters implements SubmissionFormatter {
     public static final String ONTOLOGY_REF_PREFIX = "_onto_";
     public static final String COLUMN_REF_PREFIX = "_col_";
+    private static String TEMPLATE_ROOT_DIR = "templateExport/mustache_templates"; //Relative to src/main/resources
     private final Logger logger = LoggerFactory.getLogger(TemplateFormatterWithFilters.class);
 
     //Can be overwritten by the selected template
@@ -117,13 +118,13 @@ public class TemplateFormatterWithFilters implements SubmissionFormatter {
         columnFormElementModelsUnfiltered = headerGeneratorUnfiltered.getIncludedElements();
 
         //Initialize Mustache & compile the templates
-        String templateGroupRoot = "rdfExport/mustache_templates/" + this.templateGroup;
+        String templateGroupRoot = TEMPLATE_ROOT_DIR + "/" + this.templateGroup;
         mf = new DefaultMustacheFactory();
         //Identifier templates
-        this.toplevelIdentifierMustache = mf.compile("rdfExport/mustache_templates/common/toplevelIdentifier.mustache");
-        this.columnIdentifierMustache = mf.compile("rdfExport/mustache_templates/common/columnIdentifier.mustache");
-        this.rowIdentifierMustache = mf.compile("rdfExport/mustache_templates/common/rowIdentifier.mustache");
-        this.cellIdentifierMustache = mf.compile("rdfExport/mustache_templates/common/cellIdentifier.mustache");
+        this.toplevelIdentifierMustache = mf.compile(TEMPLATE_ROOT_DIR +"/common/toplevelIdentifier.mustache");
+        this.columnIdentifierMustache = mf.compile(TEMPLATE_ROOT_DIR + "/common/columnIdentifier.mustache");
+        this.rowIdentifierMustache = mf.compile(TEMPLATE_ROOT_DIR + "/common/rowIdentifier.mustache");
+        this.cellIdentifierMustache = mf.compile(TEMPLATE_ROOT_DIR + "/common/cellIdentifier.mustache");
         //Turtle templates
         this.namespacesMustache = mf.compile(templateGroupRoot + "/namespaces.mustache");
         this.toplevelMustache = mf.compile(templateGroupRoot + "/toplevel.mustache");
