@@ -185,7 +185,7 @@ This file is responsible for defining any RDF statements on the top level of the
 The template is rendered exactly once for a given export process.
 The model provides access to metadata about the form and the dataset.
 The following fields are exposed:
-+ *toplevelEntityIdentifier* - **String** - Can be used as a subject, predicate or object in an RDF statement to uniquely identify the top level of the resulting RDF file.
++ *toplevelIdentifier* - **String** - Can be used as a subject, predicate or object in an RDF statement to uniquely identify the top level of the resulting RDF file.
 + *formId* - **String** - Unique identifier of the form used for data collection.
 + *formName* - **String** - Name of the form used for data collection. Not necessarily unique. Might be empty.
 + *formDescription* - **String** - Description of the form used for data collection. Might be empty.
@@ -206,7 +206,7 @@ It also includes the toplevel-model in case any toplevel information should be p
 The following fields are exposed:
 + *topLevelModel* - Same model as in toplevel.ttl.mustache - Contains metadata about the form and the dataset.
 + *rowId* - **String** - Unique identifier of the current submission. Depending on the selection during the start of the export this is either a whole number (starting at 1, incrementing for each row) or a globally unique identifier (UUID), e.g. `uuid:ace1da01-038f-40af-a1fb-d6758d052c36`.
-+ *rowEntityIdentifier* - **String** - Can be used as a subject, predicate or object in an RDF statement to uniquely identify the current submission. Similar to *rowId*: Depending on the selection during the start of the export this is either globally or locally unique. 
++ *rowIdentifier* - **String** - Can be used as a subject, predicate or object in an RDF statement to uniquely identify the current submission. Similar to *rowId*: Depending on the selection during the start of the export this is either globally or locally unique.
 
 This template file would usually contain triples that define one or more resources per row that the other template files can reference.
 Alternatively the template file may be left empty if there is no need for such row level resources.
@@ -219,7 +219,7 @@ It also includes the toplevel-model in case any toplevel information should be p
 The following fields are exposed:
 + *topLevelModel* - Same model as in toplevel.ttl.mustache - Contains metadata about the form and the dataset.
 + *columnHeader* - **String** - Unique name of the current column. This might differ from the **label** displayed during the survey.
-+ *columnEntityIdentifier* - **String** - Can be used as a subject, predicate or object in an RDF statement to uniquely identify the current column.
++ *columnIdentifier* - **String** - Can be used as a subject, predicate or object in an RDF statement to uniquely identify the current column.
 
 This template file would usually contain triples that define one or more resources per column that the other template files can reference.
 Alternatively the template file may be left empty if there is no need for such column level resources.
@@ -233,16 +233,16 @@ Remember that both the column- and row-models also allow access to the toplevel-
 The following fields are exposed:
 + *rowModel* - Same model as in row.ttl.mustache - Contains metadata about the row that contains the current cell.
 + *columnModel* - Same model as in column.ttl.mustache - Contains metadata about the column that contains the current cell.
-+ *cellEntityIdentifier* - **String** - Can be used as a subject, predicate or object in an RDF statement to uniquely identify the current cell.
++ *cellIdentifier* - **String** - Can be used as a subject, predicate or object in an RDF statement to uniquely identify the current cell.
 + *semantics* - **Map\<String, SemanticsModel>** - This map contains the properties that you configured in the `rdfExportTemplateConfig.yml`-file. The SemanticsModel for a given metric can be accessed with `semantics.YourMetricName`. The SemanticsModel exposes the following fields:
   + *value* - **String** - The value of the property.
   + *isLiteral* - **Boolean** - Flag signalling whether the *value* should be considered a literal or an RDF resource. Typically the model could be used in the following way: 
   ```
     1 {{#semantics.YourPropertyName.isLiteral}}
-    2   {{cellEntityIdentifier}} ex:somePredicate "{{semantics.YourPropertyName.value}}" .
+    2   {{cellIdentifier}} ex:somePredicate "{{semantics.YourPropertyName.value}}" .
     3 {{/semantics.YourPropertyName.isLiteral}}
     4 {{^semantics.YourPropertyName.isLiteral}}
-    5   {{cellEntityIdentifier}} ex:somePredicate <{{semantics.YourPropertyName.value}}> .
+    5   {{cellIdentifier}} ex:somePredicate <{{semantics.YourPropertyName.value}}> .
     6 {{/semantics.YourPropertyName.isLiteral}}
   ```
   This snippet would render line 2 if the value is considered a literal or line 5 if the value is considered an RDF resource.

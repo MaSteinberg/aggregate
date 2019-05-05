@@ -1,45 +1,45 @@
 #Row {{rowModel.rowId}}, Column {{columnModel.columnHeader}}
 {{!Construct an oboe-core:Measurement for the cell}}
-:meas_{{cellEntityIdentifier}} rdf:type oboe-core:Measurement .
+:meas_{{cellIdentifier}} rdf:type oboe-core:Measurement .
 {{!Relate the Measurement to the Observation}}
-:obs_{{columnModel.columnEntityIdentifier}} oboe-core:hasMeasurement :meas_{{cellEntityIdentifier}} .
+:obs_{{columnModel.columnIdentifier}} oboe-core:hasMeasurement :meas_{{cellIdentifier}} .
 {{!Construct an oboe-core:MeasuredValue for the cell}}
-:measuredValue_{{cellEntityIdentifier}} rdf:type oboe-core:MeasuredValue .
+:measuredValue_{{cellIdentifier}} rdf:type oboe-core:MeasuredValue .
 {{!Relate the Measurement to the MeasuredValue}}
-:meas_{{cellEntityIdentifier}} oboe-core:hasValue :measuredValue_{{cellEntityIdentifier}} .
+:meas_{{cellIdentifier}} oboe-core:hasValue :measuredValue_{{cellIdentifier}} .
 
 {{!Use semantic information}}
 {{!Creator - optional}}
 {{#semantics.Creator}}
 {{!Given a literal value}}
     {{#semantics.Creator.isLiteral}}
-        :meas_{{cellEntityIdentifier}} dcterms:creator :creator_{{cellEntityIdentifier}} .
-        :creator_{{cellEntityIdentifier}} rdf:type foaf:Person .
-        :creator_{{cellEntityIdentifier}} foaf:name "{{{semantics.Creator.value}}}" .
+        :meas_{{cellIdentifier}} dcterms:creator :creator_{{cellIdentifier}} .
+        :creator_{{cellIdentifier}} rdf:type foaf:Person .
+        :creator_{{cellIdentifier}} foaf:name "{{{semantics.Creator.value}}}" .
     {{/semantics.Creator.isLiteral}}
     {{!Given an RDF resource}}
     {{^semantics.Creator.isLiteral}}
-        :meas_{{cellEntityIdentifier}} dcterms:creator <{{{semantics.Creator.value}}}> .
+        :meas_{{cellIdentifier}} dcterms:creator <{{{semantics.Creator.value}}}> .
     {{/semantics.Creator.isLiteral}}
 {{/semantics.Creator}}
 
 {{!Characteristic - required}}
 {{!Given a literal value}}
 {{#semantics.Characteristic.isLiteral}}
-    :meas_{{cellEntityIdentifier}} oboe-core:ofCharacteristic "{{{semantics.Characteristic.value}}}" .
+    :meas_{{cellIdentifier}} oboe-core:ofCharacteristic "{{{semantics.Characteristic.value}}}" .
 {{/semantics.Characteristic.isLiteral}}
 {{!Given an RDF resource}}
 {{^semantics.Characteristic.isLiteral}}
-    :meas_{{cellEntityIdentifier}} oboe-core:ofCharacteristic <{{{semantics.Characteristic.value}}}> .
+    :meas_{{cellIdentifier}} oboe-core:ofCharacteristic <{{{semantics.Characteristic.value}}}> .
 {{/semantics.Characteristic.isLiteral}}
 
 {{!Unit - required}}
 {{!Given a literal value}}
 {{#semantics.Unit.isLiteral}}
-    :meas_{{cellEntityIdentifier}} om:hasUnit "{{{semantics.Unit.value}}}" .
+    :meas_{{cellIdentifier}} om:hasUnit "{{{semantics.Unit.value}}}" .
 {{/semantics.Unit.isLiteral}}
 {{!Given an RDF resource}}
 {{^semantics.Unit.isLiteral}}
-    :meas_{{cellEntityIdentifier}} om:hasUnit <{{{semantics.Unit.value}}}> .
+    :meas_{{cellIdentifier}} om:hasUnit <{{{semantics.Unit.value}}}> .
 {{/semantics.Unit.isLiteral}}
 

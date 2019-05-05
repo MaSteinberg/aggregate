@@ -1,13 +1,13 @@
 {{!Define the MeasuredValue to point to a collection}}
-:measuredValue_{{cellEntityIdentifier}} oboe-core:hasCode (
+:measuredValue_{{cellIdentifier}} oboe-core:hasCode (
     {{#locationList}}
-        :pathElement_{{cellEntityIdentifier}}_{{pathElementIndex}}
+        :pathElement_{{cellIdentifier}}_{{pathElementIndex}}
     {{/locationList}}
 ) .
 {{!Define the collection elements to be Points with latitude, longitude, altitude}}
 {{#locationList}}
-:pathElement_{{cellEntityIdentifier}} rdf:type geo:Point .
-:pathElement_{{cellEntityIdentifier}}  geo:lat "{{{location.latitude}}}" .
-:pathElement_{{cellEntityIdentifier}}  geo:long "{{{location.longitude}}}" .
-:pathElement_{{cellEntityIdentifier}}  geo:alt "{{{location.altitude}}}" .
+:pathElement_{{cellIdentifier}} rdf:type geo:Point .
+:pathElement_{{cellIdentifier}}  geo:lat "{{{location.latitude}}}" .
+:pathElement_{{cellIdentifier}}  geo:long "{{{location.longitude}}}" .
+:pathElement_{{cellIdentifier}}  geo:alt "{{{location.altitude}}}" .
 {{/locationList}}

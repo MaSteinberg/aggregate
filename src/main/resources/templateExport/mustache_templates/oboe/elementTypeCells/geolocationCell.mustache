@@ -1,16 +1,16 @@
 {{!Define the MeasuredValue to be a Point}}
-:measuredValue_{{cellEntityIdentifier}} rdf:type geo:Point .
+:measuredValue_{{cellIdentifier}} rdf:type geo:Point .
 {{!Define latitude, longitude and altitude}}
 {{#location.latitude}}
-:measuredValue_{{cellEntityIdentifier}} geo:lat "{{{location.latitude}}}" .
+:measuredValue_{{cellIdentifier}} geo:lat "{{{location.latitude}}}" .
 {{/location.latitude}}
 {{#location.longitude}}
-:measuredValue_{{cellEntityIdentifier}} geo:long "{{{location.longitude}}}" .
+:measuredValue_{{cellIdentifier}} geo:long "{{{location.longitude}}}" .
 {{/location.longitude}}
 {{#location.altitude}}
-:measuredValue_{{cellEntityIdentifier}} geo:alt "{{{location.altitude}}}" .
+:measuredValue_{{cellIdentifier}} geo:alt "{{{location.altitude}}}" .
 {{/location.altitude}}
 {{!Define accuracy using oboe-core:hasPrecision}}
 {{#location.accuracy}}
-:meas_{{cellEntityIdentifier}} oboe-core:hasPrecision "{{{location.accuracy}}}" .
+:meas_{{cellIdentifier}} oboe-core:hasPrecision "{{{location.accuracy}}}" .
 {{/location.accuracy}}
