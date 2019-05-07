@@ -11,7 +11,7 @@
 {{!Use semantic information}}
 {{!Creator - optional}}
 {{#semantics.Creator}}
-{{!Given a literal value}}
+    {{!Given a literal value}}
     {{#semantics.Creator.isLiteral}}
         :meas_{{cellIdentifier}} dcterms:creator :creator_{{cellIdentifier}} .
         :creator_{{cellIdentifier}} rdf:type foaf:Person .
@@ -26,7 +26,10 @@
 {{!Characteristic - required}}
 {{!Given a literal value}}
 {{#semantics.Characteristic.isLiteral}}
-    :meas_{{cellIdentifier}} oboe-core:ofCharacteristic "{{{semantics.Characteristic.value}}}" .
+    :meas_{{cellIdentifier}} oboe-core:ofCharacteristic [
+        a oboe-core:Characteristic ;
+        rdfs:label "{{{semantics.Characteristic.value}}}"
+    ] .
 {{/semantics.Characteristic.isLiteral}}
 {{!Given an RDF resource}}
 {{^semantics.Characteristic.isLiteral}}
@@ -36,7 +39,10 @@
 {{!Unit - required}}
 {{!Given a literal value}}
 {{#semantics.Unit.isLiteral}}
-    :meas_{{cellIdentifier}} om:hasUnit "{{{semantics.Unit.value}}}" .
+    :meas_{{cellIdentifier}} om:hasUnit [
+        a om:Unit ;
+        rdfs:label "{{{semantics.Unit.value}}}"
+    ] .
 {{/semantics.Unit.isLiteral}}
 {{!Given an RDF resource}}
 {{^semantics.Unit.isLiteral}}
