@@ -13,9 +13,10 @@
 {{#semantics.Creator}}
     {{!Given a literal value}}
     {{#semantics.Creator.isLiteral}}
-        :meas_{{cellIdentifier}} dcterms:creator :creator_{{cellIdentifier}} .
-        :creator_{{cellIdentifier}} rdf:type foaf:Person .
-        :creator_{{cellIdentifier}} foaf:name "{{{semantics.Creator.value}}}" .
+        :meas_{{cellIdentifier}} dcterms:creator [
+             a foaf:Person ;
+             foaf:name "{{{semantics.Creator.value}}}"
+        ] .
     {{/semantics.Creator.isLiteral}}
     {{!Given an RDF resource}}
     {{^semantics.Creator.isLiteral}}
