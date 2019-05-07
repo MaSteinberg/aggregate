@@ -1,2 +1,14 @@
 {{!The survey describes an ObservationCollection}}
-:obsCol_{{toplevelIdentifier}} rdf:type oboe-core:ObservationCollection .
+:obsCol_{{toplevelIdentifier}} rdf:type oboe-core:ObservationCollection ;
+                                dcterms:identifier "{{formId}}" ;
+                                {{#formName}}
+                                    dcterms:title "{{formName}}";
+                                {{/formName}}
+                                {{#formDescription}}
+                                    dcterms:description "{{formDescription}}";
+                                {{/formDescription}}
+                                dcterms:created "{{formCreationDate}}";
+                                dcterms:creator [
+                                    a foaf:Person;
+                                    foaf:name "{{formCreationUser}}"
+                                ] .
