@@ -1,7 +1,4 @@
-{{#columnModel.isFirstColumn}}
-<row>
-{{/columnModel.isFirstColumn}}
-<{{columnModel.columnHeader}}>
+<{{columnModel.columnIdentifier}}>
     <enum>
         {{#locationList}}
         <enumValue index="{{pathElementIndex}}">
@@ -14,7 +11,7 @@
         </enumValue>
         {{/locationList}}
     </enum>
-</{{columnModel.columnHeader}}>
+</{{columnModel.columnIdentifier}}>
 {{#columnModel.isLastColumn}}
 </row>
 {{/columnModel.isLastColumn}}

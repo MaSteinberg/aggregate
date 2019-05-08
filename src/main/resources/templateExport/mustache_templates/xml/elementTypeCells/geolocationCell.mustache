@@ -1,14 +1,11 @@
-{{#columnModel.isFirstColumn}}
-<row>
-{{/columnModel.isFirstColumn}}
-<{{columnModel.columnHeader}}>
+<{{columnModel.columnIdentifier}}>
     <location 
         latitude="{{location.latitude}}" 
         longitude="{{location.longitude}}" 
         altitude="{{location.altitude}}"
         accuracy="{{location.accuracy}}"
     />
-</{{columnModel.columnHeader}}>
+</{{columnModel.columnIdentifier}}>
 {{#columnModel.isLastColumn}}
 </row>
 {{/columnModel.isLastColumn}}

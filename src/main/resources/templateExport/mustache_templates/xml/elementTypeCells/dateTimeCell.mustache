@@ -1,10 +1,7 @@
-{{#columnModel.isFirstColumn}}
-<row>
-{{/columnModel.isFirstColumn}}
-<{{columnModel.columnHeader}}>
+<{{columnModel.columnIdentifier}}>
     <date>{{date}}</date>
     <time>{{time}}</time>
-</{{columnModel.columnHeader}}>
+</{{columnModel.columnIdentifier}}>
 {{#columnModel.isLastColumn}}
 </row>
 {{/columnModel.isLastColumn}}

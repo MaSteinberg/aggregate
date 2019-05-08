@@ -1,7 +1,4 @@
-{{#columnModel.isFirstColumn}}
-<row>
-{{/columnModel.isFirstColumn}}
-<{{columnModel.columnHeader}}>
+<{{columnModel.columnIdentifier}}>
     <collection>
         {{#locationList}}
         <collectionValue>
@@ -14,7 +11,7 @@
         </collectionValue>
         {{/locationList}}
     </collection>
-</{{columnModel.columnHeader}}>
+</{{columnModel.columnIdentifier}}>
 {{#columnModel.isLastColumn}}
 </row>
 {{/columnModel.isLastColumn}}
