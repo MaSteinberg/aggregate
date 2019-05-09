@@ -2,4 +2,7 @@ displayName: XML
 filetype: .xml
 templateProperties:
   optionalProperties:
+    - Creator
+    - Unit
+    - Characteristic
   requiredProperties:

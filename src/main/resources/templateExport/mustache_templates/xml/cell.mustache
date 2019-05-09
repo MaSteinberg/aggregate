@@ -1,2 +1,12 @@
 {{!Opening Tag for the cell}}
-<{{columnModel.columnIdentifier}}>
+<{{columnModel.columnIdentifier}}
+    {{#semantics.Characteristic}}
+    characteristic="{{semantics.Characteristic.value}}"
+    {{/semantics.Characteristic}}
+    {{#semantics.Unit}}
+        unit="{{semantics.Unit.value}}"
+    {{/semantics.Unit}}
+    {{#semantics.Creator}}
+        creator="{{semantics.Creator.value}}"
+    {{/semantics.Creator}}
+>
