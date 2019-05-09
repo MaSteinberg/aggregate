@@ -1,4 +1,8 @@
-<{{columnModel.columnIdentifier}}>{{cellValue}}</{{columnModel.columnIdentifier}}>
+{{!Cell content}}
+{{cellValue}}
+{{!Closing tag for the cell}}
+</{{columnModel.columnIdentifier}}>
+{{!Closing row tag if this is the last cell of the row}}
 {{#columnModel.isLastColumn}}
 </row>
 {{/columnModel.isLastColumn}}

@@ -1,10 +1,12 @@
-<{{columnModel.columnIdentifier}}>
-    <collection>
-        {{#cellValues}}
-        <collectionValue>{{.}}</collectionValue>
-        {{/cellValues}}
-    </collection>
+{{!Cell content}}
+<collection>
+    {{#cellValues}}
+    <collectionValue>{{.}}</collectionValue>
+    {{/cellValues}}
+</collection>
+{{!Closing tag for the cell}}
 </{{columnModel.columnIdentifier}}>
+{{!Closing row tag if this is the last cell of the row}}
 {{#columnModel.isLastColumn}}
 </row>
 {{/columnModel.isLastColumn}}

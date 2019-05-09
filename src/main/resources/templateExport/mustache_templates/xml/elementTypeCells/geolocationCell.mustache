@@ -1,11 +1,13 @@
-<{{columnModel.columnIdentifier}}>
-    <location 
-        latitude="{{location.latitude}}" 
-        longitude="{{location.longitude}}" 
-        altitude="{{location.altitude}}"
-        accuracy="{{location.accuracy}}"
-    />
+{{!Cell content}}
+<location>
+    <latitude>{{location.latitude}}</latitude>
+    <longitude>{{location.longitude}}</longitude>
+    <altitude>{{location.altitude}}</altitude>
+    <accuracy>{{location.accuracy}}</accuracy>
+</location>
+{{!Closing tag for the cell}}
 </{{columnModel.columnIdentifier}}>
+{{!Closing row tag if this is the last cell of the row}}
 {{#columnModel.isLastColumn}}
 </row>
 {{/columnModel.isLastColumn}}
