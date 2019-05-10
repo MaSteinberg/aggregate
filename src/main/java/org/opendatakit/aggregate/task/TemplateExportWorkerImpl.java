@@ -76,49 +76,58 @@ public class TemplateExportWorkerImpl {
                 " form " + form.getFormId());
 
         try {
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            PrintWriter pw = new PrintWriter(new OutputStreamWriter(stream, HtmlConsts.UTF8_ENCODE));
+            //Start time measurement
+            int numberRuns = 100;
+            long startTime = System.nanoTime();
 
-            PersistentResults r = new PersistentResults(persistentResultsKey, cc);
-            String filterGroupUri = r.getFilterGroupUri();
-
-            // placeholder for clean-up...
+            ByteArrayOutputStream stream = null;
+            TemplateFormatterWithFilters formatter = null;
             SubmissionFilterGroup subFilterGroup = null;
+            PersistentResults r = new PersistentResults(persistentResultsKey, cc);
+            for(int i = 0; i < numberRuns; i++) {
+                stream = new ByteArrayOutputStream();
+                PrintWriter pw = new PrintWriter(new OutputStreamWriter(stream, HtmlConsts.UTF8_ENCODE));
 
-            // create RDF
-            QueryBase query;
-            TemplateFormatterWithFilters formatter;
-            FilterGroup filterGroup;
+                String filterGroupUri = r.getFilterGroupUri();
 
-            // figure out the filterGroup...
-            if (filterGroupUri == null) {
-                filterGroup = new FilterGroup(UIConsts.FILTER_NONE, form.getFormId(), null);
-            } else {
-                subFilterGroup = SubmissionFilterGroup.getFilterGroup(filterGroupUri, cc);
-                filterGroup = subFilterGroup.transform();
+                // create RDF
+                QueryBase query;
+                FilterGroup filterGroup;
+
+                // figure out the filterGroup...
+                if (filterGroupUri == null) {
+                    filterGroup = new FilterGroup(UIConsts.FILTER_NONE, form.getFormId(), null);
+                } else {
+                    subFilterGroup = SubmissionFilterGroup.getFilterGroup(filterGroupUri, cc);
+                    filterGroup = subFilterGroup.transform();
+                }
+                filterGroup.setQueryFetchLimit(ServletConsts.EXPORT_CURSOR_CHUNK_SIZE);
+
+                query = new QueryByUIFilterGroup(form, filterGroup, QueryByUIFilterGroup.CompletionFlag.ONLY_COMPLETE_SUBMISSIONS, cc);
+                formatter = new TemplateFormatterWithFilters(form, cc.getServerURL(), pw, filterGroup, this.baseURI, this.requireRowUUIDs, this.templateGroup);
+
+                logger.info("after setup of RDF file generation for " + form.getFormId());
+                formatter.beforeProcessSubmissions(cc);
+                List<Submission> submissions;
+                int count = 0;
+                for (; ; ) {
+                    count++;
+                    logger.info("iteration " + Integer.toString(count) + " before issuing query for " + form.getFormId());
+                    submissions = query.getResultSubmissions(cc);
+                    if (submissions.isEmpty()) break;
+                    logger.info("iteration " + Integer.toString(count) + " before emitting rdf for " + form.getFormId());
+                    formatter.processSubmissionSegment(submissions, cc);
+                }
+                logger.info("wrapping up rdf generation for " + form.getFormId());
+                formatter.afterProcessSubmissions(cc);
+
+                // output file
+                pw.close();
             }
-            filterGroup.setQueryFetchLimit(ServletConsts.EXPORT_CURSOR_CHUNK_SIZE);
+            //Stop time measurement
+            long endTime = System.nanoTime();
+            long elapsedTimeNs = (endTime - startTime) / numberRuns;
 
-            query = new QueryByUIFilterGroup(form, filterGroup, QueryByUIFilterGroup.CompletionFlag.ONLY_COMPLETE_SUBMISSIONS, cc);
-            formatter = new TemplateFormatterWithFilters(form, cc.getServerURL(), pw, filterGroup, this.baseURI, this.requireRowUUIDs, this.templateGroup);
-
-            logger.info("after setup of RDF file generation for " + form.getFormId());
-            formatter.beforeProcessSubmissions(cc);
-            List<Submission> submissions;
-            int count = 0;
-            for (;;) {
-                count++;
-                logger.info("iteration " + Integer.toString(count) + " before issuing query for " + form.getFormId());
-                submissions = query.getResultSubmissions(cc);
-                if ( submissions.isEmpty()) break;
-                logger.info("iteration " + Integer.toString(count) + " before emitting rdf for " + form.getFormId());
-                formatter.processSubmissionSegment(submissions, cc);
-            }
-            logger.info("wrapping up rdf generation for " + form.getFormId());
-            formatter.afterProcessSubmissions(cc);
-
-            // output file
-            pw.close();
             byte[] outputFile = stream.toByteArray();
 
             // refetch because this might have taken a while...
