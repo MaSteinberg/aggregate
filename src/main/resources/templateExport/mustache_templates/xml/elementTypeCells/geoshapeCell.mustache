@@ -1,4 +1,3 @@
-{{!Cell content}}
 <collection>
     {{#locationList}}
     <collectionValue>
@@ -10,9 +9,7 @@
         </location>
     </collectionValue>
     {{/locationList}}
-</collection>
-{{!Closing tag for the cell}}
-</{{columnModel.columnIdentifier}}>
+</collection></{{columnModel.columnIdentifier}}>
 {{!Closing row tag if this is the last cell of the row}}
 {{#columnModel.isLastColumn}}
 </row>
