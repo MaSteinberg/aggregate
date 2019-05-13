@@ -203,12 +203,12 @@ public class FormServiceImpl extends RemoteServiceServlet implements
   }
 
   /**
-   * Used by the frontend to grab the RDF Export configuration.
+   * Used by the frontend to grab the template export configuration.
    * Only returns the templates for which all required annotations are available
    * @see TemplateExportOptionsPopup#TemplateExportOptionsPopup
    */
   @Override
-  public TemplateExportOptions getRdfExportSettings(String formId, FilterGroup filterGroup) throws AccessDeniedException, RequestFailureException, DatastoreFailureException {
+  public TemplateExportOptions getFlexibleExportSettings(String formId, FilterGroup filterGroup) throws AccessDeniedException, RequestFailureException, DatastoreFailureException {
     //Grab all form details & included columns to check for required annotations
     HttpServletRequest req = this.getThreadLocalRequest();
     CallingContext cc = ContextFactory.getCallingContext(this, req);
@@ -246,7 +246,7 @@ public class FormServiceImpl extends RemoteServiceServlet implements
     }
 
     //Find all registered template groups
-    TemplateExportOptions options = ExportTemplateConfigManager.getRdfExportOptions();
+    TemplateExportOptions options = ExportTemplateConfigManager.getTemplateExportOptions();
     Map<String, ExportTemplateConfig> templates = options.getTemplates();
     //Iterate all registered template groups
     for(Map.Entry<String, ExportTemplateConfig> entry: templates.entrySet()){
@@ -403,7 +403,7 @@ public class FormServiceImpl extends RemoteServiceServlet implements
   }
 
   @Override
-  public Boolean createRdfFileFromFilter(FilterGroup group, String baseURI, Boolean requireRowUUIDs, String templateGroup) throws RequestFailureException, DatastoreFailureException {
+  public Boolean createFlexibleFileFromFilter(FilterGroup group, String baseURI, Boolean requireRowUUIDs, String templateGroup) throws RequestFailureException, DatastoreFailureException {
     HttpServletRequest req = this.getThreadLocalRequest();
     CallingContext cc = ContextFactory.getCallingContext(this, req);
 
@@ -424,7 +424,7 @@ public class FormServiceImpl extends RemoteServiceServlet implements
       filterGrp.setIsPublic(false); // make the filter not visible in the UI since it's an internal filter for export
       filterGrp.persist(cc);
 
-      // create rdf job
+      // create template export job
       IForm form = FormFactory.retrieveFormByFormId(filterGrp.getFormId(), cc);
       if (!form.hasValidFormDefinition()) {
         throw new RequestFailureException(ErrorConsts.FORM_DEFINITION_INVALID); // ill-formed definition
@@ -432,17 +432,17 @@ public class FormServiceImpl extends RemoteServiceServlet implements
 
       //Build parameter map
       Map<String, String> params = new HashMap<>();
-      params.put(TemplateExportGenerator.RDF_BASEURI_KEY, baseURI);
-      params.put(TemplateExportGenerator.RDF_REQUIREUUIDS_KEY, String.valueOf(requireRowUUIDs));
-      params.put(TemplateExportGenerator.RDF_TEMPLATE_KEY, templateGroup);
+      params.put(TemplateExportGenerator.TEMPLATE_EXPORT_BASEURI_KEY, baseURI);
+      params.put(TemplateExportGenerator.TEMPLATE_EXPORT_REQUIRE_UUIDS_KEY, String.valueOf(requireRowUUIDs));
+      params.put(TemplateExportGenerator.TEMPLATE_EXPORT_TEMPLATE_KEY, templateGroup);
       PersistentResults r = new PersistentResults(ExportType.FLEX, form, filterGrp, params, cc);
       r.persist(cc);
 
-      // create rdf task
+      // create template export task
       CallingContext ccDaemon = ContextFactory.getCallingContext(this, req);
       ccDaemon.setAsDaemon(true);
-      TemplateExportGenerator generator = (TemplateExportGenerator) cc.getBean(BeanDefs.RDF_BEAN);
-      generator.createRdfTask(form, r, 1L, ccDaemon);
+      TemplateExportGenerator generator = (TemplateExportGenerator) cc.getBean(BeanDefs.TEMPLATE_EXPORT_BEAN);
+      generator.createTemplateExportTask(form, r, 1L, ccDaemon);
       return true;
 
     } catch (ODKFormNotFoundException e) {

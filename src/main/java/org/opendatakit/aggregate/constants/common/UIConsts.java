@@ -54,7 +54,7 @@ public class UIConsts {
   public static final String UPLOAD_TABLE_FROM_CSV_SERVLET_ADDR =
       "uploadTableFromCSV";
 
-  public static final String TEMPLATE_CONFIG_SERVLET_ADDR = "rdfTemplateConfig";
+  public static final String TEMPLATE_CONFIG_SERVLET_ADDR = "exportTemplateConfig";
 
   public static final String SEMANTIC_AUTOCOMPLETE_SERVLET_ADDR = "semanticAutocomplete";
 

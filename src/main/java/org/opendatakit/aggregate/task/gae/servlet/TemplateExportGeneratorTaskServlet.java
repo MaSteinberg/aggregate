@@ -30,7 +30,7 @@ public class TemplateExportGeneratorTaskServlet extends ServletUtilBase {
     /**
      * URI from base
      */
-    public static final String ADDR = "gae/rdfGeneratorTask";
+    public static final String ADDR = "gae/templateExportGeneratorTask";
 
     /**
      * Handler for HTTP Get request
@@ -43,7 +43,7 @@ public class TemplateExportGeneratorTaskServlet extends ServletUtilBase {
         CallingContext cc = ContextFactory.getCallingContext(this, req);
         cc.setAsDaemon(true);
 
-        logger.info("GAE servlet for RDF generation begins");
+        logger.info("GAE servlet for template-based generation begins");
 
         // get parameters from request
         final String formId = getParameter(req, ServletConsts.FORM_ID);
@@ -76,9 +76,9 @@ public class TemplateExportGeneratorTaskServlet extends ServletUtilBase {
         }
 
         //Get user-selected export parameters
-        String baseURI = getParameter(req, TemplateExportGenerator.RDF_BASEURI_KEY);
-        Boolean requireRowUUIDs = Boolean.parseBoolean(getParameter(req, TemplateExportGenerator.RDF_REQUIREUUIDS_KEY));
-        String templateGroup = getParameter(req, TemplateExportGenerator.RDF_TEMPLATE_KEY);
+        String baseURI = getParameter(req, TemplateExportGenerator.TEMPLATE_EXPORT_BASEURI_KEY);
+        Boolean requireRowUUIDs = Boolean.parseBoolean(getParameter(req, TemplateExportGenerator.TEMPLATE_EXPORT_REQUIRE_UUIDS_KEY));
+        String templateGroup = getParameter(req, TemplateExportGenerator.TEMPLATE_EXPORT_TEMPLATE_KEY);
 
         IForm form = null;
         try {
@@ -108,6 +108,6 @@ public class TemplateExportGeneratorTaskServlet extends ServletUtilBase {
 
         TemplateExportWorkerImpl impl = new TemplateExportWorkerImpl(form, persistentResultsKey, attemptCount, baseURI, requireRowUUIDs, templateGroup, cc);
 
-        impl.generateRdf();
+        impl.generateFlexibleFile();
     }
 }

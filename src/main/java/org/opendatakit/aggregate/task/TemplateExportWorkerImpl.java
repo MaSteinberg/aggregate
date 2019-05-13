@@ -68,8 +68,8 @@ public class TemplateExportWorkerImpl {
         }
     }
 
-    public void generateRdf(){
-        logger.info("Beginning RDF generation: " + persistentResultsKey.toString() +
+    public void generateFlexibleFile(){
+        logger.info("Beginning template-based generation: " + persistentResultsKey.toString() +
                 " form " + form.getFormId());
 
         try {
@@ -82,7 +82,6 @@ public class TemplateExportWorkerImpl {
             // placeholder for clean-up...
             SubmissionFilterGroup subFilterGroup = null;
 
-            // create RDF
             QueryBase query;
             TemplateFormatterWithFilters formatter;
             FilterGroup filterGroup;
@@ -99,7 +98,7 @@ public class TemplateExportWorkerImpl {
             query = new QueryByUIFilterGroup(form, filterGroup, QueryByUIFilterGroup.CompletionFlag.ONLY_COMPLETE_SUBMISSIONS, cc);
             formatter = new TemplateFormatterWithFilters(form, cc.getServerURL(), pw, filterGroup, this.baseURI, this.requireRowUUIDs, this.templateGroup);
 
-            logger.info("after setup of RDF file generation for " + form.getFormId());
+            logger.info("after setup of template-based file generation for " + form.getFormId());
             formatter.beforeProcessSubmissions(cc);
             List<Submission> submissions;
             int count = 0;
@@ -108,10 +107,10 @@ public class TemplateExportWorkerImpl {
                 logger.info("iteration " + Integer.toString(count) + " before issuing query for " + form.getFormId());
                 submissions = query.getResultSubmissions(cc);
                 if ( submissions.isEmpty()) break;
-                logger.info("iteration " + Integer.toString(count) + " before emitting rdf for " + form.getFormId());
+                logger.info("iteration " + Integer.toString(count) + " before emitting template-based file for " + form.getFormId());
                 formatter.processSubmissionSegment(submissions, cc);
             }
-            logger.info("wrapping up rdf generation for " + form.getFormId());
+            logger.info("wrapping up template-based generation for " + form.getFormId());
             formatter.afterProcessSubmissions(cc);
 
             // output file
@@ -121,12 +120,12 @@ public class TemplateExportWorkerImpl {
             // refetch because this might have taken a while...
             r = new PersistentResults(persistentResultsKey, cc);
             if (attemptCount.equals(r.getAttemptCount())) {
-                logger.info("saving rdf into PersistentResults table for " + form.getFormId());
+                logger.info("saving template-based file into PersistentResults table for " + form.getFormId());
                 String filename = form.getViewableFormNameSuitableAsFileName()
-                        + ServletConsts.RDF_FILENAME_APPEND
+                        + ServletConsts.TEMPLATE_FILENAME_APPEND
                         + formatter.filetype;
                 String contentType = "";
-                if(formatter.filetype.equals(ServletConsts.RDF_FILENAME_TYPE_FALLBACK)){
+                if(formatter.filetype.equals(ServletConsts.TEMPLATE_FILENAME_TYPE_FALLBACK)){
                     //Turtle content type
                     contentType = HtmlConsts.RESP_TYPE_TURTLE;
                 }

@@ -136,7 +136,7 @@ public class WatchdogWorkerImpl {
           .getBean(BeanDefs.UPLOAD_TASK_BEAN);
       CsvGenerator csvGenerator = (CsvGenerator) cc.getBean(BeanDefs.CSV_BEAN);
       KmlGenerator kmlGenerator = (KmlGenerator) cc.getBean(BeanDefs.KML_BEAN);
-      TemplateExportGenerator templateExportGenerator = (TemplateExportGenerator) cc.getBean(BeanDefs.RDF_BEAN);
+      TemplateExportGenerator templateExportGenerator = (TemplateExportGenerator) cc.getBean(BeanDefs.TEMPLATE_EXPORT_BEAN);
       WorksheetCreator worksheetCreator = (WorksheetCreator) cc.getBean(BeanDefs.WORKSHEET_BEAN);
       FormDelete formDelete = (FormDelete) cc.getBean(BeanDefs.FORM_DELETE_BEAN);
       PurgeOlderSubmissions purgeSubmissions = (PurgeOlderSubmissions) cc
@@ -361,7 +361,7 @@ public class WatchdogWorkerImpl {
               cc);
           break;
           case FLEX:
-          templateExportGenerator.createRdfTask(form, persistentResult, attemptCount, cc);
+          templateExportGenerator.createTemplateExportTask(form, persistentResult, attemptCount, cc);
           break;
         default:
           this.logger.equals("No generator defined for Persisted Result Type: "

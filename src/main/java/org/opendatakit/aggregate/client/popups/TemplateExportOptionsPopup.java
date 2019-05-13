@@ -17,11 +17,11 @@ import org.opendatakit.aggregate.constants.common.SubTabs;
 import static org.opendatakit.aggregate.client.security.SecurityUtils.secureRequest;
 
 public class TemplateExportOptionsPopup extends AbstractPopupBase {
-    private static final String EXPORT_ERROR_MSG = "One of the RDF options was invalid. Did you forget to enter a base-URI?";
+    private static final String EXPORT_ERROR_MSG = "One of the options was invalid. Did you forget to enter a base-URI?";
 
     private static final String CREATE_BUTTON_TXT = "<img src=\"images/green_right_arrow.png\" /> Export";
-    private static final String CREATE_BUTTON_TOOLTIP = "Create RDF File";
-    private static final String CREATE_BUTTON_HELP_BALLOON = "This exports your data into an RDF file with the following options.";
+    private static final String CREATE_BUTTON_TOOLTIP = "Create File";
+    private static final String CREATE_BUTTON_HELP_BALLOON = "This exports your data into a file with the following options.";
 
     private final FlexTable topBar;
     private final AggregateButton exportButton;
@@ -78,7 +78,7 @@ public class TemplateExportOptionsPopup extends AbstractPopupBase {
         layout.setWidget(3,1, new HTML("Loading..."));
 
         //Asynchronous call to get the list of available templates
-        SecureGWT.getFormService().getRdfExportSettings(formId, selectedFilterGroup, new TemplateSettingsCallback());
+        SecureGWT.getFormService().getFlexibleExportSettings(formId, selectedFilterGroup, new TemplateSettingsCallback());
     }
 
     /*
@@ -96,21 +96,21 @@ public class TemplateExportOptionsPopup extends AbstractPopupBase {
             if(baseUri.length() == 0)
                 Window.alert(EXPORT_ERROR_MSG);
 
-            //Trigger the actual Rdf-Export, register the success- and failure-handler
+            //Trigger the actual template-based export, register the success- and failure-handler
             secureRequest(
                 SecureGWT.getFormService(),
-                (rpc, sc, cb) -> rpc.createRdfFileFromFilter(selectedFilterGroup, baseUri, requireRowUUID, templateGroup, cb),
+                (rpc, sc, cb) -> rpc.createFlexibleFileFromFilter(selectedFilterGroup, baseUri, requireRowUUID, templateGroup, cb),
                 this::onSuccess,
                 this::onFailure
             );
         }
 
-        //Failure-Handler for RDF-Export
+        //Failure-Handler for template-based export
         private void onFailure(Throwable cause) {
             AggregateUI.getUI().reportError(cause);
         }
 
-        //Success-Handler for RDF-Export
+        //Success-Handler for template-based export
         private void onSuccess(Boolean result) {
             if (result) {
                 AggregateUI.getUI().redirectToSubTab(SubTabs.EXPORT);

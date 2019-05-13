@@ -38,17 +38,17 @@ import java.util.Map;
 public class TemplateExportGeneratorImpl implements TemplateExportGenerator {
 
     @Override
-    public void createRdfTask(IForm form, PersistentResults persistentResults, long attemptCount,
-                              CallingContext cc) throws ODKDatastoreException {
+    public void createTemplateExportTask(IForm form, PersistentResults persistentResults, long attemptCount,
+                                         CallingContext cc) throws ODKDatastoreException {
         Map<String, String> params = persistentResults.getRequestParameters();
         TaskOptionsBuilder b = new TaskOptionsBuilder(TemplateExportGeneratorTaskServlet.ADDR);
         b.countdownMillis(PersistConsts.MAX_SETTLE_MILLISECONDS);
         b.param(ServletConsts.FORM_ID, form.getFormId());
         b.param(ServletConsts.PERSISTENT_RESULTS_KEY, persistentResults.getSubmissionKey().toString());
         b.param(ServletConsts.ATTEMPT_COUNT, Long.toString(attemptCount));
-        b.param(TemplateExportGenerator.RDF_BASEURI_KEY, params.get(TemplateExportGenerator.RDF_BASEURI_KEY));
-        b.param(TemplateExportGenerator.RDF_REQUIREUUIDS_KEY, params.get(TemplateExportGenerator.RDF_REQUIREUUIDS_KEY));
-        b.param(TemplateExportGenerator.RDF_TEMPLATE_KEY, params.get(TemplateExportGenerator.RDF_TEMPLATE_KEY));
+        b.param(TemplateExportGenerator.TEMPLATE_EXPORT_BASEURI_KEY, params.get(TemplateExportGenerator.TEMPLATE_EXPORT_BASEURI_KEY));
+        b.param(TemplateExportGenerator.TEMPLATE_EXPORT_REQUIRE_UUIDS_KEY, params.get(TemplateExportGenerator.TEMPLATE_EXPORT_REQUIRE_UUIDS_KEY));
+        b.param(TemplateExportGenerator.TEMPLATE_EXPORT_TEMPLATE_KEY, params.get(TemplateExportGenerator.TEMPLATE_EXPORT_TEMPLATE_KEY));
         b.enqueue();
     }
 }

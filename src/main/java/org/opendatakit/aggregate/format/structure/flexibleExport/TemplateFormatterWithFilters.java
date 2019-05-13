@@ -39,8 +39,6 @@ import org.opendatakit.aggregate.submission.Submission;
 import org.opendatakit.common.persistence.exception.ODKDatastoreException;
 import org.opendatakit.common.web.CallingContext;
 import org.opendatakit.common.web.constants.HtmlConsts;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;
@@ -58,7 +56,7 @@ public class TemplateFormatterWithFilters implements SubmissionFormatter {
     private static String TEMPLATE_ROOT_DIR = "templateExport/mustache_templates";
 
     //Can be overwritten by the selected template
-    public String filetype = ServletConsts.RDF_FILENAME_TYPE_FALLBACK;
+    public String filetype = ServletConsts.TEMPLATE_FILENAME_TYPE_FALLBACK;
 
     private ElementFormatter elemFormatter;
     private List<FormElementModel> columnFormElementModelsFiltered;
@@ -169,7 +167,7 @@ public class TemplateFormatterWithFilters implements SubmissionFormatter {
         }
 
         //Grab the template config
-        ExportTemplateConfig templateConfig = ExportTemplateConfigManager.getRdfTemplateConfig(this.templateGroup);
+        ExportTemplateConfig templateConfig = ExportTemplateConfigManager.getExportTemplateConfig(this.templateGroup);
         
         //Let the template config overwrite the default filetype
         if(templateConfig.getFiletype() != null && !StringUtils.isBlank(templateConfig.getFiletype())){
@@ -288,7 +286,7 @@ public class TemplateFormatterWithFilters implements SubmissionFormatter {
             while(cellIt.hasNext()){
                 String cellValue = cellIt.next();
                 String columnName = columnFormElementModelsFiltered.get(columnNumber).getElementName();
-                //InstanceID is a special case - it's not to be considered a field for the RDF export
+                //InstanceID is a special case - it's not to be considered a field for the template-based export
                 if(!columnName.equals("instanceID")) {
                     //Generate cell identifier via template
                     CellIdentifierModel cellIdModel = modelBuilder.buildCellIdentifierModel(columnModels.get(columnNumber), rowModel);

@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 /*
-Class used to communicate the full RDF Export configuration to both the frontend and the REST-API used by ODK Build
+Class used to communicate the full template export configuration to both the frontend and the REST-API used by ODK Build
  */
 public class TemplateExportOptions implements Serializable {
     private static final long serialVersionUID = 3805983057947175416L;

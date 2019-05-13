@@ -20,17 +20,17 @@ public class ExportTemplateConfigManager {
     private static final String rootConfigFilename = "TemplateExportConfig.yml";
     private static final String templateConfigFilename = "config.yml";
 
-    public static TemplateExportOptions getRdfExportOptions(){
-        TemplateToplevelConfig toplevelConfig = ExportTemplateConfigManager.getToplevelRdfConfig();
+    public static TemplateExportOptions getTemplateExportOptions(){
+        TemplateToplevelConfig toplevelConfig = ExportTemplateConfigManager.getToplevelConfig();
         Map<String, ExportTemplateConfig> templateConfigs = new HashMap<>();
         for (String templateGroupName : toplevelConfig.getTemplates()) {
-            ExportTemplateConfig templateConfig = ExportTemplateConfigManager.getRdfTemplateConfig(templateGroupName);
+            ExportTemplateConfig templateConfig = ExportTemplateConfigManager.getExportTemplateConfig(templateGroupName);
             templateConfigs.put(templateGroupName, templateConfig);
         }
         return new TemplateExportOptions(toplevelConfig.getAvailableProperties(), templateConfigs);
     }
 
-    public static TemplateToplevelConfig getToplevelRdfConfig(){
+    public static TemplateToplevelConfig getToplevelConfig(){
         try{
             //https://www.baeldung.com/spring-classpath-file-access
             //Maven's src/main/resources are automatically added to the root of the classpath
@@ -47,7 +47,7 @@ public class ExportTemplateConfigManager {
     Parses the configuration of the templateGroup from it's configuration file.
     TemplateGroup has to match the directory name where the configuration file and the templates are placed.
      */
-    public static ExportTemplateConfig getRdfTemplateConfig(String templateGroup){
+    public static ExportTemplateConfig getExportTemplateConfig(String templateGroup){
         try{
             //https://www.baeldung.com/spring-classpath-file-access
             //Maven's src/main/resources are automatically added to the root of the classpath
@@ -68,7 +68,7 @@ public class ExportTemplateConfigManager {
     Utility to get the configuration of a single property
      */
     public static SemanticPropertyConfiguration getPropertyConfig(String property){
-        TemplateToplevelConfig config = getToplevelRdfConfig();
+        TemplateToplevelConfig config = getToplevelConfig();
         return config.getAvailableProperties().get(property);
     }
 }

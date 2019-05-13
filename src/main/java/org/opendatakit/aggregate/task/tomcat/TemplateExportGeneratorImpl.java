@@ -43,19 +43,19 @@ public class TemplateExportGeneratorImpl implements TemplateExportGenerator {
 
         @Override
         public void run() {
-            impl.generateRdf();
+            impl.generateFlexibleFile();
         }
     }
 
     @Override
-    public void createRdfTask(IForm form, PersistentResults persistentResults,
-                              long attemptCount, CallingContext cc)
+    public void createTemplateExportTask(IForm form, PersistentResults persistentResults,
+                                         long attemptCount, CallingContext cc)
             throws ODKDatastoreException {
         //Grab parameters
         Map<String, String> params = persistentResults.getRequestParameters();
-        String baseURI = params.get(TemplateExportGenerator.RDF_BASEURI_KEY);
-        Boolean requireUUIDs = Boolean.parseBoolean(params.get(TemplateExportGenerator.RDF_REQUIREUUIDS_KEY));
-        String templateGroup = params.get(TemplateExportGenerator.RDF_TEMPLATE_KEY);
+        String baseURI = params.get(TemplateExportGenerator.TEMPLATE_EXPORT_BASEURI_KEY);
+        Boolean requireUUIDs = Boolean.parseBoolean(params.get(TemplateExportGenerator.TEMPLATE_EXPORT_REQUIRE_UUIDS_KEY));
+        String templateGroup = params.get(TemplateExportGenerator.TEMPLATE_EXPORT_TEMPLATE_KEY);
 
         WatchdogImpl wd = (WatchdogImpl) cc.getBean(BeanDefs.WATCHDOG);
         // use watchdog's calling context in runner...

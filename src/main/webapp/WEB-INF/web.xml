@@ -322,12 +322,12 @@
     </servlet-mapping>
 
     <servlet>
-        <servlet-name>rdfTemplateConfig</servlet-name>
+        <servlet-name>exportTemplateConfig</servlet-name>
         <servlet-class>org.opendatakit.aggregate.servlet.ExportTemplateConfigServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>rdfTemplateConfig</servlet-name>
-        <url-pattern>/rdfTemplateConfig</url-pattern>
+        <servlet-name>exportTemplateConfig</servlet-name>
+        <url-pattern>/exportTemplateConfig</url-pattern>
     </servlet-mapping>
 
     <servlet>
@@ -473,12 +473,12 @@
 	</servlet-mapping>
 
     <servlet>
-        <servlet-name>rdfGeneratorTask</servlet-name>
+        <servlet-name>templateExportGeneratorTask</servlet-name>
         <servlet-class>org.opendatakit.aggregate.task.gae.servlet.TemplateExportGeneratorTaskServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>rdfGeneratorTask</servlet-name>
-        <url-pattern>/gae/rdfGeneratorTask</url-pattern>
+        <servlet-name>templateExportGeneratorTask</servlet-name>
+        <url-pattern>/gae/templateExportGeneratorTask</url-pattern>
     </servlet-mapping>
 
 	<servlet>

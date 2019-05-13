@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 /*
-REST-Servlet to make the RDF Export configuration available to ODK Build
+REST-Servlet to make the template-based export configuration available to ODK Build
  */
 public class ExportTemplateConfigServlet extends ServletUtilBase {
     /**
@@ -32,7 +32,7 @@ public class ExportTemplateConfigServlet extends ServletUtilBase {
             resp.setContentType(HtmlConsts.RESP_TYPE_JSON);
             resp.setCharacterEncoding(HtmlConsts.UTF8_ENCODE);
             resp.addHeader("Access-Control-Allow-Origin", "*");
-            TemplateExportOptions options = ExportTemplateConfigManager.getRdfExportOptions();
+            TemplateExportOptions options = ExportTemplateConfigManager.getTemplateExportOptions();
             ObjectMapper jsonMapper = new ObjectMapper();
             jsonMapper.writerWithDefaultPrettyPrinter().writeValue(out, options);
         } catch (IOException e) {

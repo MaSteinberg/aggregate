@@ -165,7 +165,7 @@ public class WatchdogImpl implements Watchdog, SmartLifecycle, InitializingBean,
         return csvGenerator;
       } else if ( BeanDefs.JSON_FILE_BEAN.equals(beanName) ) {
         return jsonFileGenerator;
-      } else if ( BeanDefs.RDF_BEAN.equals(beanName) ) {
+      } else if ( BeanDefs.TEMPLATE_EXPORT_BEAN.equals(beanName) ) {
         return templateExportGenerator;
       } else if (BeanDefs.DATASTORE_BEAN.equals(beanName)) {
         return datastore;

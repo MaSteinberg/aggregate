@@ -25,9 +25,9 @@ import org.opendatakit.common.web.CallingContext;
  * API for creating and restarting template export.
  */
 public interface TemplateExportGenerator {
-    public static final String RDF_BASEURI_KEY = "RDFBASEURI";
-    public static final String RDF_REQUIREUUIDS_KEY = "RDFUUIDS";
-    public static final String RDF_TEMPLATE_KEY = "RDFTEMPLATEGROUP";
-    public void createRdfTask(IForm form, PersistentResults persistentResults,
-                              long attemptCount, CallingContext cc) throws ODKDatastoreException;
+    public static final String TEMPLATE_EXPORT_BASEURI_KEY = "TEMPLATE_BASEURI";
+    public static final String TEMPLATE_EXPORT_REQUIRE_UUIDS_KEY = "TEMPLATE_UUIDS";
+    public static final String TEMPLATE_EXPORT_TEMPLATE_KEY = "TEMPLATEGROUP";
+    public void createTemplateExportTask(IForm form, PersistentResults persistentResults,
+                                         long attemptCount, CallingContext cc) throws ODKDatastoreException;
 }
