@@ -30,9 +30,6 @@ import java.util.Map;
  * This is a singleton bean.  It cannot have any per-request state.
  * It uses a static inner class to encapsulate the per-request state
  * of a running background task.
- *
- * @author msteinberg1@web.de
- *
  */
 public class TemplateExportGeneratorImpl implements TemplateExportGenerator {
 

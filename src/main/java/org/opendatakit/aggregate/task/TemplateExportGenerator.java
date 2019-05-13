@@ -22,10 +22,7 @@ import org.opendatakit.common.persistence.exception.ODKDatastoreException;
 import org.opendatakit.common.web.CallingContext;
 
 /**
- * API for creating and restarting Rdf generation tasks.
- *
- * @author msteinberg1@web.de
- *
+ * API for creating and restarting template export.
  */
 public interface TemplateExportGenerator {
     public static final String RDF_BASEURI_KEY = "RDFBASEURI";

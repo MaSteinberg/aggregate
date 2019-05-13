@@ -39,10 +39,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Common worker implementation for the generation of rdf files.
- *
- * @author msteinberg1@web.de
- *
+ * Common worker implementation for the generation of template-based files.
  */
 public class TemplateExportWorkerImpl {
     private final Logger logger = LoggerFactory.getLogger(TemplateExportWorkerImpl.class);
@@ -141,7 +138,7 @@ public class TemplateExportWorkerImpl {
                 }
                 r.persist(cc);
             } else {
-                logger.warn("stale RDF activity - do not save file in PersistentResults table for " + form.getFormId());
+                logger.warn("stale template export activity - do not save file in PersistentResults table for " + form.getFormId());
             }
         } catch (Exception e) {
             failureRecovery(e);
@@ -157,12 +154,12 @@ public class TemplateExportWorkerImpl {
         try {
             PersistentResults r = new PersistentResults(persistentResultsKey, cc);
             if (attemptCount.equals(r.getAttemptCount())) {
-                logger.info("Exception recovery during RDF generation - mark as failed for " + form.getFormId());
+                logger.info("Exception recovery during template export file generation - mark as failed for " + form.getFormId());
                 r.deleteResultFile(cc);
                 r.setStatus(ExportStatus.FAILED);
                 r.persist(cc);
             } else {
-                logger.warn("Exception recovery during RDF generation - skipped - not the active attempt! for " + form.getFormId());
+                logger.warn("Exception recovery during template export file generation - skipped - not the active attempt! for " + form.getFormId());
             }
         } catch (Exception ex) {
             // something is hosed -- don't attempt to continue.

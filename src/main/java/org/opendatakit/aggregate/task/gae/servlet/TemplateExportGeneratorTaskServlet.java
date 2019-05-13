@@ -19,11 +19,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-/**
- *
- * @author msteinberg1@web.de
- *
- */
 public class TemplateExportGeneratorTaskServlet extends ServletUtilBase {
     /**
      * Serial number for serialization

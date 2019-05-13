@@ -54,8 +54,8 @@ import static org.opendatakit.aggregate.datamodel.FormElementModel.ElementType.*
 public class TemplateFormatterWithFilters implements SubmissionFormatter {
     public static final String ONTOLOGY_REF_PREFIX = "_onto_";
     public static final String COLUMN_REF_PREFIX = "_col_";
-    private static String TEMPLATE_ROOT_DIR = "templateExport/mustache_templates"; //Relative to src/main/resources
-    private final Logger logger = LoggerFactory.getLogger(TemplateFormatterWithFilters.class);
+    //Relative to src/main/resources
+    private static String TEMPLATE_ROOT_DIR = "templateExport/mustache_templates";
 
     //Can be overwritten by the selected template
     public String filetype = ServletConsts.RDF_FILENAME_TYPE_FALLBACK;
@@ -103,6 +103,7 @@ public class TemplateFormatterWithFilters implements SubmissionFormatter {
         this.requireRowUUIDs = requireRowUUID;
         this.templateGroup = templateGroup;
 
+        //Extract information from the form
         SubmissionUISummary summary = new SubmissionUISummary(form.getViewableName());
         GenerateHeaderInfo headerGenerator = new GenerateHeaderInfo(filterGroup, summary, form);
         headerGenerator.processForHeaderInfo(form.getTopLevelGroupElement());
@@ -150,10 +151,11 @@ public class TemplateFormatterWithFilters implements SubmissionFormatter {
     }
 
     @Override
-    public void beforeProcessSubmissions(CallingContext cc) throws ODKDatastoreException {
+    public void beforeProcessSubmissions(CallingContext cc) {
         //Gather the semantic information that was submitted during form upload
         List<SemanticsTable> sem = SemanticsTable.findEntriesByFormId(this.form.getFormId(), cc);
         semantics = new HashMap<>();
+        //Transform semantic information for easier access
         for(SemanticsTable t : sem){
             Map<String, String> tmp;
             String fieldName = t.getFieldName();
@@ -200,7 +202,7 @@ public class TemplateFormatterWithFilters implements SubmissionFormatter {
         for(int col = 0; col < columnFormElementModelsFiltered.size(); col++){
             String colName = columnFormElementModelsFiltered.get(col).getElementName();
 
-            //InstanceID is a special case - it's not to be considered a field for the RDF export
+            //InstanceID is a special case - it's not to be considered a field for the template-based export
             if(colName.equals("instanceID")){
                 //Adding a null-value to the list of column models makes indexing easier in the cells-section
                 columnModels.add(null);
@@ -229,7 +231,7 @@ public class TemplateFormatterWithFilters implements SubmissionFormatter {
 
     @Override
     public void processSubmissions(List<Submission> submissions, CallingContext cc) throws ODKDatastoreException {
-        //Function currently not in use, the functions are separately called
+        //Function currently not in use, the functions are executed separately
         beforeProcessSubmissions(cc);
         processSubmissionSegment(submissions, cc);
         afterProcessSubmissions(cc);
@@ -250,7 +252,7 @@ public class TemplateFormatterWithFilters implements SubmissionFormatter {
             //Generate row identifier via template
             String rowId = "";
             if(this.requireRowUUIDs){
-                //Use the header names to identify the fields that contain row-related metadata
+                //Use the header name to identify the field that contains the unique row ID
                 for(int i = 0; i < columnFormElementModelsFiltered.size(); i++){
                     String header = columnFormElementModelsFiltered.get(i).getElementName();
                     if (header.equals("instanceID"))
@@ -261,6 +263,7 @@ public class TemplateFormatterWithFilters implements SubmissionFormatter {
                 rowId = String.valueOf(rowCounter);
                 rowCounter++;
             }
+            //Generate row identifier via template
             ByteArrayOutputStream identifierStream = new ByteArrayOutputStream();
             PrintWriter identifierWriter;
             String rowEntityIdentifier = "";
@@ -351,7 +354,7 @@ public class TemplateFormatterWithFilters implements SubmissionFormatter {
     }
 
     @Override
-    public void afterProcessSubmissions(CallingContext cc) throws ODKDatastoreException {
+    public void afterProcessSubmissions(CallingContext cc) {
         //Execute termination template with the same Model as the Toplevel template
         ByteArrayOutputStream identifierStream = new ByteArrayOutputStream();
         PrintWriter identifierWriter;

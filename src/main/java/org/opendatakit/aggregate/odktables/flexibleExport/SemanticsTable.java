@@ -10,9 +10,8 @@ import java.util.List;
 
 /**
  *
- * @author Markus Steinberg
  * This class describes the Semantics table in the database
- * It stores meta-information about the fields of a survey, necessary for the RDF-export
+ * It stores meta-information about the fields of a survey, necessary for the template-based export
  *
  */
 public class SemanticsTable extends CommonFieldsBase {
@@ -133,7 +132,9 @@ public class SemanticsTable extends CommonFieldsBase {
         return st;
     }
 
-
+    /*
+    Returns the stored semantics of the form with the given formId
+     */
     public static final List<SemanticsTable> findEntriesByFormId(String formId, CallingContext cc){
         List<SemanticsTable> out = new ArrayList();
         try{
@@ -153,6 +154,9 @@ public class SemanticsTable extends CommonFieldsBase {
         return out;
     }
 
+    /*
+    Deletes an entry form the table
+     */
     public void delete(CallingContext cc) throws ODKDatastoreException {
         Datastore ds = cc.getDatastore();
         ds.deleteEntity(this.getEntityKey(), cc.getCurrentUser());
