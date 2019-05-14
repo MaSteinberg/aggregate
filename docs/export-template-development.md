@@ -323,7 +323,7 @@ The Models in these files expose the following fields:
 ### termination.mustache
 This file is responsible for defining statements at the very end of the resulting exported file.
 The template is rendered exactly once for a given export process.
-The Model is the same as in the toplevel.mustache template, providing access to the following fields:
+The Model is the same as in the [toplevel.mustache](#toplevelmustache) template, providing access to the following fields:
 + *toplevelIdentifier* - **String** - Unique identifier for the survey.
 + *formId* - **String** - Unique identifier of the form used for data collection.
 + *formName* - **String** - Name of the form used for data collection. Not necessarily unique. Might be empty.
@@ -333,6 +333,6 @@ The Model is the same as in the toplevel.mustache template, providing access to 
 + *lastUpdate* - **String** - DateTime of the form's latest update. Format: yyyy-MM-dd HH:mm:ss.fff
 + *formVersion* - **String** - Name of the form's latest version. Might be empty.
 
-This template can be left empty for order-agnostic formats like RDF/Turtle, because statements about the survey could simply be added in the toplevel.mustache template.
+This template can be left empty for order-agnostic formats like RDF/Turtle, because statements about the survey could simply be added in the [toplevel.mustache](#toplevelmustache) template.
 For other formats, the termination template can be very important.
-For example, in XML templates it can be used to close tags that were opened in the toplevel.mustache template.
+For example, in XML templates it can be used to close tags that were opened in the [toplevel.mustache](#toplevelmustache) template.
