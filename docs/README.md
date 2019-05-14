@@ -7,4 +7,4 @@
 - [Build and run a Docker image](build-and-run-a-docker-image.md)
 - [Build and run with Docker Compose](build-and-run-with-docker-compose.md)
 - [Build and run a Virtual Machine](build-and-run-a-virtual-machine.md)
-- [Develop a new RDF template group](rdf-template-development.md)
+- [Develop a new data export template group](export-template-development.md)
