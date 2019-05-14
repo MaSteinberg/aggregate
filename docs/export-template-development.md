@@ -318,7 +318,7 @@ The Model in this file exposes the following fields:
 The Models in these files expose the following fields:
 + *locationList* - **List\<GeotraceElement>** - List of the collected locations. Each element exposes the fields:
   + *pathElementIndex* - **Integer** - Ordinal number of this location, starting at 1.
-  + *location* - **Location** - The collected location. For the fields that this object exposes, please refer to the [geolocationCell.mustache](#geolocationCell.mustache) section.
+  + *location* - **Location** - The collected location. For the fields that this object exposes, please refer to the [geolocationCell.mustache](#geolocationcellmustache) section.
 
 ### termination.mustache
 This file is responsible for defining statements at the very end of the resulting exported file.
