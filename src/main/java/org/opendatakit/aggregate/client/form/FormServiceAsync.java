@@ -28,7 +28,7 @@ public interface FormServiceAsync {
 
   void getPossibleKmlSettings(String formId, AsyncCallback<KmlOptionsSummary> callback);
 
-  void getRdfExportSettings(AsyncCallback<RdfExportOptions> callback);
+  void getFlexibleExportSettings(String formId, FilterGroup filterGroup, AsyncCallback<TemplateExportOptions> callback);
 
   void getGpsCoordnates(String formId, AsyncCallback<GeopointElementList> callback);
 
@@ -38,7 +38,7 @@ public interface FormServiceAsync {
 
   void createJsonFileFromFilter(FilterGroup group, AsyncCallback<Boolean> callback);
 
-  void createRdfFileFromFilter(FilterGroup group, String baseURI, Boolean requireRowUUID, String templateGroup, AsyncCallback<Boolean> callback);
+  void createFlexibleFileFromFilter(FilterGroup group, String baseURI, Boolean requireRowUUID, String templateGroup, AsyncCallback<Boolean> callback);
 
   void deleteExport(String uri, AsyncCallback<Void> callback);
 

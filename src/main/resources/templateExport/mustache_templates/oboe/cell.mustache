@@ -1,0 +1,51 @@
+#Row {{rowModel.rowId}}, Column {{columnModel.columnHeader}}
+{{!Construct an oboe-core:Measurement for the cell}}
+:meas_{{cellIdentifier}} rdf:type oboe-core:Measurement .
+{{!Relate the Measurement to the Observation}}
+:obs_{{columnModel.columnIdentifier}} oboe-core:hasMeasurement :meas_{{cellIdentifier}} .
+{{!Construct an oboe-core:MeasuredValue for the cell}}
+:measuredValue_{{cellIdentifier}} rdf:type oboe-core:MeasuredValue .
+{{!Relate the Measurement to the MeasuredValue}}
+:meas_{{cellIdentifier}} oboe-core:hasValue :measuredValue_{{cellIdentifier}} .
+
+{{!Use semantic information}}
+{{!Creator - optional}}
+{{#semantics.Creator}}
+    {{!Given a literal value}}
+    {{#semantics.Creator.isLiteral}}
+        :meas_{{cellIdentifier}} dcterms:creator [
+             a foaf:Person ;
+             foaf:name "{{{semantics.Creator.value}}}"
+        ] .
+    {{/semantics.Creator.isLiteral}}
+    {{!Given an RDF resource}}
+    {{^semantics.Creator.isLiteral}}
+        :meas_{{cellIdentifier}} dcterms:creator <{{{semantics.Creator.value}}}> .
+    {{/semantics.Creator.isLiteral}}
+{{/semantics.Creator}}
+
+{{!Characteristic - required}}
+{{!Given a literal value}}
+{{#semantics.Characteristic.isLiteral}}
+    :meas_{{cellIdentifier}} oboe-core:ofCharacteristic [
+        a oboe-core:Characteristic ;
+        rdfs:label "{{{semantics.Characteristic.value}}}"
+    ] .
+{{/semantics.Characteristic.isLiteral}}
+{{!Given an RDF resource}}
+{{^semantics.Characteristic.isLiteral}}
+    :meas_{{cellIdentifier}} oboe-core:ofCharacteristic <{{{semantics.Characteristic.value}}}> .
+{{/semantics.Characteristic.isLiteral}}
+
+{{!Unit - required}}
+{{!Given a literal value}}
+{{#semantics.Unit.isLiteral}}
+    :meas_{{cellIdentifier}} om:hasUnit [
+        a om:Unit ;
+        rdfs:label "{{{semantics.Unit.value}}}"
+    ] .
+{{/semantics.Unit.isLiteral}}
+{{!Given an RDF resource}}
+{{^semantics.Unit.isLiteral}}
+    :meas_{{cellIdentifier}} om:hasUnit <{{{semantics.Unit.value}}}> .
+{{/semantics.Unit.isLiteral}}

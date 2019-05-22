@@ -1,7 +1,7 @@
 package org.opendatakit.aggregate.parser;
 
 import org.apache.commons.io.IOUtils;
-import org.opendatakit.aggregate.odktables.rdf.SemanticsTable;
+import org.opendatakit.aggregate.odktables.flexibleExport.SemanticsTable;
 import org.opendatakit.common.persistence.exception.ODKDatastoreException;
 import org.opendatakit.common.web.CallingContext;
 import org.slf4j.Logger;
@@ -22,6 +22,9 @@ import java.util.Map;
  *
  */
 public class SemanticsParser {
+    private static final String SEM_NAMESPACE = "http://annotation";
+    private static final String SEM_NODE_TAG_NAME = "node";
+    private static final String FIELD_IDENTIFIER_NAME = "fieldName";
     private Logger logger = LoggerFactory.getLogger(SemanticsParser.class);
 
     public void parseSemantics(String xmlDocument, String formId, CallingContext cc) throws SAXException, ParserConfigurationException, IOException {
@@ -46,7 +49,7 @@ public class SemanticsParser {
         @Override
         public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
             //A <sem:node></sem:node> describes the semantics of a single data-field in a survey
-            if(qName.equals("sem:node")){
+            if(uri.equals(SEM_NAMESPACE) && localName.equals(SEM_NODE_TAG_NAME)){
                 String fieldName = "";
                 Map<String, String> termValueMap = new HashMap<>();
                 //Loop through all attributes of the current XML-element
@@ -55,15 +58,16 @@ public class SemanticsParser {
                     String attributeName = attributes.getQName(i);
                     if(val != null && val.trim().length() > 0) {
                         //Store the value either as the fieldName or in a Map<AttributeName, Value>
-                        if (attributeName.equals("fieldName")) {
+                        if (attributeName.equals(FIELD_IDENTIFIER_NAME)) {
                             fieldName = val;
                         } else {
+                            //Decode the URI
                             termValueMap.put(attributeName, val);
                         }
                     }
                 }
                 //We can't assert the DB-entities in the loop above as we need the fieldName but we can't guarantee
-                // the order of the XML-attributes
+                //the order of the XML-attributes
                 for(Map.Entry<String, String> entry : termValueMap.entrySet()){
                     try {
                         //Persist the semantics in the database

@@ -83,7 +83,8 @@ def versions = [
     servletApi    : '3.1.0',
     junit         : '4.12',
     mockito       : '2.+',
-    mustache      : '0.9.5'
+    mustache      : '0.9.5',
+    rdf4j         : '2.4.4'
 ]
 
 configurations.all {
@@ -147,6 +148,7 @@ dependencies {
   compile group: 'com.google.appengine', name: 'appengine-api-labs', version: versions.gae
   compile group: 'com.google.appengine', name: 'appengine-jsr107cache', version: versions.gae
   compile group: 'com.github.spullara.mustache.java', name: 'compiler', version: versions.mustache
+  compile group: 'org.eclipse.rdf4j', name: 'rdf4j-repository-sparql', version: versions.rdf4j
   compileOnly group: 'javax.servlet', name: 'javax.servlet-api', version: versions.servletApi
   testCompile group: 'junit', name: 'junit', version: versions.junit
   testCompile group: 'org.springframework', name: 'spring-test', version: versions.spring

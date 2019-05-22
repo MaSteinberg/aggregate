@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import org.opendatakit.aggregate.odktables.flexibleExport.SemanticsTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opendatakit.aggregate.constants.TaskLockType;
@@ -297,6 +298,21 @@ public class FormDeleteWorkerImpl {
     }
   }
 
+  private void deleteSemantics() throws ODKDatastoreException {
+    List<SemanticsTable> semantics = SemanticsTable.findEntriesByFormId(form.getFormId(), cc);
+    for(SemanticsTable sem : semantics){
+      boolean deleted = false;
+      try{
+        sem.delete(cc);
+        deleted = true;
+      } finally{
+        if(!deleted){
+          logger.error("Unable to delete from Semantics table: " + sem.getUri());
+        }
+      }
+    }
+  }
+
   private void doMarkAsComplete(MiscTasks t) throws ODKEntityPersistException, ODKOverQuotaException {
     // and mark us as completed... (don't delete for audit..).
     t.setCompletionDate(new Date());
@@ -379,6 +395,9 @@ public class FormDeleteWorkerImpl {
       return false;
 
     deletePersistentResultTasks();
+
+    //Delete semantics that were submitted for this table
+    deleteSemantics();
 
     // same is true with other miscellaneous tasks. Delete them.
     if (!deleteMiscTasks(t))

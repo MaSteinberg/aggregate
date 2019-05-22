@@ -65,6 +65,17 @@ public final class ServletConsts {
   public static final String FORM_ID = "formId";
 
   /**
+   * The name of the property that includes the semantic property name
+   */
+  public static final String SEMANTIC_PROPERTY = "semanticProperty";
+
+  /**
+   * The name of the property that flags whether the results of the
+   * semantic autocompletion servlet should be prefixed
+   */
+  public static final String SEMANTIC_AUTOCOMP_PREFIXED = "prefixed";
+
+  /**
    * For OdkTables:
    * The argument for a tableId.
    */
@@ -120,7 +131,9 @@ public final class ServletConsts {
 
   public static final String JSON_FILENAME_APPEND = "_results.json";
 
-  public static final String RDF_FILENAME_APPEND = "_results.ttl";
+  public static final String TEMPLATE_FILENAME_APPEND = "_results";
+
+  public static final String TEMPLATE_FILENAME_TYPE_FALLBACK = ".ttl";
 
   public static final String RECORD_KEY = "record";
 

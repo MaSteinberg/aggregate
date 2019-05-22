@@ -16,28 +16,25 @@
 
 package org.opendatakit.aggregate.server;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
-import java.io.*;
-import java.net.URL;
 import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.io.FileUtils;
 import org.opendatakit.aggregate.ContextFactory;
 import org.opendatakit.aggregate.client.exception.FormNotAvailableException;
 import org.opendatakit.aggregate.client.exception.RequestFailureException;
 import org.opendatakit.aggregate.client.filter.FilterGroup;
 import org.opendatakit.aggregate.client.form.*;
+import org.opendatakit.aggregate.client.popups.TemplateExportOptionsPopup;
+import org.opendatakit.aggregate.client.submission.SubmissionUISummary;
 import org.opendatakit.aggregate.constants.BeanDefs;
 import org.opendatakit.aggregate.constants.ErrorConsts;
 import org.opendatakit.aggregate.constants.HtmlUtil;
 import org.opendatakit.aggregate.constants.common.ExportType;
 import org.opendatakit.aggregate.constants.common.FormActionStatusTimestamp;
 import org.opendatakit.aggregate.constants.format.FormTableConsts;
+import org.opendatakit.aggregate.datamodel.FormElementModel;
 import org.opendatakit.aggregate.exception.ODKFormNotFoundException;
 import org.opendatakit.aggregate.filter.SubmissionFilterGroup;
 import org.opendatakit.aggregate.form.FormFactory;
@@ -45,9 +42,10 @@ import org.opendatakit.aggregate.form.IForm;
 import org.opendatakit.aggregate.form.MiscTasks;
 import org.opendatakit.aggregate.form.PersistentResults;
 import org.opendatakit.aggregate.form.PersistentResults.ResultFileInfo;
+import org.opendatakit.aggregate.odktables.flexibleExport.SemanticsTable;
 import org.opendatakit.aggregate.task.CsvGenerator;
 import org.opendatakit.aggregate.task.JsonFileGenerator;
-import org.opendatakit.aggregate.task.RdfGenerator;
+import org.opendatakit.aggregate.task.TemplateExportGenerator;
 import org.opendatakit.aggregate.task.KmlGenerator;
 import org.opendatakit.common.persistence.client.exception.DatastoreFailureException;
 import org.opendatakit.common.persistence.exception.ODKDatastoreException;
@@ -57,7 +55,6 @@ import org.opendatakit.common.security.client.exception.AccessDeniedException;
 import org.opendatakit.common.web.CallingContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.ResourceUtils;
 
 public class FormServiceImpl extends RemoteServiceServlet implements
     org.opendatakit.aggregate.client.form.FormService {
@@ -205,9 +202,81 @@ public class FormServiceImpl extends RemoteServiceServlet implements
     }
   }
 
+  /**
+   * Used by the frontend to grab the template export configuration.
+   * Only returns the templates for which all required annotations are available
+   * @see TemplateExportOptionsPopup#TemplateExportOptionsPopup
+   */
   @Override
-  public RdfExportOptions getRdfExportSettings() {
-    return RdfTemplateConfigManager.getRdfExportOptions();
+  public TemplateExportOptions getFlexibleExportSettings(String formId, FilterGroup filterGroup) throws AccessDeniedException, RequestFailureException, DatastoreFailureException {
+    //Grab all form details & included columns to check for required annotations
+    HttpServletRequest req = this.getThreadLocalRequest();
+    CallingContext cc = ContextFactory.getCallingContext(this, req);
+    IForm form;
+    try {
+      form = FormFactory.retrieveFormByFormId(formId, cc);
+    } catch (ODKFormNotFoundException e) {
+      throw new RequestFailureException(ErrorConsts.FORM_NOT_FOUND);
+    } catch (ODKOverQuotaException e) {
+      throw new RequestFailureException(ErrorConsts.QUOTA_EXCEEDED);
+    } catch (ODKDatastoreException e) {
+      throw new DatastoreFailureException(e.getMessage());
+    }
+    if (!form.hasValidFormDefinition()) {
+      throw new RequestFailureException(ErrorConsts.FORM_DEFINITION_INVALID); // ill-formed definition
+    }
+    SubmissionUISummary summary = new SubmissionUISummary(form.getViewableName());
+    GenerateHeaderInfo headerGenerator = new GenerateHeaderInfo(filterGroup, summary, form);
+    headerGenerator.processForHeaderInfo(form.getTopLevelGroupElement());
+    List<FormElementModel> columnFormElementModelsFiltered = headerGenerator.getIncludedElements();
+
+    //Retrieve semantics of the form from the DB
+    List<SemanticsTable> sem = SemanticsTable.findEntriesByFormId(formId, cc);
+    Map<String, Map<String, String>> semantics = new HashMap<>(); //(fieldName -> (propertyName -> propertyValue))
+    for(SemanticsTable t : sem){
+      Map<String, String> tmp;
+      String fieldName = t.getFieldName();
+      if(!semantics.containsKey(t.getFieldName())){
+        tmp = new HashMap<>();
+      } else{
+        tmp = semantics.get(fieldName);
+      }
+      tmp.put(t.getPropertyName(), t.getPropertyValue());
+      semantics.put(fieldName, tmp);
+    }
+
+    //Find all registered template groups
+    TemplateExportOptions options = ExportTemplateConfigManager.getTemplateExportOptions();
+    Map<String, ExportTemplateConfig> templates = options.getTemplates();
+    //Iterate all registered template groups
+    for(Map.Entry<String, ExportTemplateConfig> entry: templates.entrySet()){
+      List<String> requiredProperties;
+      if(entry.getValue().getTemplateProperties() != null){
+        requiredProperties = entry.getValue().getTemplateProperties().getRequiredProperties();
+        //Check if we have all required annotations
+        if(requiredProperties != null) {
+          for(String requiredProperty : requiredProperties) {
+            for (FormElementModel col : columnFormElementModelsFiltered) {
+              //"instanceID" is a special case - it's automatically generated and thus semantic information
+              //can't be entered by the form author
+              //Repeats also don't have semantic information attached so we can ignore these
+              if(!col.getElementName().equals("instanceID") &&
+                      !col.getElementType().equals(FormElementModel.ElementType.REPEAT)){
+                Map<String, String> semanticsForColumn = semantics.get(col.getElementName());
+                if (semanticsForColumn == null ||
+                    !(semanticsForColumn.containsKey(requiredProperty)) ||
+                    semanticsForColumn.get(requiredProperty) == null ||
+                    semanticsForColumn.get(requiredProperty).trim().length() == 0){
+                  //Missing required annotations so we don't return this template group as an option
+                  templates.remove(entry.getKey());
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    return options;
   }
 
   @Override
@@ -334,7 +403,7 @@ public class FormServiceImpl extends RemoteServiceServlet implements
   }
 
   @Override
-  public Boolean createRdfFileFromFilter(FilterGroup group, String baseURI, Boolean requireRowUUIDs, String templateGroup) throws RequestFailureException, DatastoreFailureException {
+  public Boolean createFlexibleFileFromFilter(FilterGroup group, String baseURI, Boolean requireRowUUIDs, String templateGroup) throws RequestFailureException, DatastoreFailureException {
     HttpServletRequest req = this.getThreadLocalRequest();
     CallingContext cc = ContextFactory.getCallingContext(this, req);
 
@@ -355,7 +424,7 @@ public class FormServiceImpl extends RemoteServiceServlet implements
       filterGrp.setIsPublic(false); // make the filter not visible in the UI since it's an internal filter for export
       filterGrp.persist(cc);
 
-      // create rdf job
+      // create template export job
       IForm form = FormFactory.retrieveFormByFormId(filterGrp.getFormId(), cc);
       if (!form.hasValidFormDefinition()) {
         throw new RequestFailureException(ErrorConsts.FORM_DEFINITION_INVALID); // ill-formed definition
@@ -363,17 +432,17 @@ public class FormServiceImpl extends RemoteServiceServlet implements
 
       //Build parameter map
       Map<String, String> params = new HashMap<>();
-      params.put(RdfGenerator.RDF_BASEURI_KEY, baseURI);
-      params.put(RdfGenerator.RDF_REQUIREUUIDS_KEY, String.valueOf(requireRowUUIDs));
-      params.put(RdfGenerator.RDF_TEMPLATE_KEY, templateGroup);
-      PersistentResults r = new PersistentResults(ExportType.RDF, form, filterGrp, params, cc);
+      params.put(TemplateExportGenerator.TEMPLATE_EXPORT_BASEURI_KEY, baseURI);
+      params.put(TemplateExportGenerator.TEMPLATE_EXPORT_REQUIRE_UUIDS_KEY, String.valueOf(requireRowUUIDs));
+      params.put(TemplateExportGenerator.TEMPLATE_EXPORT_TEMPLATE_KEY, templateGroup);
+      PersistentResults r = new PersistentResults(ExportType.FLEX, form, filterGrp, params, cc);
       r.persist(cc);
 
-      // create rdf task
+      // create template export task
       CallingContext ccDaemon = ContextFactory.getCallingContext(this, req);
       ccDaemon.setAsDaemon(true);
-      RdfGenerator generator = (RdfGenerator) cc.getBean(BeanDefs.RDF_BEAN);
-      generator.createRdfTask(form, r, 1L, ccDaemon);
+      TemplateExportGenerator generator = (TemplateExportGenerator) cc.getBean(BeanDefs.TEMPLATE_EXPORT_BEAN);
+      generator.createTemplateExportTask(form, r, 1L, ccDaemon);
       return true;
 
     } catch (ODKFormNotFoundException e) {

@@ -149,8 +149,8 @@ public final class ExportPopup extends AbstractPopupBase {
         KmlOptionsPopup popup = new KmlOptionsPopup(formId, filterGroup);
         popup.setPopupPositionAndShow(popup.getPositionCallBack());
         hide();
-      } else if (type == ExportType.RDF){
-        RdfOptionsPopup popup = new RdfOptionsPopup(formId, filterGroup);
+      } else if (type == ExportType.FLEX){
+        TemplateExportOptionsPopup popup = new TemplateExportOptionsPopup(formId, filterGroup);
         popup.setPopupPositionAndShow(popup.getPositionCallBack());
         hide();
       }

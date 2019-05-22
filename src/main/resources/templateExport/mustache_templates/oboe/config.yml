@@ -1,0 +1,8 @@
+displayName: Extensible Observation Ontology
+filetype: .ttl
+templateProperties:
+  optionalProperties:
+    - Creator
+  requiredProperties:
+    - Characteristic
+    - Unit

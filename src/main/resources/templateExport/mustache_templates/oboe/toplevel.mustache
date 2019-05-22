@@ -1,0 +1,19 @@
+{{!The survey describes an ObservationCollection}}
+:obsCol_{{toplevelIdentifier}}  rdf:type oboe-core:ObservationCollection ;
+                                {{!Attach the formId as an identifier}}
+                                dcterms:identifier "{{formId}}" ;
+                                {{!Attach the formName as a title}}
+                                {{#formName}}
+                                    dcterms:title "{{formName}}";
+                                {{/formName}}
+                                {{!Attach the formDescription as a description}}
+                                {{#formDescription}}
+                                    dcterms:description "{{formDescription}}";
+                                {{/formDescription}}
+                                {{!Attach the formCreationDate}}
+                                dcterms:created "{{formCreationDate}}";
+                                {{!Attach the formCreationUser as a foaf:Person}}
+                                dcterms:creator [
+                                    a foaf:Person;
+                                    foaf:name "{{formCreationUser}}"
+                                ] .

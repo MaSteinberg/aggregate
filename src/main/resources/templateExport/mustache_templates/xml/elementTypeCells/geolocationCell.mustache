@@ -1,0 +1,10 @@
+<location>
+    <latitude>{{location.latitude}}</latitude>
+    <longitude>{{location.longitude}}</longitude>
+    <altitude>{{location.altitude}}</altitude>
+    <accuracy>{{location.accuracy}}</accuracy>
+</location></{{columnModel.columnIdentifier}}>
+{{!Closing row tag if this is the last cell of the row}}
+{{#columnModel.isLastColumn}}
+</row>
+{{/columnModel.isLastColumn}}

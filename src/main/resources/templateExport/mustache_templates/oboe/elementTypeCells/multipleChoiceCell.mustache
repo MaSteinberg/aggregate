@@ -1,0 +1,6 @@
+{{!Relate the actual cell-values to the MeasuredValue}}
+:measuredValue_{{cellIdentifier}} oboe-core:hasCode (
+    {{#cellValues}}
+    "{{{.}}}"^^xsd:string
+    {{/cellValues}}
+) .

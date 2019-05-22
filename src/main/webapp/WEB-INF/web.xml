@@ -322,12 +322,21 @@
     </servlet-mapping>
 
     <servlet>
-        <servlet-name>rdfTemplateConfig</servlet-name>
-        <servlet-class>org.opendatakit.aggregate.servlet.RdfTemplateConfigServlet</servlet-class>
+        <servlet-name>exportTemplateConfig</servlet-name>
+        <servlet-class>org.opendatakit.aggregate.servlet.ExportTemplateConfigServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>rdfTemplateConfig</servlet-name>
-        <url-pattern>/rdfTemplateConfig</url-pattern>
+        <servlet-name>exportTemplateConfig</servlet-name>
+        <url-pattern>/exportTemplateConfig</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>semanticPropertyAutocomplete</servlet-name>
+        <servlet-class>org.opendatakit.aggregate.servlet.SemanticPropertyAutocompleteServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>semanticPropertyAutocomplete</servlet-name>
+        <url-pattern>/semanticAutocomplete</url-pattern>
     </servlet-mapping>
 
     <servlet>
@@ -464,12 +473,12 @@
 	</servlet-mapping>
 
     <servlet>
-        <servlet-name>rdfGeneratorTask</servlet-name>
-        <servlet-class>org.opendatakit.aggregate.task.gae.servlet.RdfGeneratorTaskServlet</servlet-class>
+        <servlet-name>templateExportGeneratorTask</servlet-name>
+        <servlet-class>org.opendatakit.aggregate.task.gae.servlet.TemplateExportGeneratorTaskServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>rdfGeneratorTask</servlet-name>
-        <url-pattern>/gae/rdfGeneratorTask</url-pattern>
+        <servlet-name>templateExportGeneratorTask</servlet-name>
+        <url-pattern>/gae/templateExportGeneratorTask</url-pattern>
     </servlet-mapping>
 
 	<servlet>
