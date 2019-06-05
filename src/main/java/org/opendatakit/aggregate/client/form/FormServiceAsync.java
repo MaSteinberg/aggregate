@@ -20,6 +20,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import java.util.ArrayList;
 import org.opendatakit.aggregate.client.filter.FilterGroup;
 
+//Modified by Markus Steinberg as part of his Master's thesis
 public interface FormServiceAsync {
 
   void getForms(AsyncCallback<ArrayList<FormSummary>> callback);

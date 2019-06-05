@@ -39,6 +39,7 @@ import org.opendatakit.common.web.servlet.CommonServletBase;
  * Base class for Servlets that contain useful utilities
  *
  */
+//Modified by Markus Steinberg as part of his Master's thesis
 @SuppressWarnings("serial")
 public class ServletUtilBase extends CommonServletBase {
 

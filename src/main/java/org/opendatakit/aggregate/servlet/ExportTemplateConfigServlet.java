@@ -11,8 +11,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-/*
-REST-Servlet to make the template-based export configuration available to ODK Build
+/**
+ * @author Markus Steinberg
+ * REST-Servlet to make the template-based export configuration available to ODK Build
  */
 public class ExportTemplateConfigServlet extends ServletUtilBase {
     /**

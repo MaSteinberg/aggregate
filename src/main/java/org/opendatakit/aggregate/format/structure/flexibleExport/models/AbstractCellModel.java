@@ -6,6 +6,9 @@ import org.opendatakit.aggregate.format.structure.flexibleExport.TemplateFormatt
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author Markus Steinberg
+ */
 public abstract class AbstractCellModel {
     public ColumnModel columnModel;
     public RowModel rowModel;

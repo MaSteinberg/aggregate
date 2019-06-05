@@ -3,8 +3,9 @@ package org.opendatakit.aggregate.client.form;
 import java.util.List;
 import java.util.Map;
 
-/*
-Class used for deserialization of the TemplateExportConfig.yml
+/**
+ * @author Markus Steinberg
+ * Class used for deserialization of the TemplateExportConfig.yml
  */
 public class TemplateToplevelConfig {
     private Map<String, SemanticPropertyConfiguration> availableProperties;

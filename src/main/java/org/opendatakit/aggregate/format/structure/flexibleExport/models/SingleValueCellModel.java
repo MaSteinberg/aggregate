@@ -2,6 +2,9 @@ package org.opendatakit.aggregate.format.structure.flexibleExport.models;
 
 import java.util.Map;
 
+/**
+ * @author Markus Steinberg
+ */
 public class SingleValueCellModel extends AbstractCellModel{
     String cellValue;
 

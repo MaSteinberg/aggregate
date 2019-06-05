@@ -54,6 +54,7 @@ import org.springframework.beans.factory.InitializingBean;
  * @author mitchellsundt@gmail.com
  *
  */
+//Modified by Markus Steinberg as part of his Master's thesis
 public class WatchdogImpl implements Watchdog, InitializingBean {
 
   private Logger logger = LoggerFactory.getLogger(WatchdogImpl.class);

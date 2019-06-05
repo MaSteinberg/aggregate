@@ -3,6 +3,9 @@ package org.opendatakit.aggregate.format.structure.flexibleExport.models;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author Markus Steinberg
+ */
 public class GeotraceCellModel extends AbstractCellModel {
     List<GeotraceElement> locationList;
 

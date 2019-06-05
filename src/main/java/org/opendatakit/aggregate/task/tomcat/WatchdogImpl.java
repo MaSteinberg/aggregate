@@ -50,6 +50,7 @@ import org.springframework.web.context.ServletContextAware;
  * @author mitchellsundt@gmail.com
  *
  */
+//Modified by Markus Steinberg as part of his Master's thesis
 public class WatchdogImpl implements Watchdog, SmartLifecycle, InitializingBean,
     ServletContextAware {
 

@@ -21,6 +21,7 @@ package org.opendatakit.aggregate.constants;
  * @author mitchellsundt@gmail.com
  * 
  */
+//Modified by Markus Steinberg as part of his Master's thesis
 public class BeanDefs {
 
   public static final String HTTP_CLIENT_FACTORY = "http_client_factory";

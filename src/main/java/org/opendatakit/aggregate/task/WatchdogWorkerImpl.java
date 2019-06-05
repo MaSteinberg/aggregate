@@ -58,6 +58,7 @@ import org.opendatakit.common.web.CallingContext;
  * @author mitchellsundt@gmail.com
  *
  */
+//Modified by Markus Steinberg as part of his Master's thesis
 public class WatchdogWorkerImpl {
 
   private Logger logger = LoggerFactory.getLogger(WatchdogWorkerImpl.class);

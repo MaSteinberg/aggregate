@@ -38,6 +38,9 @@ import org.opendatakit.aggregate.client.widgets.FilterListBox;
 import org.opendatakit.aggregate.constants.common.ExportType;
 import org.opendatakit.aggregate.constants.common.SubTabs;
 
+/**
+ * @author Markus Steinberg
+ */
 public final class ExportPopup extends AbstractPopupBase {
 
   private static final String EXPORT_ERROR_MSG = "Problem creating your export file";

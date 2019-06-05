@@ -1,5 +1,8 @@
 package org.opendatakit.aggregate.client.form;
 
+/**
+ * @author Markus Steinberg
+ */
 public class SemanticAutocompleteElement {
     private String value;
     private String label;

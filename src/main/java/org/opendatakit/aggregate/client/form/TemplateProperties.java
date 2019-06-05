@@ -3,6 +3,9 @@ package org.opendatakit.aggregate.client.form;
 import java.io.Serializable;
 import java.util.List;
 
+/**
+ * @author Markus Steinberg
+ */
 public class TemplateProperties implements Serializable {
     private List<String> optionalProperties;
     private List<String> requiredProperties;

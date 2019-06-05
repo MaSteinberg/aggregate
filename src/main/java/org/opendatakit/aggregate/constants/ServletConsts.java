@@ -25,6 +25,7 @@ package org.opendatakit.aggregate.constants;
  * @author mitchellsundt@gmail.com
  *
  */
+//Modified by Markus Steinberg as part of his Master's thesis
 public final class ServletConsts {
 
   // TODO: remove temporary debug variable

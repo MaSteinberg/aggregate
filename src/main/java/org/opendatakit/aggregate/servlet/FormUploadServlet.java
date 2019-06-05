@@ -56,6 +56,7 @@ import org.xml.sax.SAXException;
  * @author mitchellsundt@gmail.com
  *
  */
+//Modified by Markus Steinberg as part of his Master's thesis
 public class FormUploadServlet extends ServletUtilBase {
 
   /**

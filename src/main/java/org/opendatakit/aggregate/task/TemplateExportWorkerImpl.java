@@ -39,6 +39,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
+ * @author Markus Steinberg
  * Common worker implementation for the generation of template-based files.
  */
 public class TemplateExportWorkerImpl {

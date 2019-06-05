@@ -22,6 +22,7 @@ import org.opendatakit.common.persistence.exception.ODKDatastoreException;
 import org.opendatakit.common.web.CallingContext;
 
 /**
+ * @author Markus Steinberg
  * API for creating and restarting template export.
  */
 public interface TemplateExportGenerator {

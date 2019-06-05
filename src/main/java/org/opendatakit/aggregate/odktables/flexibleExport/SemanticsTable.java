@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
+ * @author Markus Steinberg
  * This class describes the Semantics table in the database
  * It stores meta-information about the fields of a survey, necessary for the template-based export
  *

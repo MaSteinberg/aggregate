@@ -11,6 +11,9 @@ import org.opendatakit.aggregate.client.form.SemanticAutocompleteElement;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author Markus Steinberg
+ */
 public class SparqlQueryManager {
     /*
     Issues the given query on the given SPARQL-Endpoint.

@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
 
+/**
+ * @author Markus Steinberg
+ */
 public class SemanticPropertyConfiguration implements Serializable {
     private static final long serialVersionUID = 3180598340579147616L;
 

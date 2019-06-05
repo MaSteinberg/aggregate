@@ -58,6 +58,7 @@ import org.opendatakit.common.web.CallingContext;
  * @author mitchellsundt@gmail.com
  *
  */
+//Modified by Markus Steinberg as part of his Master's thesis
 public class FormDeleteWorkerImpl {
 
   public static final int FORM_DELETE_RECORD_QUERY_LIMIT = 50;

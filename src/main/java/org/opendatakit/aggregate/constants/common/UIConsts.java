@@ -16,6 +16,7 @@
 
 package org.opendatakit.aggregate.constants.common;
 
+//Modified by Markus Steinberg as part of his Master's thesis
 public class UIConsts {
   public static final String VERSION_STRING = "v1.4.15 Production";
 

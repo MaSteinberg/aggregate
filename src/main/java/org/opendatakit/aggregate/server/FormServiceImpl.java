@@ -56,6 +56,7 @@ import org.opendatakit.common.web.CallingContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+//Modified by Markus Steinberg as part of his Master's thesis
 public class FormServiceImpl extends RemoteServiceServlet implements
     org.opendatakit.aggregate.client.form.FormService {
   private static final Logger logger = LoggerFactory.getLogger(FormServiceImpl.class);

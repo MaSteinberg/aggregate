@@ -1,5 +1,8 @@
 package org.opendatakit.aggregate.format.structure.flexibleExport.models;
 
+/**
+ * @author Markus Steinberg
+ */
 public class ColumnModel {
     public TopLevelModel topLevelModel;
     public String columnHeader;

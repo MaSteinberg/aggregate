@@ -32,6 +32,7 @@ import org.opendatakit.common.security.client.exception.AccessDeniedException;
  *
  * @author wbrunette@gmail.com
  */
+//Modified by Markus Steinberg as part of his Master's thesis
 @RemoteServiceRelativePath("formservice")
 public interface FormService extends RemoteService {
 

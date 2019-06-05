@@ -19,6 +19,9 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author Markus Steinberg
+ */
 public class SemanticPropertyAutocompleteServlet extends ServletUtilBase {
     /**
      * Serial number for serialization

@@ -6,6 +6,9 @@ import org.opendatakit.aggregate.format.structure.flexibleExport.models.*;
 
 import java.util.*;
 
+/**
+ * @author Markus Steinberg
+ */
 public class ModelBuilder {
     public CellIdentifierModel buildCellIdentifierModel(ColumnModel columnModel, RowModel rowModel) {
         return new CellIdentifierModel(columnModel.columnHeader, rowModel.rowId);

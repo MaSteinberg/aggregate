@@ -18,7 +18,7 @@ package org.opendatakit.aggregate.constants.common;
 
 import java.io.Serializable;
 
-
+//Modified by Markus Steinberg as part of his Master's thesis
 public enum ExportType implements Serializable {
     CSV("CSV file"),
     KML("KML file"),

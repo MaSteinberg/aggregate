@@ -11,8 +11,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-/*
-Class that manages access and parsing of the configuration files for the template-based export.
+/**
+ * @author Markus Steinberg
+ * Class that manages access and parsing of the configuration files for the template-based export.
  */
 public class ExportTemplateConfigManager {
     private static final String configRoot = "templateExport";

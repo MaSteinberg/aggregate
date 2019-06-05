@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author Markus Steinberg
+ */
 public class MultiValueCellModel extends AbstractCellModel {
     public List<String> cellValues;
 

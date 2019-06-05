@@ -16,6 +16,9 @@ import org.opendatakit.aggregate.constants.common.SubTabs;
 
 import static org.opendatakit.aggregate.client.security.SecurityUtils.secureRequest;
 
+/**
+ * @author Markus Steinberg
+ */
 public class TemplateExportOptionsPopup extends AbstractPopupBase {
     private static final String EXPORT_ERROR_MSG = "One of the options was invalid. Did you forget to enter a base-URI?";
 

@@ -49,6 +49,9 @@ import java.util.stream.IntStream;
 
 import static org.opendatakit.aggregate.datamodel.FormElementModel.ElementType.*;
 
+/**
+ * @author Markus Steinberg
+ */
 public class TemplateFormatterWithFilters implements SubmissionFormatter {
     public static final String ONTOLOGY_REF_PREFIX = "_onto_";
     public static final String COLUMN_REF_PREFIX = "_col_";

@@ -24,6 +24,7 @@ package org.opendatakit.common.web.constants;
  * @author mitchellsundt@gmail.com
  *
  */
+//Modified by Markus Steinberg as part of his Master's thesis
 public final class HtmlConsts {
 
     // tag brackets
